@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "Bu kodu kullanırsanız lütfen aşağıdaki çalışmaya atıfta bulunun."
+title: "Türkiye piyasasında yön tahmini: derin öğrenme ve majority class illüzyonu"
+authors:
+  - family-names: "Kurt"
+    given-names: "Mehmet Ali"
+    orcid: "https://orcid.org/0009-0008-3371-7952"
+    email: "m.alikuurt0@gmail.com"
+    affiliation: "Hacettepe Üniversitesi, Aktüerya Bilimleri Bölümü"
+  - family-names: "Demir"
+    given-names: "Şevval"
+    orcid: "https://orcid.org/0009-0005-3077-3666"
+    email: "dsevval5@gmail.com"
+    affiliation: "Hacettepe Üniversitesi, Aktüerya Bilimleri Bölümü"
+  - family-names: "Karadağ Erdemir"
+    given-names: "Övgücan"
+    orcid: "https://orcid.org/0000-0002-4725-3588"
+    email: "ovgucan@hacettepe.edu.tr"
+    affiliation: "Hacettepe Üniversitesi, Aktüerya Bilimleri Bölümü"
+date-released: "2026-05-02"
+license: MIT
+keywords:
+  - ARIMA
+  - LSTM
+  - 1D-CNN
+  - direction forecasting
+  - majority class illusion
+  - concept drift
+  - BIST
+  - pension funds
+  - Turkish market
