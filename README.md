@@ -137,6 +137,15 @@ Bu kodu kullanırsanız lütfen makaleye atıfta bulunun:
 }
 ```
 
+## 🔗 İlgili Projeler / Related Projects
+
+| Proje / Project | Açıklama / Description |
+|-----------------|------------------------|
+| [Tubitak-2209A-MCAware](https://github.com/kuurtali/Tubitak-2209A-MCAware) | TÜBİTAK 2209-A: BIST'te derin öğrenme ile anti-prediktif davranış keşfi |
+| [ADAS Pricing Paradox](https://github.com/kuurtali/ADAS-Pricing-Paradox) | Aktüeryal ADAS fiyatlama: 100K poliçe, Poisson + Gamma GLM |
+| [VOL2 — ADAS Advanced](https://github.com/kuurtali/VOL2-ADAS-Pricing-Paradox) | ADAS fiyatlama VOL2: 200K poliçe, Gini Index, Lift Charts |
+| [Actuarial Shiny Dashboard](https://github.com/kuurtali/actuarial-analysis-w-shiny-and-glm) | İnteraktif R Shiny risk skorlama: Logistic GLM (AUC 0.828) |
+
 ## Lisans
 
 MIT License — bkz. [LICENSE](LICENSE).
