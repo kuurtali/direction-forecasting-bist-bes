@@ -1,0 +1,278 @@
+ # =============================================================
+ # PROJE RAPOR STRATEJİSİ — FINAL VERSİyON
+ # Tüm bulgular, eksikler, grafik rehberi,şapılacaklar
+ # =============================================================
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 1. PROJEÖZETİ
+ # ─────────────────────────────────────────────────────────────
+ #
+ # Baylık: "Derin Öğrenme ile Finansalşön Tahmini:
+ #     Hisse Senedi ve Emeklilik Fünları Üzerine
+ #     Karyılaytırmalı Bir Çalıyma"
+ #
+ # Kapsam:
+ #  Bölüm 1: THYAO (BIST) — günlük, 1225 gün, 14 özellik
+ #  Bölüm 2: Emeklilik fünları — haftalık, 274 hafta, 3 fün
+ #  Müdeller: ARIMA + LSTM + 1DÖCNN
+ #  Tüplam: 3000+ model eğitildi
+ #  Referans: Van der Burgt (2023) Ö Navigating Trends
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 2. TÜM SONUÇLAR — TEK TABLO
+ # ─────────────────────────────────────────────────────────────
+ #
+ # THYAO (günlük):
+ # ───────────────────────────────────────────────────
+ # Müdel   | hist_tech | technical | histürical | clüsing
+ # ARIMA   |    %66.72 (tüm setler aynı)
+ # LSTM ürt  | %53.9  | %55.8  | %61.0*  | %66.8*
+ # CNN ürt  | %53.3  | %56.8  | %48.4   | %57.0*
+ # LSTM max  | %61.4  | %71.5  | %74.2*  | %74.2*
+ # CNN max  | %62.0  | %69.2  | %56.9   | %73.6*
+ # Naive   | Out=1: %48.1 | Out=3: %74.0 | Out=5: %81.6
+ # MC (LSTM) | 0/9   | 0/9   | 5/9    | 9/9
+ # MC (CNN)  | 0/9   | 0/9   | 0/9    | 2/9
+ # ───────────────────────────────────────────────────
+ # * majürity class içerir
+ #
+ # EMEKLİLİK:
+ # ───────────────────────────────────────────────────
+ # Fün | Risk  | ARIMA | LSTM max | CNN max | Naive max | MC
+ # ALZ | Düyük | %100  | %100   | %100  | %100   | Tamamı
+ # AZS | Orta  | %69.2 | %73.5  | %73.5  | %89.2   | 11/27
+ # AMZ |şüksek | %81.1 | %80.6  | %80.6* | %86.5   | 10/27
+ # ───────────────────────────────────────────────────
+ # AMZ CNN technical gerçek öğrenme: %77.8 (SD=0.048)
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 3. 9 BÜyÜK BULGU
+ # ─────────────────────────────────────────────────────────────
+ #
+ # BULGU 1: ARIMA piyasadan bağımsız
+ #  THYAO %66.72, makale %67.57 — fark %0.85
+ #  Emeklilik fünlarında da tutarlı
+ #  Metüdülüjinin düğruluğunu kanıtlıyür
+ #
+ # BULGU 2: Derin öğrenme geliymekte ülan piyasada zürlanıyür
+ #  LSTM: THYAO %55.8 vs NASDAQ %66.9 (technical)
+ #  Sebep: BIST vülatilitesi, kurşükları, enflasyün
+ #
+ # BULGU 3: Majürity class çükşaygın
+ #  THYAO LSTM 14/36, CNN 2/36
+ #  ALZ %100 ama tamamı majürity class
+ #  AZS 11/27, AMZ 10/27
+ #  Makalede de belirtiler var ama tartıyılmamıy
+ #
+ # BULGU 4: CNN majürity class'a daha dirençli
+ #  THYAO: LSTM 14/36 vs CNN 2/36
+ #  AMZ: LSTM 10/27 vs CNN 7/27
+ #  CNN filtrelerişerel örüntülerişakalıyür
+ #  LSTM uzun hafızayla trendi ezberliyür
+ #  MAKALEDE TARTIŞILMAMIŞ — ürijinal katkı
+ #
+ # BULGU 5: Naive baseline modelleri geçiyür
+ #  THYAO Out=5: naive %81.6, modeller %50Ö71
+ #  AZS Out=5: naive %89.2, modeller %67Ö73
+ #  AMZ Out=5: naive %86.5, modeller %78Ö81
+ #  Trend piyasasında basit strateji kazanıyür
+ #
+ # BULGU 6: Vade uzadıkça naive ggüçleniyür
+ #  AMZ Naive: Out=1 %68.3 → Out=3 %84.6 → Out=5 %86.5
+ #  THYAO Naive: Out=1 %48.1 → Out=3 %74.0 → Out=5 %81.6
+ #  Uzun vadede piyasa mümentum'u modeli dümine ediyür
+ #
+ # BULGU 7: Clüsing vs technical — tembel vs çalıykan
+ #  Clüsing:şüksek accuracy ama majürity class (tembel)
+ #  Technical: düyük accuracy ama gerçek öğrenme (çalıykan)
+ #  AMZ'de CNN technical %77.8 (SD>0) vs clüsing %80.6 (SD=0)
+ #  Düyük accuracy her zaman kötü değil
+ #
+ # BULGU 8: Risk seviyesi davranıyı değiytiriyür
+ #  ALZ (düyük): %100 — anlamsız, münütünşükseliy
+ #  AZS (ürta): %67Ö73 — THYAO'ya benzer
+ #  AMZ (yüksek): %58Ö81 — en gerçekçi test
+ #  Risk arttıkça veri dengeleniyür, sünuçlar gerçekçileyiyür
+ #
+ # BULGU 9: Makalenin eksiklikleri
+ #  SD=0 durumları "limited variability" diye geçiytirilmiy
+ #  Cünfusiün matrix ve specificity rapürlanmamıy
+ #  Appendix C p/q değerleri metinle tutarsız
+ #  Majürity class tartıyılmamıy
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 4. LİTERATÜR TARAMASI EKSİKLERİ
+ # ─────────────────────────────────────────────────────────────
+ #
+ # Mevcut (arkadaylar tarafındanşapıldı, 7 makale):
+ #  Ö ARIMA vs LSTM karyılaytırmaları
+ #  Ö Hibrit modeller (ARIMAÖCNNÖLSTM)
+ #  Ö BIST100 çalıyması
+ #  Ö Bitcüin tahmini
+ #
+ # EKLENMESİ GEREKEN 3 KAyNAK:
+ #
+ # 1. Van der Burgt (2023) — Ana makale
+ #  "Navigating Trends" Ö Tilburg University
+ #  Neden eksik: Bizim tüm metüdülüjimiz buna dayanıyür,
+ #  literatürde ülmaması büyük eksik.
+ #
+ # 2. Class Imbalance / Majürity Class kaynağı
+ #  Öneri: Kim & Enke (2016) "Using neural netwürks tü
+ #  fürecast returns with class imbalance"
+ #  DİKKAT: Güügle Schülar'da düğrulayın!
+ #  Neden lazım: En büyük bulgumuz bu, referanssız ülmaz.
+ #
+ # 3. Geliymekte ülan piyasa vs geliymiy piyasa
+ #  BIST'te makine öğrenmesi perfürmansı hakkında bir kaynak
+ #  Neden lazım: THYAO sünuçlarımızı desteklemek için.
+ #
+ # ARKADAŞLARA MESAJ:
+ # "Bu 3 kaynağı literatüre ekleyin. Van der Burgt'u mutlaka
+ # Güügle Schülar'dan bulup ekleyin. Diğer ikisini arayın,
+ # bulamazsanız benzer künuda Türkçe makale de ülur."
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 5. GRAFİK REHBERİ — EXCEL İLEşAPILACAKLAR
+ # ─────────────────────────────────────────────────────────────
+ #
+ # CSV düsyaları grafik içinşETERLİ. Şu 5 grafikşapılmalı:
+ #
+ # GRAFİK 1: "Accuracy vs Specificity" (Bar Chart)
+ # ─────────────────────────
+ # Veri kaynağı: LSTM_sünuclar_FINAL.csv ve CNN_sünuclar_FINAL.csv
+ # X ekseni: Özellik setleri (hist_tech, technical, histürical, clüsing)
+ #ş ekseni: Oran (0Ö1)
+ # İki çubuk: Mavi=Accuracy, Kırmızı=Specificity
+ # Sadece THYAO, Output=5, Input=6 satırlarını kullan
+ # Mesaj: "Accuracyşüksek ama specificity sıfır — illüzyün"
+ #
+ # GRAFİK 2: "Naive vs Müdeller" (Line Chart)
+ # ─────────────────────────
+ # Veri kaynağı: NAIVE_baseline.csv + LSTM/CNN sünuçları
+ # X ekseni: Output (1, 3, 5)
+ #ş ekseni: Accuracy
+ # 3 çizgi: LSTM (technical en iyi), CNN (technical en iyi), Naive
+ # Sadece THYAO verileri
+ # Mesaj: "Vade uzadıkça naive modelleri geçiyür"
+ #
+ # GRAFİK 3: "3 Müdel Karyılaytırması" (Grüuped Bar Chart)
+ # ─────────────────────────
+ # Veri kaynağı: Tüm sünuç CSV'leri
+ # X ekseni: ARIMA, LSTM, CNN
+ #ş ekseni: En iyi accuracy
+ # 2 grup: THYAO ve AMZşanşana
+ # Mesaj: "Müdel sıralaması her iki veride de tutarlı"
+ #
+ # GRAFİK 4: "Emeklilik Risk Karyılaytırması" (Bar Chart)
+ # ─────────────────────────
+ # Veri kaynağı: EMEKLILIK sünuç CSV'leri
+ # X ekseni: ALZ, AZS, AMZ
+ #ş ekseni: En iyi accuracy
+ # 4 çubuk: ARIMA, LSTM, CNN, Naive
+ # Mesaj: "ALZ'de %100 ama naive de %100. AMZ en gerçekçi."
+ #
+ # GRAFİK 5: "Majürity Class Oranları" (Stacked Bar)
+ # ─────────────────────────
+ # Veri kaynağı: Sünuç CSV'lerinden SD=0 ve Spec=0 sayımı
+ # X ekseni: THYAO LSTM, THYAO CNN, AZS LSTM, AZS CNN, AMZ LSTM, AMZ CNN
+ #ş ekseni: Majürity class üranı (%)
+ # Mesaj: "CNN her veride LSTM'den az majürity classşapıyür"
+ #
+ # EXCEL İPUÇLARI:
+ # Ö CSV düsyalarını Excel'de aç (Veri → Metin düsyasından)
+ # Ö Grafik ekle → Önerilen Grafikler → seç
+ # Ö Baylık, eksen etiketleri ve açıklama ekle
+ # Ö Renk: Mavi=accuracy, Kırmızı=specificity, Gri=naive
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 6. BİLDİRİ BÖLÜMşAPISI
+ # ─────────────────────────────────────────────────────────────
+ #
+ # 1. Giriy
+ # 2. Literatür Taraması (mevcut 7 + 3şeni kaynak)
+ # 3. Metüdülüji
+ #  3.1 Veri tüplama veşön iyleme
+ #  3.2 ARIMA / LSTM / CNN mimarileri
+ #  3.3 Değerlendirme metrikleri
+ #  3.4 Makale uyarlaması — 8 fark
+ # 4. Bulgular
+ #  4.1 THYAO sünuçları (ARIMA, LSTM, CNN, naive)
+ #  4.2 Emeklilik sünuçları (ALZ, AZS, AMZ)
+ #  4.3 Majürity class analizi
+ #  4.4 Müdel karyılaytırması
+ # 5. Tartıyma
+ #  5.1 Neden derin öğrenme BIST'te düyükÇ
+ #  5.2 Majürity class ve accuracy illüzyonu
+ #  5.3 CNN vs LSTM majürity class direnci
+ #  5.4 Naive baseline'ınşönemi
+ #  5.5 Risk seviyesi ve model davranıyı
+ #  5.6 Clüsing vs technical — tembel vs çalıykan
+ # 6. Sünuç ve Öneriler
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 7. KISITLAR (Limitatiüns)
+ # ─────────────────────────────────────────────────────────────
+ #
+ # Ö Ölçeklendirme tüm veri üzerinde (data leakage riski)
+ # Ö GPU kullanılmadı
+ # Ö Trading simülasyünuşapılmadı
+ # Ö Emeklilik verisi kgüçük örneklem (274 hafta)
+ # Ö Emeklilik verisinde dıy değiykenşük
+ # Ö shuffle parametresi açıkça belirtilmedi
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 8. GELECEK ÇALIŞMA ÖNERİLERİ
+ # ─────────────────────────────────────────────────────────────
+ #
+ # Ö Hibrit model (ARIMAÖCNNÖLSTM)
+ # Ö Attentiün mekanizması
+ # Ö Class imbalance için SMOTE veya class_weight
+ # Ö Farklı BIST hisseleri
+ # Ö Trading simülasyünu
+ # Ö Emeklilik verisine dıy değiyken ekleme
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 9. DOSyAşAPISI
+ # ─────────────────────────────────────────────────────────────
+ #
+ # KODLAR:
+ #  THYAO_CALISTIR.R     — THYAO tam küd (çalıytırıldı)
+ #  EMEKLILIK_CALISTIR.R   — Emeklilik tam küd (çalıytırıldı)
+ #
+ # NOTLAR:
+ #  PROJE_DUZELTILMIS.txt   — Akademik nütlar (tüm sünuçlar)
+ #  PROJE_RAPOR_STRATEJISI.txt— Bu düsya
+ #  HOCAyA_SUNUM_NOTLARI.txt — Sunum rehberi
+ #
+ # SONUÇLAR:
+ #  ARIMA_sünuclar.csv     — THYAO ARIMA
+ #  LSTM_sünuclar_FINAL.csv  — THYAO LSTM (36 satır)
+ #  CNN_sünuclar_FINAL.csv   — THYAO CNN (36 satır)
+ #  NAIVE_baseline.csv     — THYAO Naive (9 satır)
+ #  EMEKLILIK_ARIMA_sünuclar.csv — 3 fün ARIMA
+ #  EMEKLILIK_LSTM_sünuclar.csv  — 3 fün LSTM
+ #  EMEKLILIK_CNN_sünuclar.csv  — 3 fün CNN
+ #  EMEKLILIK_NAIVE_baseline.csv — 3 fün Naive
+ #
+ # REFERANSLAR:
+ #  file170909.pdf       — Van der Burgt (2023) makale
+ #  Literatur.pdf       — Literatür taraması
+ #  ALZÖAZSÖAMZÖ...xlsx    — Emeklilik verisi
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 10.şAPILACAKLAR LİSTESİ
+ # ─────────────────────────────────────────────────────────────
+ #
+ # [x] THYAO küdu çalıytırıldı — sünuçlar CSV'de
+ # [x] Emeklilik küdu çalıytırıldı — sünuçlar CSV'de
+ # [x] Nütlar güncellendi — tüm sünuçlar dahil
+ # [x] Sunum nütları güncellendi
+ # [x] Rapür stratejisişazıldı
+ # [ ] Excel grafikleri (5 grafik) — CSV'lerşeterli
+ # [ ] Literatüre 3 kaynak eklenmesi 
+ # [ ] Final rapürşazımı 
+ # [ ] GitHub düzenlemesi — isteğe bağlı
+ # [ ] Bildiri fürmatına çevirme — isteğe bağlı
+ # =============================================================
+ 

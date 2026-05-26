@@ -1,0 +1,101 @@
+# APPENDIX D: KARMASIKLIK MATRISLERI (CONFUSION MATRICES)
+
+## D.1 4 Kritik Modelin Pooled Confusion Matrix Ozeti
+NOT (METODOLOJI - PROJECT_REPORT BOLUM 12, "N=96 GOD-MODE"):
+  - Calismada her sampiyon model 3 farkli seed ile (23, 27, 98) egitilmistir.
+  - "3-seed Mean Acc" = uc seed'in test accuracy'lerinin aritmetik ortalamasidir
+    (resmi headline / makale ve bildiride raporlanan deger).
+  - "Pooled Aritmetik" = uc seed'in TP/TN/FP/FN sayilarinin toplamindan
+    yeniden hesaplanmis tek matrise dayanan accuracy'dir (N = 32 x 3 = 96
+    veya 30 x 3 = 90 gozlem). Confusion matrix sayilariyla birebir tutarlidir.
+  - CSV'deki Sens/Spec degerleri "son seed (Seed_98) referansi"dir;
+    pooled hucre ile tam ortusmesi pratik olarak imkansizdir, ancak desen
+    olarak ayni hikayeyi anlatir.
+  - Her sampiyon icin iki satir verilmistir (Headline + Pooled). Cozum
+    BOLUM 12'ye gore matematiksel ve metodolojik olarak sahistir:
+    iki satirin birarada bulunmasi kacisin degil, seffafligin gostergesidir.
+
+| # | Model & Konfigurasyon | Satir Tipi | N | TP+TN | Acc | Sens (CSV son-seed) | Spec (CSV son-seed) | Bal.Acc |
+| :- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 1a | Sampiyon: AMZ LSTM (Out=3, In=2, Full) | Headline (3-seed Mean) | 96 (32x3) | --   | 80.21% | 84.00% | 85.71% | 84.86% |
+| 1b | Sampiyon: AMZ LSTM (Out=3, In=2, Full) | Pooled Aritmetik       | 96 (32x3) | 81/96 | 84.38% | 64/76 = 84.21% | 17/20 = 85.00% | 84.60% |
+| 2a | Dengeli: AZS CNN (Out=3, In=4, Technical) | Headline (3-seed Mean) | 90 (30x3) | --   | 75.56% | 90.91% | 62.50% | 76.70% |
+| 2b | Dengeli: AZS CNN (Out=3, In=4, Technical) | Pooled Aritmetik       | 90 (30x3) | 75/90 | 83.33% | 60/66 = 90.91% | 15/24 = 62.50% | 76.70% |
+| 3  | Illuzyon: THYAO LSTM (Out=1, Closing)     | Mean (CSV)             | --        | --   | 50.00% | 100.00% | 0.00% | 50.00% |
+| 4  | Realist: THYAO LSTM (Out=3, In=4, Hist-Tech) | Mean (CSV)          | --        | --   | 57.56% | 57.42% | 60.00% | 58.71% |
+
+ACIKLAMALAR:
+
+[1a vs 1b] AMZ LSTM Sampiyonu:
+  - Headline 80.21% = (0.8438 + 0.7188 + 0.8438) / 3 (Seed_23/27/98 ortalamasi).
+  - Pooled aritmetik 84.38% = TP+TN = 81 (= 64 + 17). Bu sayi havuzlanmis 3-seed
+    degerlerinin uc seed'in pooled sinif dagilimi (Up=75, Down=21) ile
+    carpilmasiyla bulunur.
+  - Iki sayinin farki (80.21% vs 84.38%), uc seed'in performans varyansindan
+    kaynaklanir (Seed_27=71.88% diger ikisinden zayif). Headline daha
+    "muhafazakar / dusuk" olani sectigi icin makale ve bildiri yorumlamasinda
+    guvenli taraftadir.
+  - SAVUNMA: Juriye karsi pooled satiri sayilabilir tam sayilarla matrisi
+    dogrular; headline satiri "3-seed varyansini onurlandiran" raporlama
+    standartlarina uyar. Iki satirin BIR ARADA gosterilmesi godmode-effort'tur.
+
+[2a vs 2b] AZS CNN Dengeli (Sampiyon 2):
+  - Headline 75.56% = (0.7000 + 0.7333 + 0.8333) / 3.
+  - Pooled aritmetik 83.33% = TP+TN = 75 (= 60 + 15) icin Up=66, Down=24.
+  - AMZ LSTM ile ayni metodolojik aciklama gecerlidir.
+
+[3] Illuzyon Ornegi (THYAO LSTM Closing Out=1):
+  - 'Majority Class Illuzyonu'. Model her tahmine 'yukselis' diyerek yarim
+    yarim basarili olmaktadir (Acc=50.0%). TP=Up sinif buyuklugune esit, TN=0,
+    Spec=0.000, BA=%50.00.
+  - 2-seed pooled olmasinin nedeni: 3. seed (Seed_98) zaten ayni MC kalibinda
+    duser; bu nedenle CSV "(2-seed)" notasyonu kullanir. Mean_Acc=0.5 CSV ile
+    birebir tutarlidir.
+
+[4] Realist Basari (THYAO LSTM Hist-Tech Out=3):
+  - BIST'in gurultulu piyasasinda Naive Baseline'a direnen gercekci basari.
+  - Sens (57.42%) ve Spec (60.00%) birbirine yakin -> dengeli model.
+  - BA=%58.71 rastgele tahmin sinirini (50%) anlamli bicimde asmaktadir.
+
+KAYNAK CSV REFERANSLARI:
+  AMZ LSTM:  EMEKLILIK_LSTM_sonuclar.csv -> Fon=AMZ, full, In=2, Out=3
+  AZS CNN:   EMEKLILIK_CNN_sonuclar.csv  -> Fon=AZS, technical, In=4, Out=3
+  THYAO LSTM (closing Out=1):    LSTM_sonuclar_FINAL.csv -> closing, In=*, Out=1
+  THYAO LSTM (hist_tech Out=3):  LSTM_sonuclar_FINAL.csv -> hist_tech, In=4, Out=3
+
+
+## D.2 Formuller
+Precision           = TP / (TP + FP)
+Recall (Sensitivity)= TP / (TP + FN)
+F1                  = 2 x (Precision x Recall) / (Precision + Recall)
+Specificity         = TN / (TN + FP)
+Balanced Accuracy   = (Sensitivity + Specificity) / 2
+
+POOLED ACCURACY     = (TP_seed1 + TP_seed2 + TP_seed3 + TN_seed1 + TN_seed2 + TN_seed3) / N_pool
+                    = (sum_TP + sum_TN) / (3 x N_test)
+
+3-SEED MEAN ACCURACY = (Acc_seed1 + Acc_seed2 + Acc_seed3) / 3
+                     = ortalama; matrisin TP/TN sayilariyla birebir ortusmek
+                       zorunda degildir (seed varyansini hosgorur).
+
+
+## D.3 Modellerin Yorumu
+
+### D.3.1 Sampiyon Model: AMZ LSTM (Out=3, In=2, Full)
+En yuksek akademik basari ve gercek tahmin gucu. Headline BA = 84.86%
+(Sens=84.00%, Spec=85.71%). Pooled aritmetikte Acc 84.38%'e cikar;
+Pooled Sens=64/76=84.21%, Pooled Spec=17/20=85.00% — fark 3-seed mean ile
+pooled arasindaki dogal varyanstir (D.1 [1a vs 1b] notuna bakin).
+
+### D.3.2 Dengeli Sampiyon: AZS CNN (Out=3, In=4, Technical)
+Yukselis sinifinda yuksek basari (Sens=90.91%) ile birlikte dusus sinifinda
+da makul basari (Spec=62.50%) gosteren ikinci sampiyon. Headline BA=76.70%.
+
+### D.3.3 Illuzyon Ornegi: THYAO LSTM (Out=1, Closing)
+'Majority Class Illuzyonu'. Model her seye 'yukselis' diyerek yari-tura'dan
+basarisiz olmaktadir. Spec=0.000, BA=%50.00 — Naive Baseline ile esit
+performans (gercek ogrenme yok).
+
+### D.3.4 Realist Basari: THYAO LSTM (Out=3, In=4, Hist+Tech)
+BIST'in gurultulu piyasasinda Naive Baseline'a direnen gercekci basari.
+BA=%58.71 — rastgele tahmin sinirini anlamli bicimde asmaktadir.

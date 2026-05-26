@@ -1,0 +1,329 @@
+﻿--- slide1.xml ---
+A Comparative Mortality Analysis Using the Lee-Carter Model: Evidence from the UK, Bulgaria, and Belarus
+Gizem
+
+Ã–zgÃ¼den
+Department of Actuarial Science, 
+Hacettepe
+ University, 
+gizemozguden@hacettepe.edu.tr
+Assist. Prof. Dr. 
+Ã–vgÃ¼can
+
+KaradaÄŸ
+ Erdemir
+Department of Actuarial Science, 
+Hacettepe
+ University, 
+ovgucan@hacettepe.edu.tr
+Assist. Prof. Dr. 
+BaÅŸak
+
+Bulut
+
+Karageyik
+Department of Actuarial Science, 
+Hacettepe
+ University, 
+basakbulut@hacettepe.edu.tr
+Gizem
+
+Ã–zgÃ¼den
+--- slide2.xml ---
+Outline
+1. Introduction
+2. Theoretical Framework
+3. Methodology
+4. Application
+5. Experimental Results
+6. Conclusion
+Gizem
+
+Ã–zgÃ¼den
+--- slide3.xml ---
+Introduction
+While numerous models have been developed for mortality analysis, the Lee-Carter model remains one of the most prominent due to its balance of simplicity and interpretability. 
+Widely applied in demographic studies and mortality forecasting, the modelâ€™s strength lies in its ability to capture 
+age- and time-specific mortality dynamics 
+effectively. 
+In this study, the Lee-Carter model is applied to compare mortality trends in three countriesâ€”the 
+United Kingdom, Bulgaria, 
+and 
+Belarus
+â€”using high-quality data obtained from the Human Mortality Database (HMD). 
+Gizem
+
+Ã–zgÃ¼den
+--- slide4.xml ---
+Introduction
+These countries are deliberately selected to reflect significant contrasts in healthcare systems, socioeconomic conditions, and cultural settings. 
+The analysis focuses on age- and gender-specific mortality rates, modeled over time within 
+a consistent parametric framework
+. 
+By situating the mortality profiles within their broader demographic, institutional, and geographic contexts, the study aims to explore the multifaceted drivers of mortality variation. 
+Gizem
+
+Ã–zgÃ¼den
+--- slide5.xml ---
+Theoretical
+
+Framework
+Gizem
+
+Ã–zgÃ¼den
+Numerous mathematical models have been developed for mortality analysis. Among the most well-known are the 
+De Moivre, Gompertz
+, and 
+Makeham
+ models (Carriere, 1992).
+However, these models have faced criticism over time due to assumptions such as 
+linear increase in mortality with age, population homogeneity, 
+and 
+limited ability to capture age-specific dynamics.
+In 1992, 
+Lee and Carter 
+introduced a more flexible and realistic model by simultaneously incorporating 
+age- and time-specific components
+, addressing many of the limitations of earlier models.
+--- slide6.xml ---
+Theoretical
+
+Framework
+Gizem
+
+Ã–zgÃ¼den
+The Leeâ€“Carter model was developed to forecast mortality rates and address a key gap in traditional mortality modeling.
+One of its main advantages lies in its 
+simplicity and parsimony
+â€”it uses a limited number of parameters while still producing 
+accurate results 
+when applied to real-world data.
+Another strength is its ability to 
+capture variations across age groups
+, where 
+mortality fluctuations at specific ages are well-aligned 
+and consistent over time (Lee, 2000).
+--- slide7.xml ---
+Theoretical
+
+Framework
+Gizem
+
+Ã–zgÃ¼den
+The Lee Carter model has been performed to mortality data from many countries:
+The United States (US) (Lee and Carter, 1992), 
+The G7 countries (Canada, France, Germany, Italy, Japan, UK, US) (
+Tuljapurkar
+ et al., 2000),
+
+Australia (Booth et al., 2002)
+, 
+China and South Korea (Li et al.,2004), 
+England and Wales (EW) (
+Renshaw and Haberman, 2003; Renshaw and Haberman, 2006),
+France and Australia (Hyndman and Ullah, 2007),
+Turkiye
+ (
+YÄ±ldÄ±rÄ±m
+, 2010; 
+YÄ±ldÄ±rÄ±m
+ and 
+Sucu
+, 2013),
+United Kingdom 
+(UK) (
+O'Hare
+ and Li, 2014
+)
+Bulgaria
+ (
+Koissi and Shapiro, 2006)
+Belarus
+ (
+Lakman
+ et al., 2017; 
+Lakman
+ et al., 2021) and many more countries not mentioned hereâ€¦
+--- slide8.xml ---
+Methodology
+Lee-Carter Model 
+(Lee and Carter, 1992)
++ 
+ The central mortality rate, 
+   = The factor that ensures the basic shape of the mortality curve over ages is in line with historical observations,
+ The mortality index that represents changes in mortality between ages reflecting the historical observations that improvement rates can differ for different age classes. 
+ARIMA (0,1,0)
+ The pattern of deviations from the age of profile as the 
+ varies and 
+ is
+= The error term at age x and time t
+Â 
+Gizem
+
+Ã–zgÃ¼den
+--- slide9.xml ---
+Application
+In application part, the Leeâ€“Carter model was implemented using data from the 
+Human Mortality Database (HMD)
+, a widely recognized and reliable source for long-term demographic and mortality data.
+The United Kingdom dataset includes male and female mortality rates for ages 
+0 to 85 
+between 
+1970 and 2016
+.
+The Bulgaria dataset covers the for ages 
+0 to 
+85 
+between 
+1970 to 2016
+.
+The Belarus dataset includes mortality rates for ages 
+0 to 85 
+between 
+1970 and 2010
+.
+All visualizations were generated using the 
+R programming language
+.
+Gizem
+
+Ã–zgÃ¼den
+--- slide10.xml ---
+Experimental Results
+
+United Kingdom 
+
+Gizem
+
+Ã–zgÃ¼den
+--- slide11.xml ---
+Experimental Results
+Gizem
+
+Ã–zgÃ¼den
+--- slide12.xml ---
+Experimental Results
+     Bulgaria
+Gizem
+
+Ã–zgÃ¼den
+--- slide13.xml ---
+Experimental Results
+Gizem
+
+Ã–zgÃ¼den
+--- slide14.xml ---
+Experimental Results
+     Belarus
+Gizem
+
+Ã–zgÃ¼den
+--- slide15.xml ---
+Experimental Results
+Gizem
+
+Ã–zgÃ¼den
+--- slide16.xml ---
+Experimental Results
+Gizem
+
+Ã–zgÃ¼den
+--- slide17.xml ---
+Experimental Results
+Gizem
+
+Ã–zgÃ¼den
+--- slide18.xml ---
+Experimental Results
+The findings suggest that the 
+United Kingdom
+, with its advanced healthcare infrastructure and high living standards, consistently exhibits lower mortality rates.
+In contrast, 
+Bulgaria 
+and
+
+Belarus
+
+are characterized by relatively higher mortality, influenced by factors such as limited access to medical services, lower economic development, and social disparities. 
+The analysis also highlights how gender and age interact differently across countries, revealing patterns shaped by both biological and structural determinants.
+
+This study underscores the importance of linking statistical modeling with contextual interpretation in understanding international mortality differentials.
+Gizem
+
+Ã–zgÃ¼den
+--- slide19.xml ---
+Gizem
+
+Ã–zgÃ¼den
+References
+Booth, H., 
+Maindonald
+, J., & Smith, L. (2002). Applying Leeâ€“Carter under conditions of variable mortality decline. Population Studies, 56(3), 325â€“336. 
+Booth, H., & Tickle, L. (2008). Mortality modelling and forecasting: A review of methods. Annals of actuarial science, 3(1-2), 3-43.
+Carriere, J. (1992) Parametric Models for Life Tables. Transactions of Society of Actuaries, 44, 77-100.
+Human Mortality Database. (2024). Human Mortality Database: Mortality data for the United Kingdom. University of California, Berkeley (USA), and Max Planck Institute for Demographic Research (Germany). 
+(
+https
+://www.mortality.
+org/
+)
+Koissi
+, M. C., & Shapiro, A. F. (2006). The Leeâ€“Carter model under the condition of variable age-specific parameters. North American Actuarial Journal, 10(4), 80â€“95. 
+Lakman
+, I., Popov, D., & 
+Shamsutdinova
+, N. (2017). The Leeâ€“Carter method for mortality forecasting: The case of the Republic of Bashkortostan. In Proceedings of the 2nd Workshop on Computer Modelling in Decision Making (pp. 74â€“82). Ufa State Aviation Technical University. 
+Lakman
+, I. A., 
+Askarov
+, R. A., 
+Prudnikov
+, V. B., & 
+Askarova
+, Z. F. (2021). Predicting mortality by causes in the Republic of Bashkortostan using the Leeâ€“Carter model. Studies on Russian Economic Development, 32, 536â€“548. 
+Lee, R. D., & Carter, L. R. (1992). Modeling and forecasting US mortality. Journal of the American statistical association, 87(419), 659-671.080/01621459.1992.10475265.
+Lee, R. (2000). The Lee-Carter method for forecasting mortality, with various extensions and applications. North American actuarial journal, 4(1), 80-91.
+Oâ€™Hare, C., & Li, Y. (2014). Models of mortality rates â€“ 
+Analysing
+ the residuals. SSRN Electronic Journal. https://doi.org/10.2139/ssrn.24252843. 
+Renshaw, A. E., & Haberman, S. (2006). A cohort-based extension to the Leeâ€“Carter model for mortality reduction factors. Insurance: Mathematics and Economics, 38(3), 556â€“570. 
+Renshaw, A. E., & Haberman, S. (2003). Leeâ€“Carter mortality forecasting: A parallel generalized linear modelling approach for England and Wales. Journal of the Royal Statistical Society: Series C (Applied Statistics), 52(1), 119â€“137. 
+Tuljapurkar
+, S., Li, N., & 
+Boe
+, C. (2000). A universal pattern of mortality decline in the G7 countries. Nature, 405(6788), 789â€“792. 
+YÄ±ldÄ±rÄ±m
+, F. (2010). 
+TÃ¼rkiye
+
+Ã¶lÃ¼mlÃ¼lÃ¼k
+
+yapÄ±sÄ±nÄ±n
+ Lee-Carter 
+ve
+
+bulanÄ±k
+ Lee-Carter 
+ile
+
+modellenmesi
+. 
+Hacettepe
+ University, Graduate School of Science and Engineering, Department of Actuarial Sciences, Master Thesis, Ankara, Turkey. 
+YÄ±ldÄ±rÄ±m
+, F., & 
+Sucu
+, M. (2016). 
+TÃ¼rkiye
+
+Ã–lÃ¼mlÃ¼Ã¼ÄŸÃ¼nÃ¼n
+ Lee-Carter 
+ile
+
+Modellenmesi
+. 
+NÃ¼fusbilim
+
+Dergisi
+, 35(1), 19-30.
+--- slide20.xml ---

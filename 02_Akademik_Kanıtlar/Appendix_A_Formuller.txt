@@ -1,0 +1,39 @@
+﻿# APPENDIX A: TEKNIK GOSTERGELER VE MATEMATIKSEL ALTYAPI
+
+## A.1 Proje Formulleri - Ozet Tablo
+
+| Gosterge / Formul | Matematiksel Ifade | Kullanim Amaci |
+| :--- | :--- | :--- |
+| Logaritmik Getiri | R_t = ln(P_t / P_{t-1}) | Duraganlik, bilesik buyume normalizasyonu |
+| EMA (n=12) | EMA_t = (P_t x 2/13) + EMA_{t-1} x (11/13) | Kisa vadeli trend |
+| EMA (n=26) | EMA_t = (P_t x 2/27) + EMA_{t-1} x (25/27) | Uzun vadeli trend |
+| MACD | MACD_t = EMA_12 - EMA_26 | Momentum farki |
+| RSI | RSI = 100 - 100/(1+RS) | Asiri alim/satim |
+| Stochastic %K | %K = 100 x (C - L_14)/(H_14 - L_14) | Fiyat konumu |
+| Stochastic %D | %D = SMA_3(%K) | Sinyal cizgisi |
+| ADX | ADX = 100 x EMA(|+DI - (-DI)| / (+DI + (-DI))) | Trend gucu |
+| ReLU | f(x) = max(0, x) | Gizli katman aktivasyonu |
+| Sigmoid | sigma(x) = 1/(1+e^-x) | Cikti katmani aktivasyonu |
+| Binary Cross-Entropy | L = -(1/N) * sum[y*ln(p)+(1-y)*ln(1-p)] | Kayip fonksiyonu |
+| MinMax Norm. | X_norm = (X - X_min)/(X_max - X_min) | Ozellik olcekleme |
+| Class Weight | w = n_total / (n_classes x n_class) | Sinif dengesizligi telafisi |
+| Accuracy | Acc = (TP+TN) / (TP+TN+FP+FN) | Genel dogruluk |
+| Sensitivity | Sens = TP / (TP+FN) | Yukselis yakalama orani |
+| Specificity | Spec = TN / (TN+FP) | Dusus yakalama orani |
+| Precision | Prec = TP / (TP+FP) | Yukselis tahmin keskinligi |
+| F1-Score | F1 = 2 x (Prec x Recall)/(Prec+Recall) | Dengeli basari skoru |
+| Balanced Accuracy| BA = (Sensitivity + Specificity) / 2 | Sinif dengeli dogruluk |
+
+## A.2 Logaritmik Getiri
+Finansal zaman serilerinde duraganlik saglamak icin kullanilir. P_t = t zamanindaki kapanis fiyati.
+R_t = ln(P_t / P_{t-1})
+
+## A.3 EMA ve MACD
+EMA projede n=12 ve n=26 periyot degerleriyle hesaplanmistir.
+EMA_t = (P_t x 2/(n+1)) + EMA_{t-1} x (1 - 2/(n+1))
+MACD_t = EMA_12(P_t) - EMA_26(P_t)
+
+## A.4 Derin Ogrenme Fonksiyonlari
+ReLU: f(x) = max(0, x)
+Sigmoid: sigma(x) = 1 / (1 + e^(-x))
+Binary Cross-Entropy: L = -(1/N) * sum[ y*ln(p) + (1-y)*ln(1-p) ]

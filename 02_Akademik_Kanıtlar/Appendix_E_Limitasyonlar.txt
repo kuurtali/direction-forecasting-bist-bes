@@ -1,0 +1,17 @@
+﻿# APPENDIX E: FINANSAL ISLEM MALIYETLERI VE LIMITASYONLAR
+
+Bu calisma, makine ogrenmesi modellerinin 'Tahmin Gucu' (Predictive Power) uzerine odaklanan akademik bir arastirmadir. Gercek dunya finansal piyasa uygulamalarinda modellerin kar/zarar potansiyelini degerlendirirken asagidaki finansal kisitlarin coz onunde bulundurulmasi gerekmektedir.
+
+## E.1 Islem Maliyetleri (Transaction Costs)
+Modelleme surecinde alim-satim komisyonlari (Brokerage fees) ve BIST islem vergileri goz ardi edilmistir. Yuksek frekansli islem yapan modellerde (Out=1), biriken komisyon giderleri modelin elde ettigi brut getiriyi (Gross Return) onemli olcude azaltabilir.
+
+## E.2 Kayma (Slippage)
+Test sonuclari, modelin tahmin ettigi andaki 'Kapanis Fiyati' uzerinden islem yapabildigini varsaymaktadir. Gercek piyasada emrin girildigi an ile gerceklestigi an arasindaki fiyat farklari (slippage), ozellikle volatil donemlerde modelin teorik basarisini negatif etkileyebilir.
+
+## E.3 Piyasa Derinligi ve Likidite
+THYAO yuksek likiditeye sahip olsa da, emeklilik fonlarinin (ALZ, AZS, AMZ) alim-satim islemleri valor (T+1, T+2) surelerine tabidir. Bu durum, modelin anlik sinyallerini gercek zamanli ticarete (Real-time Trading) donusturmeyi zorlastiran yapisal bir kisittir.
+
+## E.4 Vergi ve Fon Kesintileri
+Emeklilik yatirim fonlarindan elde edilen getiriler uzerindeki stopaj ve fon yonetim ucreti gibi mali yukumlulukler, simulasyon sonuclarina dahil edilmemistir.
+
+NOT: Bu limitasyonlar, modellerin istatistiksel siniflandirma basarisini (Accuracy/Recall) golgelemez; ancak sonuclarin bir 'Yatirim Danismanligi' teskil etmediginin akademik bir kanitidir.

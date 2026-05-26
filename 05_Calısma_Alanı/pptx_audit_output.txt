@@ -1,0 +1,333 @@
+﻿================================================================================
+UYIK_2026_BES.pptx ÔÇö TAM ─░├çER─░K TARAMASI
+================================================================================
+Toplam slayt: 26
+
+================================================================================
+SLAYT 1 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  VII. INTERNATIONAL APPLIED STATISTICS CONGRESS
+  UYIK-2026  ┬À  Istanbul, T├╝rkiye  ┬À  May 11-13, 2026
+  Directional Forecasting of
+Pension Investment Funds
+  Evidence on the Majority Class Illusion from
+ARIMA, CNN, and LSTM Models
+  AUTHOR
+  ┼Şevval Demir
+  Department of Actuarial Sciences  ┬À  Hacettepe University
+  dsevval5@gmail.com
+  AUTHOR
+  Mehmet Ali Kurt
+  Department of Actuarial Sciences  ┬À  Hacettepe University
+  m.alikuurt0@gmail.com
+  SUPERVISOR  ┬À  ASSIST. PROF. DR.
+  ├ûvg├╝can Karada─ş Erdemir
+  Department of Actuarial Sciences  ┬À  Hacettepe University
+  ovgucan@hacettepe.edu.tr
+  Data: TEFAS  ┬À  Period: April 2021 ÔÇô April 2026  ┬À  Funds: ALZ ÔÇó AZS ÔÇó AMZ  ┬À  3 seeds ├ù 81 configs / fund
+
+================================================================================
+SLAYT 2 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Outline
+  2 / 25
+  01
+  Motivation & Research Gap
+  Why directional forecasting on BES?
+  02
+  Data, Funds & Class Balance
+  ALZ / AZS / AMZ ÔÇö risk profiles and label distribution
+  03
+  Methodology & Search Space
+  ARIMA + LSTM + 1D-CNN  ÔÇó  3 ├ù 9 ├ù 3 = 81 configs/fund
+  04
+  The Majority-Class (MC) Illusion
+  Why high accuracy can be empty
+  05
+  Results ÔÇö Champion Configurations
+  AMZ LSTM (2,3) and AZS 1D-CNN (4,3)
+  06
+  Robustness &  Reporting
+  Seed stability, optimizer, pooled vs mean accuracy
+  07
+  Conclusions & Future Work
+  Results, limitations, references
+
+================================================================================
+SLAYT 3 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Classical ARIMA
+  Box-Jenkins ARIMA remains the dominant benchmark in pension-fund return forecasting. Karada─ş Erdemir & K─▒rka─şa├ğ (2024) applied ARIMA to Turkish BES pension funds. E┼şsiz & Ordu (2024) applied ARIMA to 
+  Deep Learning in Finance
+  Fischer & Krauss (2018) showed LSTM networks outperform memory-free models on S&P 500 constituents. Siami-Namini et al. (2019) reported LSTM/BiLSTM improvements over ARIMA on economic time-series. 1D-
+  Evaluation Methodology Gap
+  Finance DL studies frequently report raw accuracy without specificity, sensitivity or baseline comparison. Majority-Class illusion (Spec=0 or Sens=0) is rarely flagged, leading to overstated predictiv
+  Research Contribution
+  First systematic application of ARIMA + LSTM + 1D-CNN to TEFAS pension funds (ALZ/AZS/AMZ) under a multi-seed, multi-window framework ÔÇö with Majority-Class detection, Balanced Accuracy and Na├»ve-Basel
+  Literature Review
+  3 / 25
+
+================================================================================
+SLAYT 4 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Why Pension Funds?
+  Turkey's TEFAS platform manages billions in pension assets. ALZ, AZS and AMZ represent three distinct risk profiles (low ┬▒2%, medium ┬▒18%, high ┬▒38%). Directional prediction directly impacts retiremen
+  Adapted Methodology
+  Van der Burgt (2023) NASDAQ-100 framework extended to weekly TEFAS data: multi-seed (23/27/98), rolling windows (InÔêê{2,4,6}, OutÔêê{1,3,5}), 3 feature sets (full ┬À technical ┬À closing), Majority-Class d
+  Research Gap
+  Prior work (Karada─ş Erdemir & K─▒rka─şa├ğ, 2024; E┼şsiz & Ordu, 2024) relies on ARIMA for pension-fund returns. No prior study systematically applies LSTM and 1D-CNN with multi-seed validation to TEFAS pe
+  Why Balanced Accuracy?
+  Data is heavily imbalanced (AZS: 84.85% Up). Raw accuracy is misleading ÔÇö always predicting Up gives 84.85% but captures no Down signal. Balanced Accuracy = (Sensitivity + Specificity) / 2 penalises t
+  Motivation ÔÇö Why BES, Why Directional?
+  4 / 25
+
+Slayt 5: Data & Pension Funds ÔÇö ALZ / AZS / AMZ
+
+================================================================================
+SLAYT 6 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Methodology ÔÇö Three-Model Pipeline
+  6 / 25
+  ARIMA
+  Box-Jenkins
+  Grid dÔêê{0,1,2,3,4,5}, CSS fit
+Classical baseline
+  LSTM
+  Recurrent
+  Adam / SGD  ÔÇó  ReLU/Tanh
+Dropout {0, 0.2, 0.4}  ÔÇó  class_weight
+  1D-CNN
+  Convolutional
+  Filters {32-64-128, 64-128-256}
+Kernel 3  ÔÇó  Dense 64  ÔÇó  class_weight
+  All models share the same 9 (Input ├ù Output) windows and 3-seed protocol
+
+================================================================================
+SLAYT 7 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Search Space ÔÇö 81 Configurations per Fund
+  7 / 25
+  3
+  Feature Sets
+  closing ÔÇó technical ÔÇó full
+  9
+  (In, Out) Windows
+  (2.4.6) ├ù (1.3.5) weeks
+  3
+  Random Seeds
+  23 ÔÇó 27 ÔÇó 98
+  81
+  Configs / Fund
+  3 ├ù 9 ├ù 3
+  FEATURE SETS
+  closing ÔÇö 1 var
+  Weekly close only
+  technical ÔÇö 3 vars
+  RSI(14) ÔÇó MACD ÔÇó Momentum(10)
+  full ÔÇö 7 vars
+  Close, RSI, MACD, EMA12, EMA26,
+  Momentum, Volatility
+  Training: epochs = 50  ÔÇó  batch = 16  ÔÇó  patience = 5 (early stopping)  ÔÇó  class_weight balancing  ÔÇó  CSS fit for ARIMA
+  Figure : 2
+
+Slayt 8: The Majority-Class Illusion
+
+Slayt 9: The Accuracy Illusion in Action
+
+Slayt 10: Finding 1 ÔÇö 1D-CNN Resists the MC Trap
+
+Slayt 11: Finding 2 ÔÇö Feature Set Drives Performance
+
+================================================================================
+SLAYT 12 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Finding 3 ÔÇö Input/Output Window Sensitivity
+  12 / 25
+  OPTIMAL WINDOWS
+  AMZ ÔÇó LSTM
+  (2, 3)
+  Mean Acc 80.21 %
+  AZS ÔÇó CNN
+  (4, 3)
+  Mean Acc 75.56 %
+  ALZ
+  ÔÇö
+  Any (collapses to MC)
+  h = 3 weeks dominates
+  Figure : 6
+
+Slayt 13: Finding 4 ÔÇö Risk Profile Predicts Learnability
+
+Slayt 14: Champion Configurations
+
+================================================================================
+SLAYT 15 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Champion 1 ÔÇö AMZ ÔÇó LSTM ÔÇó full ÔÇó (2, 3)
+  15 / 25
+  80.21 %
+  Mean Accuracy
+  84.86 %
+  Balanced Accuracy
+  89.36 %
+  F1-Score
+  0.0001
+  p-value (binomial)
+  PER-METRIC BREAKDOWN
+  Sensitivity 84.00 %  ÔÇó  Specificity 85.71 %
+  BA = (Sens + Spec) / 2 = (0.84 + 0.8571) / 2 = 0.84855 ÔåÆ 84.86 %
+  Seed accuracies: 0.8438 / 0.7188 / 0.8438
+  SD = 7.22 % across seeds (transparently reported)
+  HYPERPARAMETERS
+  Optimizer Adam   ÔÇó   Activation Tanh   ÔÇó   Dropout 0.4
+  Epochs 50   ÔÇó   Batch 16   ÔÇó   Patience 5
+  Feature set: full (7 vars)  ÔÇó  class_weight balanced
+  Figure : 8
+
+================================================================================
+SLAYT 16 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Champion 1 ÔÇö Confusion Matrix &   Reporting
+  16 / 25
+  POOLED MATRIX (N = 96)
+  TP = 63    TN = 18
+  FP = 3       FN = 12
+  Diagonal: 63 + 18 = 81  ÔåÆ  Pooled Acc = 81/96 = 84.38 %
+  REPORTING NOTE
+  Two valid summaries of the same evaluation:
+  Pooled accuracy = 81 / 96 = 84.38 %  (concatenated test sets)
+  3-seed mean accuracy = 77 / 96 = 80.21 %  (mean of {0.8438, 0.7188, 0.8438})
+  We adopt the 3-seed mean as the headline Figure :.
+  Pooled is exposed for full transparency ÔÇö never as the headline.
+  Figure : 9
+
+================================================================================
+SLAYT 17 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Statistical Significance ÔÇö Beyond Accuracy
+  17 / 25
+  AMZ LSTM (2,3) full
+  p < 0.0001
+  Exact binomial test  ÔÇó  HÔéÇ : Acc = 0.5  ÔÇó  rejected
+  AZS 1D-CNN (4,3) technical
+  p = 0.0002
+  Mean Acc 75.56 %  ÔÇó  BA 76.70 %  ÔÇó  F1 88.89 %
+  VS PERSISTENCE NAIVE BASELINE  ( predict majority class, Out = 3 )
+  AMZ
+  Naive 78.79 %
+  LSTM 80.21 %
+  +1.42 pp
+  AZS
+  Naive 84.85 %
+  CNN 75.56 %
+  ÔêÆ9.29 pp
+  ALZ
+  Naive 100.00 %
+  All MC
+  no signal
+
+================================================================================
+SLAYT 18 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Champion 2 ÔÇö AZS ÔÇó 1D-CNN ÔÇó technical ÔÇó (4, 3)
+  18 / 25
+  75.56 %
+  Mean Accuracy
+  76.70 %
+  Balanced Accuracy
+  88.89 %
+  F1-Score
+  0.0002
+  p-value (binomial)
+  INTERPRETATION
+  Sens 90.91 %  ÔÇó  Spec 62.50 %
+  BA = (0.9091 + 0.625) / 2 = 0.76705  ÔåÆ  76.70 %
+  Asymmetric strength: strong recall on "up" weeks but weaker discrimination on "down" weeks ÔÇö typical for medium-volatility mixed funds.
+  Hyperparameters
+  Filters 64-128-256  ÔÇó  Kernel 3  ÔÇó  Dense 64  ÔÇó  Dropout 0.2
+  Feature set technical (RSI, MACD, Momentum)  ÔÇó  Window (4, 3)
+  Seed accuracies 0.7000 / 0.7333 / 0.8333  ÔÇó  SD 6.94 %
+  Figure : 10
+
+================================================================================
+SLAYT 19 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Cross-View ÔÇö Model ├ù Asset Performance Heatmap
+  19 / 25
+  READING THE HEATMAP
+  Each cell = best Mean Accuracy of any configuration of that (Model, Fund) pair.
+  ALZ column = 100 %: pathological monotone ÔÇö every model collapses to majority class.
+  AMZ ├ù LSTM = 80.21 %: only configuration above its Out=3 naive (78.79 %).
+  AZS ├ù Naive = 84.85 %: persistence dominates ÔÇö CNN champion 75.56 % falls below.
+  ARIMA: dominated by naive on AZS, tied with naive on AMZ.
+  Figure : 11
+
+Slayt 20: Decision Quality Map ÔÇö Escape from the MC Sinkhole
+
+================================================================================
+SLAYT 21 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Robustness ÔÇö Seed Stability of Champions
+  21 / 25
+  STABILITY NOTES
+  AMZ LSTM: 84.38 / 71.88 / 84.38 %  ÔåÆ  SD = 7.22 %.
+  AZS CNN: 70.00 / 73.33 / 83.33 %  ÔåÆ  SD = 6.94 %.
+  Both means clear the random-guess line (50 %) at p < 0.001.
+  note: only AMZ LSTM exceeds its Out=3 persistence-naive (78.79 %).
+  3-seed
+  23 ┬À 27 ┬À 98
+  weighted
+  class_weight balancing
+  p < 0.001
+  champion significance
+  CSS-fit
+  ARIMA stable
+  Figure : 13
+
+================================================================================
+SLAYT 22 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Robustness ÔÇö Optimizer & Activation Sensitivity
+  22 / 25
+  CONCLUSION
+  Adam + Tanh wins for the AMZ champion ÔÇö gradient stability matters under high seed-variance.
+  SGD competitive on AZS but no statistically significant lift over Adam.
+  Dropout 0.4 ÔÇö high regularisation helps the small-sample BES regime.
+  ReLU collapsed several configurations to MC ÔÇö inactive units on near-monotone targets.
+  Figure : 14
+
+================================================================================
+SLAYT 23 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Limitations &   Reporting
+  23 / 25
+  Sample size
+  ~260 weekly observations across 5 years ÔÇö small-sample variance dominates.
+  Pooled vs Mean
+  Pooled accuracy (84.38 %) > 3-seed mean (80.21 %). Mean is the headline; pooled is fully disclosed.
+  Single market
+  TEFAS only; cross-market transfer to NASDAQ/EuroStoxx left for future work.
+  Cost-aware loss
+  Class_weight balancing applied, but not full asymmetric utility (e.g., max-drawdown-aware loss).
+
+================================================================================
+SLAYT 24 ÔÇö KR─░T─░K ─░├çER─░K
+================================================================================
+  Conclusions
+  24 / 25
+  01
+  1D-CNN is more MC-resistant than LSTM
+  On AZS and AMZ, convolutional bias yields ~15 pp fewer collapsed configurations.
+  02
+  Risk profile = learnability ceiling
+  ALZ (low-risk) is monotone ÔåÆ 27/27 MC across both deep models. AMZ is the clearest signal.
+  03
+  Two statistically significant champions
+  AMZ LSTM (2,3) full ÔåÆ BA 84.86 %, p<0.0001  ÔÇó  AZS CNN (4,3) tech ÔåÆ BA 76.70 %, p=0.0002.
+  04
+  Reporting is non-negotiable
+  Mean accuracy as headline, pooled CM disclosed, MC defined broadly (Sens=0 OR Spec=0 OR Spec=NA).
+
+Slayt 25: References
+
+Slayt 26: QUESTIONS & DISCUSSION

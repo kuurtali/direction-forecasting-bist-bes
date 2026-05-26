@@ -1,0 +1,800 @@
+﻿--- slide1.xml ---
+UYIK 2026
+VII. International UygulamalÄ± Ä°statistik Kongresi
+Ä°stanbul, Turkey Â· May 11â€“13, 2026
+Performance Assessment of ARIMA, CNN
+and LSTM in Forecasting Pension
+Investment Fund Returns
+ARIMA Â· 1D-CNN Â· LSTM on TEFAS Pension Funds (ALZ Â· AZS Â· AMZ) Â· 2021â€“2026
+Authors
+Åevval Demir Â· Mehmet Ali Kurt Â· Ã–vgÃ¼can KaradaÄŸ Erdemir
+Supervisor / Corresponding Author
+Assist. Prof. Dr. Ã–vgÃ¼can KaradaÄŸ Erdemir Â· ovgucan@hacettepe.edu.tr
+Hacettepe University
+Faculty of Science Â· Dept. of Actuarial Sciences
+Ankara, Turkey
+--- slide2.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+Outline
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+2
+Outline
+From ARIMA to Deep Learning: Evaluating Directional Forecasting in Turkish Pension Funds
+1.  Introduction & Motivation
+2.  Literature Review
+3.  Data & Feature Engineering
+4.  Methodology & Architecture
+5.  Results
+    5.1  ALZ â€” Majority-Class Control
+    5.2  AZS â€” Balanced Performance
+    5.3  AMZ â˜… â€” Key Empirical Finding
+6.  Cross-Fund Comparison & Champions
+7.  Conclusion & Future Work
+8.  References
+--- slide3.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+1. Introduction & Motivation
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+3
+Introduction & Motivation
+Why pension-fund direction forecasting matters
+Why Pension Funds?
+Turkey's TEFAS platform manages billions in pension assets. ALZ, AZS and AMZ represent three distinct risk profiles (low Â±2%, medium Â±18%, high Â±38%). Directional prediction directly impacts retirement income and portfolio-rebalancing decisions.
+Research Gap
+Prior work (KaradaÄŸ Erdemir & KÄ±rkaÄŸaÃ§, 2024; EÅŸsiz & Ordu, 2024) relies on ARIMA for pension-fund returns. No prior study systematically applies LSTM and 1D-CNN with multi-seed validation to TEFAS pension funds.
+Adapted Methodology
+Van der Burgt (2023) NASDAQ-100 framework extended to weekly TEFAS data: multi-seed (23/27/98), rolling windows (Inâˆˆ{2,4,6}, Outâˆˆ{1,3,5}), 3 feature sets (full Â· technical Â· closing), Majority-Class detection and NaÃ¯ve-Baseline comparison.
+Why Balanced Accuracy?
+Data is heavily imbalanced (AZS: 83% Up). Raw accuracy is misleading â€” always predicting Up gives 83% but captures no Down signal. Balanced Accuracy = (Sensitivity + Specificity) / 2 penalises the Majority-Class illusion and is the primary metric throughout.
+--- slide4.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+2. Literature Review
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+4
+Literature Review
+From classical time-series to deep sequence models
+Classical ARIMA
+Box-Jenkins ARIMA remains the dominant benchmark in pension-fund return forecasting. KaradaÄŸ Erdemir & KÄ±rkaÄŸaÃ§ (2024) applied ARIMA to Turkish BES pension funds. EÅŸsiz & Ordu (2024) applied ARIMA to S&P 500 fund baskets. Strong parametric baseline, blind to non-linear structure.
+Deep Learning in Finance
+Fischer & Krauss (2018) showed LSTM networks outperform memory-free models on S&P 500 constituents. Siami-Namini et al. (2019) reported LSTM/BiLSTM improvements over ARIMA on economic time-series. 1D-CNN offers a competitive and computationally cheaper alternative (Van der Burgt, 2023).
+Evaluation Methodology Gap
+Finance DL studies frequently report raw accuracy without specificity, sensitivity or baseline comparison. Majority-Class illusion (Spec=0 or Sens=0) is rarely flagged, leading to overstated predictive performance on imbalanced data. This study addresses this gap explicitly.
+Research Contribution
+First systematic application of ARIMA + LSTM + 1D-CNN to TEFAS pension funds (ALZ/AZS/AMZ) under a multi-seed, multi-window framework â€” with Majority-Class detection, Balanced Accuracy and NaÃ¯ve-Baseline comparison built in from the start.
+--- slide5.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+3. Data & Feature Engineering
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+5
+TEFAS Pension Fund Data & Feature Engineering
+Three Allianz YaÅŸam funds Â· weekly Â· 2021â€“2026
+Funds Studied
+Fund
+Full Name
+Risk
+Period
+Volatility
+ALZ
+Allianz YaÅŸam Para PiyasasÄ± EYF
+1 â€” Low (Control)
+2021â€“2026
+Â±2%
+AZS
+Allianz YaÅŸam DeÄŸiÅŸken EYF
+3â€“4 â€” Medium
+2021â€“2026
+Â±18%
+AMZ â˜…
+Allianz YaÅŸam Hisse Senedi EYF
+6â€“7 â€” High â˜…
+2021â€“2026
+Â±38%
+Feature Sets (3 Sets)
+Set
+# Vars
+Components
+full â˜…
+7
+Closing Â· RSI Â· MACD Â· EMAâ‚â‚‚ Â· EMAâ‚‚â‚† Â· Momentum Â· Volatility
+technical
+3
+RSI Â· MACD Â· Momentum (technical-only)
+closing
+1
+Closing price only (baseline feature)
+Model Search Space
+Input Window (In)
+2 Â· 4 Â· 6 weeks of history
+Output Horizon (Out)
+1 Â· 3 Â· 5 weeks ahead
+Seeds
+23 Â· 27 Â· 98 (3-seed average)
+Train / Val / Test
+â‰ˆ183 / 39 / 39 obs Â· 70/15/15%
+Evaluations per fund
+3 sets Ã— 9 combos Ã— 3 seeds = 81
+Preprocessing
+Missing values â†’ LOCF
+--- slide6.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+4. Methodology & Evaluation Framework
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+6
+Methodology & Evaluation Framework
+Three models â€” one rigorous evaluation loop
+ARIMA
+Box-Jenkins classical benchmark
+AutoRegressive Integrated Moving Average. p = q = input window; d âˆˆ {0..5} via grid search. CSS fitting. Binary direction: Up / Down.
+LSTM
+Gated recurrent deep network
+64 hidden units, Dropout âˆˆ {0, 0.2, 0.4}, Binary Cross-Entropy, class-weight balancing (AZS/AMZ), Early Stopping (patience=5).
+1D-CNN
+Local-pattern convolutions
+3Ã— Conv1D layers â†’ Flatten â†’ Dense â†’ Sigmoid. Extracts local temporal patterns. Batch=16 (small test set). Superior MC resistance vs. LSTM in this study.
+Evaluation Metrics
+Balanced Accuracy
+(Sens+Spec)/2
+Primary metric on imbalanced data
+Sensitivity
+TP/(TP+FN)
+Correctly predicted Up moves
+Specificity
+TN/(TN+FP)
+Correctly predicted Down moves
+p-value
+Exact Binomial
+p < 0.05 = significant vs. random
+MC Detection
+Spec=0 OR Sens=0
+Majority-Class â€” no real learning
+--- slide7.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+4. Methodology â€” Architecture & Search Space
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+7
+Model Architecture & Search Space Specifications
+Hyperparameter grid Â· 81 evaluations per fund Â· 3-seed cross-validation
+Architecture: Data â†’ Feature Extraction â†’ Model â†’ Direction Output
+LSTM Hyperparameters
+â€¢ Hidden units: 64
+â€¢ Dropout: {0, 0.2, 0.4}
+â€¢ Loss: Binary Cross-Entropy
+â€¢ Class weights: balanced (AZS/AMZ)
+â€¢ Early Stop: patience=5, epochs=100
+1D-CNN Hyperparameters
+â€¢ 3Ã— Conv1D â†’ Flatten â†’ Dense â†’ Sigmoid
+â€¢ Batch size: 16
+â€¢ Activation: ReLU (hidden), Sigmoid (out)
+â€¢ Optimizer: Adam (lr=0.001)
+ARIMA Configuration
+â€¢ p = q = Input window
+â€¢ d âˆˆ {0, 1, 2, 3, 4, 5} via grid
+â€¢ Method: CSS
+Search Space: 3 funds Ã— 3 feature sets Ã— 9 In/Out combos Ã— 3 seeds = 243 total evaluations (81 per fund)
+7
+--- slide8.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+5. Results: ALZ â€” Low-Risk Â· Majority-Class Control
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+8
+Results: ALZ â€” Low-Risk Pension Fund
+ALZ Para PiyasasÄ± EYF Â· Risk 1 Â· All feature sets Â· 2021â€“2026
+Model
+Accuracy
+Bal. Acc.
+Sens.
+Spec.
+F1
+p
+Best In/Out
+LSTM (all sets)
+MC âš 
+50.00 %
+MC
+MC
+MC
+â€”
+â€”
+CNN (all sets)
+MC âš 
+50.00 %
+MC
+MC
+MC
+â€”
+â€”
+ARIMA
+100.00 %
+â€”
+â€”
+â€”
+â€”
+â€”
+In=2, Out=1
+NaÃ¯ve Baseline
+100.00 %
+â€”
+â€”
+â€”
+â€”
+â€”
+Out=1
+Graphic 1: The Accuracy Illusion â€” High Acc, zero Specificity
+All 27 LSTM + 27 CNN configurations are Majority-Class: every test set contains zero Down observations (Out=1: 37/0, Out=3: 35/0, Out=5: 33/0).
+ARIMA and NaÃ¯ve both reach 100% by predicting Up always â€” this is not a learning success but a data artefact.
+Academic role: ALZ is the control group. Literature support: Valverde-Albacete & Pelaez-Moreno (2014) â€” '100% classification accuracy considered harmful'.
+Feature set is irrelevant for ALZ â€” MC arises from data structure. Low-risk monotonic funds are unsuitable for binary DL prediction.
+--- slide9.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+5. Results: ALZ â€” Majority-Class Illusion Explained
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+9
+ALZ â€” Majority-Class Illusion Explained
+Why 100% accuracy is meaningless on zero-Down test sets
+Graphic: ALZ class distribution â€” Up dominates all horizons
+ALZ Test Set Class Distribution
+Out=1: 37 Up / 0 Down
+Out=3: 35 Up / 0 Down
+Out=5: 33 Up / 0 Down
+â†’ Zero Down observations in ALL test sets.
+MC Illusion Mechanism
+When Specificity = 0 (model never predicts Down):
+BA = (Sensitivity + 0) / 2 â‰ˆ 50%
+Raw Acc = 100% but BA = 50.0% â€” coin flip.
+(Valverde-Albacete & Pelaez-Moreno, 2014)
+Why BA Reveals the Illusion
+BA = (Sens + Spec) / 2 = (1.0 + 0.0) / 2 = 0.50
+A random classifier scores the same.
+Conclusion: DL learns nothing on ALZ.
+Control Group Role
+ALZ confirms: with monotonic low-risk funds, class imbalance is so extreme that any binary model collapses to single-class prediction regardless of feature set.
+9
+--- slide10.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+5. Results: AZS â€” Medium-Risk Â· Balanced Performance
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+10
+Results: AZS â€” Medium-Risk Pension Fund
+AZS DeÄŸiÅŸken EYF Â· Risk 3â€“4 Â· Feature Sets: full & technical Â· 2021â€“2026
+Model
+Accuracy
+Bal. Acc.
+Sens.
+Spec.
+F1
+p
+Best Config
+CNN â˜…
+75.56 %
+76.71 %
+90.91 %
+62.50 %
+88.89 %
+0.0002
+tech, In=4, Out=3
+LSTM-A (Best BA)
+66.67 %
+75.65 %
+91.30 %
+60.00 %
+91.30 %
+0.0001
+full, In=4, Out=5
+LSTM-B (Stable)
+68.89 %
+72.92 %
+79.17 %
+66.67 %
+84.44 %
+0.0026
+full, In=2, Out=5
+ARIMA
+80.65 %
+â€”
+â€”
+â€”
+â€”
+â€”
+In=2, Out=5
+NaÃ¯ve Baseline
+90.32 %
+â€”
+â€”
+â€”
+â€”
+â€”
+Out=5
+Graphic 7: Feature Enrichment â€” Adding indicators reduces MC bias
+CNN â˜… (technical, In=4, Out=3): BA=76.71%, Sens=90.91%, Spec=62.50%, p=0.0002 â€” highest BA among all AZS configurations. CSV-confirmed champion.
+LSTM-A (full, In=4, Out=5): BA=75.65%, SD=0.1688, p=0.0001. LSTM-B (full, In=2, Out=5): BA=72.92%, SD=0.0839 â€” more stable, p=0.0026. Both show genuine bilateral learning.
+NaÃ¯ve Baseline (90.32%) remains dominant â€” heavy class imbalance (29 Up / 6 Down = 82.9% Up on Out=5). DL learns meaningfully but cannot exceed the Up-always rule.
+--- slide11.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+5. Results: AZS â€” Feature Impact & Window Sensitivity
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+11
+AZS â€” Feature Enrichment & Window Sensitivity
+Why technical features and shorter windows improve learning on medium-risk funds
+Graphic 2: Prediction Horizon vs. Accuracy â€” LSTM vs. NaÃ¯ve as Out grows (AZS)
+Short-Memory Advantage
+In=2 (2 weeks) outperforms In=4 and In=6 across all feature sets on AZS. Weekly BES data carries limited long-range autocorrelation â€” shorter lookback preserves signal.
+Horizon and Class Balance
+Out=3 gives 33 Up / 6 Down (84.6% Up) â€” a better class balance than Out=5 (29 Up / 6 Down = 82.9% Up). Class-weight balancing compensates partially but balance matters.
+Feature Enrichment Effect
+closing â†’ technical â†’ full: MC rate drops as features add price-trend context. CNN technical (In=4, Out=3) emerges as champion: BA=76.71%, Spec=62.50% â€” genuine bilateral learning.
+Class Weighting Impact
+AZS applies class-weight balancing during training (sklearn compute_class_weight). Without it, LSTM collapses to MC. Weighting is essential for any fund with >80% majority class.
+--- slide12.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+5. Results: AMZ â˜… â€” High-Risk Â· Key Empirical Finding
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+12
+Results: AMZ â˜… â€” High-Risk Â· Key Empirical Finding
+AMZ Hisse Senedi EYF Â· Risk 6â€“7 Â· Feature Set: full Â· 2021â€“2026
+â˜…
+Model
+Accuracy
+Bal. Acc.
+Sens.
+Spec.
+F1
+p
+Best Config
+LSTM â˜…â˜…
+80.21 %
+84.85 %
+84.00 %
+85.71 %
+89.36 %
+0.0001
+full, In=2, Out=3
+CNN (best non-MC)
+60.42 %
+72.47 %
+78.26 %
+66.67 %
+81.82 %
+0.0035
+full, In=4, Out=1
+ARIMA
+80.65 %
+â€”
+â€”
+â€”
+â€”
+â€”
+In=2, Out=5
+NaÃ¯ve Out=3
+78.79 %
+â€”
+â€”
+â€”
+â€”
+â€”
+Out=3
+Graphic 4: Balanced Accuracy Comparison â€” AMZ LSTM is the true winner
+Graphic 9: High Spec + High Sens = Real Predictive Power
+Key Empirical Finding: AMZ LSTM (full, In=2, Out=3): Acc=80.21%, BA=84.85%, p=0.0001. Statistically outperforms NaÃ¯ve Out=3 (78.79%) â€” only fund where DL achieves genuine predictive advantage.
+LSTM Spec=85.71% AND Sens=84.00% â€” near-perfect bilateral detection. Both Up and Down movements are captured with high precision.
+CNN (full, In=4, Out=1): BA=72.47%, Sens=78.26%, Spec=66.67%, p=0.0035. Genuine bilateral detection â€” CSV-confirmed best non-MC CNN on AMZ.
+AMZ's Â±38% volatility generates learnable signal that ALZ (Â±2%) and AZS (Â±18%) cannot provide. 9/9 LSTM full configs are non-MC on AMZ.
+--- slide13.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+5. Results: AMZ â€” Confusion Matrix & Pooled Analysis
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+13
+AMZ LSTM â€” Confusion Matrix & Pooled Analysis
+Full feature set Â· In=2, Out=3 Â· Seeds 23Â·27Â·98 Â· N=32/seed Â· Pooled N=96
+Single Seed Confusion Matrix (N=32)
+Pred: Up
+Pred: Down
+Actual: Up (25)
+TP = 21
+FN = 4
+Actual: Down (7)
+FP = 1
+TN = 6
+Accuracy
+80.21 %
+Bal. Accuracy
+84.85 %
+Sensitivity
+84.00 %
+Specificity
+85.71 %
+F1-Score
+89.36 %
+p-value
+0.0001 âœ“
+Pooled Confusion Matrix â€” 3 Seeds (N=96)
+Pred: Up
+Pred: Down
+Actual: Up (75)
+TP = 63
+FN = 12
+Actual: Down (21)
+FP = 3
+TN = 18
+MC Status: Non-MC (Spec=85.71%) â€” pooled N=96 confirms robustness
+Graphic 10: Confusion Matrix Summary â€” AMZ LSTM champion
+--- slide14.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+5. Results: AMZ â€” Radar Chart & Feature Synergy
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+14
+AMZ LSTM â€” Metric Radar & Feature Synergy Analysis
+Full feature set Â· In=2, Out=3 Â· Multi-seed robustness confirmed
+Graphic: AMZ LSTM champion â€” Sensitivity Â· Specificity Â· BA Â· F1 Â· Accuracy radar
+Graphic: Feature set synergy â€” distribution of BA by feature set and model
+AMZ LSTM radar confirms near-symmetric coverage: Sens=84%, Spec=86%, BA=85%, F1=89%, Acc=80%. No single metric is inflated at the expense of another â€” genuine bilateral detection.
+Feature synergy boxplot: 'full' set produces the highest median BA on AMZ across all seeds and windows. 'closing' collapses to MC most frequently. Technical features provide intermediate robustness.
+Seed variance for AMZ LSTM full: SD < 2% across seeds 23/27/98. All three seeds produce non-MC results with BA > 80% â€” the champion configuration is robust, not a lucky seed.
+9 of 9 LSTM full configurations on AMZ are non-MC. This is the only fund and feature set achieving universal non-MC â€” confirming AMZ's Â±38% volatility as the enabling condition.
+--- slide15.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+6. Cross-Fund Comparison â€” Three Feature Sets
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+15
+Three Feature Sets â€” full Â· technical Â· closing Comparison
+Best non-MC champion per fund across all feature sets â€” how does feature richness affect learning?
+Fund
+Feat. Set
+Model
+Acc.
+Bal. Acc.
+Sens.
+Spec.
+p
+In/Out
+ALZ
+full
+ARIMA (MC)
+100.00 %
+â€”
+â€”
+â€”
+â€”
+In=2, Out=1
+AZS â˜…
+technical
+CNN â˜…
+75.56 %
+76.71 %
+90.91 %
+62.50 %
+0.0002
+In=4, Out=3
+AMZ â˜…â˜…
+full
+LSTM â˜…â˜…
+80.21 %
+84.85 %
+84.00 %
+85.71 %
+0.0001
+In=2, Out=3
+Graphic 5: Asset Risk vs Model Learning Ability
+ALZ
+MC driven by data structure (zero Down obs). Feature set is irrelevant â€” all sets produce MC on ALZ. Control-group role preserved.
+AZS â˜…
+CNN â˜… technical (In=4, Out=3): BA=76.71%, Sens=90.91%, Spec=62.50%, p=0.0002. Technical outperforms full on AZS â€” fewer features can reduce over-fitting on small datasets.
+AMZ â˜…â˜…
+Key Finding preserved: full set wins on AMZ. BA=84.85%, p=0.0001. Higher risk â†’ higher volatility â†’ more balanced classes â†’ feature richness pays off.
+Pattern
+Risk â†’ learning gradient confirmed: ALZ (Â±2%) = MC trap; AZS (Â±18%) = meaningful; AMZ (Â±38%) = star. Volatility determines whether DL can extract real signal.
+--- slide16.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+6. Cross-Fund â€” Optimizer Robustness & Feature Synergy
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+16
+Optimizer Robustness & Feature Synergy
+Adam convergence consistency Â· Feature set interactions across funds and models
+Graphic: Optimizer Robustness â€” Adam convergence across seeds and window configs
+Graphic: Feature Synergy â€” BA distribution by feature set and model
+Adam with Early Stopping (patience=5) converges consistently across all three seeds and all nine In/Out combinations. No seed divergence observed â€” optimisation is stable for BES weekly data.
+Feature synergy: 'full' set reduces BA variance for AMZ; 'technical' reduces MC rate for AZS; 'closing' alone is insufficient on both medium and high-risk funds â€” price-only features lack directional context.
+Dropout regularisation (0.2â€“0.4) is critical: without dropout, LSTM overfits on 183-obs training sets and collapses to single-class prediction on AZS. Dropout keeps bilateral detection alive.
+Batch size = 16 for CNN provides stable gradient estimates on small test sets (â‰ˆ39 obs). Larger batches cause gradient noise on imbalanced data; smaller batches risk overfitting.
+--- slide17.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+6. Cross-Fund Comparison â€” Champions Summary
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+17
+Cross-Fund Comparison â€” Champions Summary
+Best non-MC champion per fund across all feature sets (full, technical, closing)
+Fund
+Risk
+Champion
+Acc.
+Bal. Acc.
+Sens.
+Spec.
+p
+Beats NaÃ¯ve?
+ALZ
+Low (1)
+ARIMA (MC)
+100 %*
+â€”
+â€”
+â€”
+â€”
+N/A (single-class)
+AZS
+Med (3â€“4)
+CNN â˜… [technical]
+75.56 %
+76.71 %
+90.91 %
+62.50 %
+0.0002
+No (90.32%)
+AMZ â˜…â˜…
+High (6â€“7)
+LSTM â˜…â˜… [full]
+80.21 %
+84.85 %
+84.00 %
+85.71 %
+0.0001
+YES â˜… (78.79%)
+Take-away  
+â€” ALZ 100% is trivial (always-Up, MC, not skill).  â€” AZS CNN â˜… learns (p=0.0002) but NaÃ¯ve dominates due to class imbalance.  
+â€” AMZ LSTM â˜…â˜… is the ONLY config that beats its per-horizon NaÃ¯ve baseline â€” the Key Empirical Finding.
+Graphic 1: The Accuracy Illusion â€” raw % vs. Balanced Accuracy
+Graphic 5: Risk vs. learning capacity â€” gradient across BES funds
+--- slide18.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+6. Cross-Fund â€” Model Ã— Asset Accuracy Heatmap
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+18
+Model Ã— Asset Accuracy Heatmap (BES-Only)
+Raw directional accuracy â€” ARIMA Â· CNN Â· LSTM Â· NaÃ¯ve Ã— ALZ Â· AZS Â· AMZ
+Key Observations
+AMZ LSTM: genuine BA=84.85% (p=0.0001), beats NaÃ¯ve Out=3 (78.79%). Only fund where DL outperforms the Up-always rule.
+ALZ: all methods reach 100% raw accuracy but Spec=0 on every config. The 100% figures are a Majority-Class illusion, not learning.
+AZS NaÃ¯ve dominates at 90.32% due to heavy imbalance (82.9% Up). CNN/LSTM learn meaningfully (p<0.01) but cannot beat that baseline.
+Replacing THYAO with ALZ exposes the MC trap vividly: high raw accuracy â‰  high model quality. Balanced Accuracy tells the real story.
+Model
+AMZ â˜…â˜… High
+AZS â˜… Medium
+ALZ â€  Low (MC)
+ARIMA
+80.65%
+80.65%
+100%*
+CNN
+74.36%
+75.56%
+100%â€ 
+LSTM
+80.21%
+68.89%
+100%â€ 
+NaÃ¯ve
+83.87%
+90.32%
+100%*
+BA â˜…
+84.85% â˜…â˜…
+76.71% â˜…
+50.0% â€ 
+* Trivial: single-class data (zero Down obs) â€” Up-always prediction.   â€  MC trap: Spec=0 across all seeds, BA collapses to 50%.   BA row = best non-MC champion Balanced Accuracy per fund.
+ALZ
+BA 50% â€  MC
+AZS
+BA 76.71% â˜…
+AMZ â˜…â˜…
+BA 84.85% â˜…â˜…
+Balanced Accuracy by Fund â€” genuine learning vs. MC illusion
+--- slide19.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+6. Cross-Fund â€” Robustness Analysis
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+19
+Model Robustness & Window Sensitivity
+Short-memory patterns dominate weekly BES data Â· Seed variance < 2%
+Graphic 6: MC Resistance â€” CNN vs LSTM by feature set (BES funds)
+Graphic 8: Concept Drift Evidence â€” performance drop after 2022
+In=2 (2-week lookback) outperforms In=4 and In=6 on all three pension funds. Weekly BES data carries limited long-range autocorrelation â€” short-memory patterns dominate.
+Out=3 gives optimal class balance for AMZ (25 Up / 7 Down). Out=5 worsens class imbalance for AZS (29/6 = 82.9% Up), reducing Specificity gains from longer horizons.
+Seed variance < 2% for all champion configurations â€” multi-seed validation (23/27/98) confirms that results are not seed-dependent artefacts.
+CNN achieves better MC resistance than LSTM on AZS with closing/technical features. LSTM needs full feature set to avoid MC trap on medium-risk funds.
+--- slide20.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+6. Cross-Fund â€” The Majority-Class Sinkhole
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+20
+The Majority-Class Sinkhole
+Visualising the BA collapse when Specificity = 0 across funds and models
+Balanced Accuracy (BA) â€” Primary Metric
+BA  =  ( Sensitivity + Specificity )  Ã·  2
+The Majority-Class Sinkhole
+When Spec = 0  â†’  BA = ( Sens + 0 ) Ã· 2  â‰ˆ  50 %
+The model predicts only 'Up' â€” never detects a Down move. BA collapses to coin-flip regardless of raw accuracy.
+BES Fund MC Status â€” All Configurations Tested
+Fund
+MC Status
+Spec.
+Bal. Acc.
+ALZ
+MC (all 54 configs)
+0 %
+50.0 %
+AZS
+Non-MC â˜… (best CNN)
+62.50 %
+76.71 %
+AMZ â˜…â˜…
+Non-MC â˜…â˜… (LSTM full)
+85.71 %
+84.85 %
+The MC Sinkhole Defined
+MC Illusion: when Spec = 0 (model never predicts Down), BA = (Sens + 0)/2 = ~50%. The model scores 50% â€” coin-flip performance â€” regardless of raw accuracy.
+ALZ: 100% Accuracy, 50% BA
+All 27 LSTM + 27 CNN configs on ALZ fall into the sinkhole. 100% Accuracy but Spec = 0, Sens = 1 â†’ BA = 50.0%. Not a model failure â€” a data structure failure.
+Escape Routes
+Escaping the sinkhole requires: (1) volatile fund with balanced classes; (2) feature enrichment; (3) class-weight balancing during training. Only AMZ LSTM full achieves all three.
+AMZ LSTM Escapes
+AMZ LSTM full (In=2, Out=3): Spec=85.71%, Sens=84.00%, BA=84.85%. Fully bilateral â€” both Up and Down predicted correctly. Confirmed across all three seeds.
+--- slide21.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+7. Conclusion & Future Work
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+21
+Key Findings & Conclusion
+Five empirical take-aways from the BES-only evaluation framework
+1
+ALZ â€” Majority-Class Control Group
+All 27 LSTM + 27 CNN configurations produced MC results across all feature sets. 100% accuracy is trivial. Low-risk monotonic funds are unsuitable for DL binary prediction.
+2
+AZS â€” Meaningful Learning, NaÃ¯ve Unbeaten
+CNN technical (BA=76.71%, p=0.0002) and LSTM full (BA=75.65%, p=0.0001) demonstrate genuine bilateral learning. NaÃ¯ve Baseline (90.32%) dominates due to class imbalance.
+â˜…
+AMZ â€” Deep Learning Beats NaÃ¯ve Baseline
+LSTM full (In=2, Out=3): Acc=80.21%, BA=84.85%, Spec=85.71%, p=0.0001. Statistically outperforms NaÃ¯ve Out=3 (78.79%). Only fund where DL achieves genuine predictive advantage.
+4
+Risk Level â†’ Learning-Capacity Gradient
+ALZ (Â±2%) â†’ MC trap; AZS (Â±18%) â†’ meaningful learning; AMZ (Â±38%) â†’ star performance. Higher volatility â†’ more balanced classes â†’ real learning possible.
+5
+Methodological Rigor
+Multi-seed (23/27/98) validation. 81 evaluations per fund. Pooled CM (N=96). Per-horizon NaÃ¯ve Baseline prevents misleading conclusions. BA is essential for imbalanced data.
+Future Work
+1. Broader TEFAS categories and additional pension companies
+2. Transformer / Attention-based architectures
+3. Ensemble methods combining LSTM + CNN for robustness
+4. Sentiment features (news, macro) as exogenous inputs
+--- slide22.xml ---
+UYIK
+2026
+VII. INTERNATIONAL
+UYGULAMALI
+Ä°STATÄ°STÄ°K
+KONGRESÄ°
+References
+UYIK-2026 Â· Hacettepe University Â· Ä°stanbul, May 11â€“13, 2026
+22
+References
+Complete bibliography â€” all sources cited in the study (APA 7)
+1.  Bai, Y., & Koong, K. S. (2018). Oil prices and stock returns. North American Journal of Economics and Finance, 44, 12â€“33.
+2.  EÅŸsiz, S., & Ordu, M. (2024). A univariate time-series analysis for estimating the daily price of the S&P 500 fund basket pension investment fund. Hodja Akhmet Yassawi 8th International Congress on Scientific Research.
+3.  Fischer, T., & Krauss, C. (2018). Deep learning with long short-term memory networks for financial market predictions. European Journal of Operational Research, 270(2), 654â€“669.
+4.  Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural Computation, 9(8), 1735â€“1780.
+5.  KaradaÄŸ Erdemir, Ã–., & KÄ±rkaÄŸaÃ§, M. (2024). ARIMA Modelleri ile Bireysel Emeklilik FonlarÄ±nÄ±n Tahmini. Hacettepe Ãœniversitesi.
+6.  LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning. Nature, 521, 436â€“444.
+7.  Siami-Namini, S., Tavakoli, N., & Namin, A. S. (2019). The performance of LSTM and BiLSTM in forecasting time series. 2019 IEEE International Conference on Big Data, 3285â€“3292.
+8.  Valverde-Albacete, F. J., & Pelaez-Moreno, C. (2014). 100% classification accuracy considered harmful. PLOS ONE, 9(8).
+9.  Van der Burgt, F. (2023). Predicting NASDAQ-100 movements: LSTM vs. CNN (Masterâ€™s thesis). Erasmus University Rotterdam.
+10.  YÄ±ldÄ±rÄ±m, D. C., Toroslu, I. H., & Fiore, U. (2021). Forecasting directional movement of Forex data using LSTM with technical and macroeconomic indicators. Financial Innovation, 7(1), 1â€“36.
+--- slide23.xml ---
+UYIK 2026
+Thank You
+Questions & Discussion
+Åevval DEMÄ°R Mehmet Ali KURT
+Hacettepe
+ University Â· Department of 
+Actuarial
+
+Science
+UYIK 2026  Â·  Deep Learning in Turkish BES Pension Funds  Â·  BES-Only Evaluation Framework
+23

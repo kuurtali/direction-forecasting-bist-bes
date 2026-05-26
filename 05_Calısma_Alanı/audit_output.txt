@@ -1,0 +1,238 @@
+﻿================================================================================
+PHASE 1: CSV GROUND-TRUTH Y├£KLEME
+================================================================================
+LSTM sat─▒r: 81
+CNN sat─▒r: 81
+Naive sat─▒r: 27
+ARIMA sat─▒r: 27
+
+================================================================================
+PHASE 2: N=96 POOLED MATRIX DER─░N ANAL─░Z
+================================================================================
+
+--- AMZ LSTM ┼ŞAMP─░YON KONF─░G├£RASYON ---
+Feature: full | In=2 | Out=3
+Optimizer: adam | Activation: tanh | Dropout: 0.4
+Seed_23: 0.8438
+Seed_27: 0.7188
+Seed_98: 0.8438
+Mean_Acc: 0.8021
+SD: 0.0722
+P_Value: 1e-04
+F1: 0.8936
+Sens: 0.84
+Spec: 0.8571
+
+--- SEED BAZLI TEST SET─░ B├£Y├£KL├£─Ş├£ HESABI ---
+  Seed_23: Acc=0.8438 ÔåÆ N=32, Do─şru=27 (kontrol: 0.8438)
+  Seed_27: Acc=0.7188 ÔåÆ N=32, Do─şru=23 (kontrol: 0.7188)
+  Seed_98: Acc=0.8438 ÔåÆ N=32, Do─şru=27 (kontrol: 0.8438)
+
+--- N=32 DO─ŞRULAMASI ---
+  Seed_23: 27/32 = 0.8438 (CSV: 0.8438)
+  Seed_27: 23/32 = 0.7188 (CSV: 0.7188)
+  Seed_98: 27/32 = 0.8438 (CSV: 0.8438)
+
+--- POOLED N=96 HESABI ---
+  Toplam do─şru tahmin: 77
+  Toplam N: 96
+  Pooled Acc: 77/96 = 0.8021 (80.21%)
+  CSV Mean Acc: 0.8021 (80.21%)
+  Aritmetik ortalama: (0.8438+0.7188+0.8438)/3 = 0.8021
+
+--- CSV'DEK─░ SENS/SPEC ANAL─░Z─░ ---
+  CSV Sens: 0.84 (= TP / (TP + FN))
+  CSV Spec: 0.8571 (= TN / (TN + FP))
+  ├ûNEML─░: Bu de─şerler POOLED DE─Ş─░L, yaln─▒zca SON SEED'den (Seed 98) loglanm─▒┼ş!
+
+--- N=96 AR─░TMET─░K KR─░T─░K ANAL─░Z ---
+  Senaryo A (Mean Acc = 80.21%):
+    77/96 = 0.8021 ÔåÆ TP+TN = 77
+  Senaryo B (Pooled Acc = 84.38%):
+    77/96 = 0.8021 ÔåÆ TP+TN = 77
+
+  FARK: 77 - 77 = 0
+
+  E─şer Sens ve Spec pooled matris oranlar─▒ysa:
+    Tahmini s─▒n─▒f da─ş─▒l─▒m─▒: 75 Up, 21 Down
+    Sens=0.84 ÔåÆ TP Ôëê 63, FN Ôëê 12
+    Spec=0.8571 ÔåÆ TN Ôëê 18, FP Ôëê 3
+    TP+TN = 81
+    Hesaplanan Acc = 81/96 = 0.8438
+
+  SONU├ç:
+  ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+  Mean Acc (3-seed aritmetik ortalama) = 0.8021 = 80.21%
+  Pooled Acc (3-seed toplam do─şru/96)  = 0.8021 = 80.21%
+  CSV Sens/Spec = SON SEED (Seed 98) de─şerleri, pooled DE─Ş─░L
+  ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+  Mean Ôëá Pooled ├ğ├╝nk├╝: aritmetik ortalama Ôëá toplam do─şru/toplam N
+  Seed 27'nin d├╝┼ş├╝k performans─▒ (71.88%) ortalamayi a┼şa─ş─▒ ├ğekiyor
+  ama pooled'da 23/32 do─şru hala havuza kat─▒l─▒yor ÔåÆ pooled y├╝kseliyor
+
+================================================================================
+PHASE 3: AMZ LSTM ÔÇö MC vs NON-MC DA─ŞILIMI
+================================================================================
+AMZ LSTM: 10/27 MC, 17/27 non-MC
+
+MC da─ş─▒l─▒m─▒:
+  full: 0/9 MC
+  technical: 1/9 MC
+  closing: 9/9 MC
+
+================================================================================
+PHASE 4: TABLO B2 (AMZ DETAILED) ÔÇö CSV ├çAPRAZ DENET─░M
+================================================================================
+
+--- TABLO B2 SATIR SATIR CSV KAR┼ŞILA┼ŞTIRMASI ---
+Etiket                     Tablo Acc    CSV Acc      CSV Set      Durum
+---------------------------------------------------------------------------
+LSTM full 2 3                 80.21%     80.21%         full          Ô£ô
+LSTM full 4 5                 77.38%     47.62%         full Ô£ù FARK=-29.76
+LSTM full 2 1                 69.61%     47.06%         full Ô£ù FARK=-22.55
+LSTM full 6 3                 75.00%     47.62%         full Ô£ù FARK=-27.38
+LSTM technical 2 1            67.86%     69.61%    technical Ô£ù FARK=1.75
+CNN closing 6 5               74.36%     74.36%      closing          Ô£ô
+CNN full 4 1                  60.42%     60.42%         full          Ô£ô
+CNN technical 2 3             72.92%     72.92%    technical          Ô£ô
+
+--- YANLI┼Ş ET─░KET TESP─░T─░: Bu de─şerler ger├ğekte nereden geliyor? ---
+  LSTM full 2 3 Acc=80.21% ÔåÆ  | CSV KAYNAK: full In=2 Out=3 Acc=0.8021, closing In=2 Out=5 Acc=0.8000
+  LSTM full 4 5 Acc=77.38% ÔåÆ  | CSV KAYNAK: technical In=4 Out=5 Acc=0.7738, closing In=6 Out=5 Acc=0.7692
+  LSTM full 2 1 Acc=69.61% ÔåÆ  | CSV KAYNAK: technical In=2 Out=1 Acc=0.6961
+  LSTM full 6 3 Acc=75.00% ÔåÆ  | CSV KAYNAK: closing In=6 Out=3 Acc=0.7500
+  LSTM technical 2 1 Acc=67.86% ÔåÆ  | CSV KAYNAK: full In=2 Out=5 Acc=0.6778, technical In=6 Out=3 Acc=0.6786
+  CNN closing 6 5 Acc=74.36% ÔåÆ  | CSV KAYNAK: closing In=6 Out=5 Acc=0.7436
+  CNN full 4 1 Acc=60.42% ÔåÆ  | CSV KAYNAK: full In=4 Out=1 Acc=0.6042
+  CNN technical 2 3 Acc=72.92% ÔåÆ  | CSV KAYNAK: full In=6 Out=5 Acc=0.7308, technical In=2 Out=3 Acc=0.7292
+
+================================================================================
+PHASE 5: APPENDIX DOSYALARI ÔÇö N=96 REFERANSLARI
+================================================================================
+
+[Appendix_D_Karmasiklik_Matrisleri.txt] ÔÇö N=96/pooled referans─▒ bulundu:
+  Sat─▒r 3: ## D.1 4 Kritik Modelin Pooled Confusion Matrix Ozeti
+  Sat─▒r 4: NOT (METODOLOJI - PROJECT_REPORT BOLUM 12, "N=96 GOD-MODE"):
+  Sat─▒r 8: - "Pooled Aritmetik" = uc seed'in TP/TN/FP/FN sayilarinin toplamindan
+  Sat─▒r 12: pooled hucre ile tam ortusmesi pratik olarak imkansizdir, ancak desen
+  Sat─▒r 14: - Her sampiyon icin iki satir verilmistir (Headline + Pooled). Cozum
+  Sat─▒r 21: | 1b | Sampiyon: AMZ LSTM (Out=3, In=2, Full) | Pooled Aritmetik       | 96 (32x3) | 81/96 | 84.38% | 63/75 = 84.00% | 1
+  Sat─▒r 23: | 2b | Dengeli: AZS CNN (Out=3, In=4, Technical) | Pooled Aritmetik       | 90 (30x3) | 75/90 | 83.33% | 60/66 = 90.91% 
+  Sat─▒r 31: - Pooled aritmetik 84.38% = TP+TN = 81 (= 63 + 18). Bu sayi son-seed Sens/Spec
+  Sat─▒r 32: degerlerinin uc seed'in pooled sinif dagilimi (Up=75, Down=21) ile
+  Sat─▒r 38: - SAVUNMA: Juriye karsi pooled satiri sayilabilir tam sayilarla matrisi
+  Sat─▒r 44: - Pooled aritmetik 83.33% = TP+TN = 75 (= 60 + 15) icin Up=66, Down=24.
+  Sat─▒r 51: - 2-seed pooled olmasinin nedeni: 3. seed (Seed_98) zaten ayni MC kalibinda
+  Sat─▒r 74: POOLED ACCURACY     = (TP_seed1 + TP_seed2 + TP_seed3 + TN_seed1 + TN_seed2 + TN_seed3) / N_pool
+  Sat─▒r 86: (Sens=84.00%, Spec=85.71%). Pooled aritmetikte BA degismez ancak Acc
+  Sat─▒r 87: 84.38%'e cikar ÔÇö fark 3-seed mean ile pooled arasindaki dogal varyanstir
+
+================================================================================
+PHASE 6: PROJECT_REPORT ÔÇö N=96 T├£M REFERANSLAR
+================================================================================
+Toplam N=96 referans─▒: 40
+  Sat─▒r 58: N=96 ile pooled p-de─şer hesab─▒ (B├Âl├╝m 12 ile ba─şlant─▒).
+  Sat─▒r 60: [G10] Appendix_D.1 B├ûL├£M 12 N=96 GOD-MODE ├ğ├Âz├╝m├╝yle hizaland─▒:
+  Sat─▒r 62: ayr─▒ raporland─▒. AMZ LSTM: 80.21% (mean) ve 84.38% (pooled, 81/96)
+  Sat─▒r 99: CNN causal padding, binom testi N=96) akademik dilde aktar─▒ld─▒.
+  Sat─▒r 123: [N4] FAZ 5: ├ç─░ZELGE 18 (Pooled Matris) B├ûL├£M 12 N=96 GOD-MODE ├ğ├Âz├╝m├╝yle
+  Sat─▒r 973: Senin Kalkan─▒n: "Hay─▒r Hocam. ─░mkans─▒z matematikten ve ┼şans fakt├Âr├╝nden ka├ğ─▒nmak i├ğin tekil matrisleri de─şil, 3 farkl─▒ seed'in sonu├ğlar─▒n─▒ havuzlad─▒k 
+  Sat─▒r 1697: 1. "Metodoloji / Model De─şerlendirme" B├Âl├╝m├╝ne Eklenecek (N=96 Havuzlanm─▒┼ş Matris Savunmas─▒):
+  Sat─▒r 1699: "├çal─▒┼şmada, modellerin tahmin performanslar─▒n─▒n rastgele ba┼şlang─▒├ğ a─ş─▒rl─▒klar─▒na (Lucky Seed) ba─şl─▒ olarak manip├╝le edilmesini ├Ânlemek amac─▒yla '├çoklu
+  Sat─▒r 1776: B├ûL├£M 12: N=96 POOLED CONFUSION MATRIX ÔÇö GOD-MODE SAVUNMASI
+  Sat─▒r 1782: N=96 metodolojik olarak EN UYGUN ve EN DO─ŞRU tercihtir. Tek seed (N=32)
+  Sat─▒r 1786: (Pooled Confusion Matrix), N = 32 x 3 = 96 olarak ortaya ├ğ─▒kar ve
+  Sat─▒r 1790: 12.2. NEDEN N=96 ÔÇö ALTERNAT─░FLERLE KIYASLA
+  Sat─▒r 1835: N=96 ├╝zerinden hesaplanm─▒┼şt─▒r. 96/2 = 48 baseline-e┼şit beklentisinden
+  Sat─▒r 1837: - Klinik denemelerde N=96 zay─▒f say─▒l─▒rd─▒; finansal HAFTALIK y├Ân
+  Sat─▒r 1844: k├╝m├╝latif (pooled) confusion matrisini kulland─▒k. 32 yerine 96 ├╝zerinden
+  Sat─▒r 1858: - Mevcut N=96, p<0.001 d├╝zeyinde anlaml─▒ sonu├ğ veren g├╝ce sahiptir;
+  Sat─▒r 1860: SONU├ç: 3-seed ├ù N=96 maliyet/g├╝├ğ dengesi a├ğ─▒s─▒ndan optimal.
+  Sat─▒r 1864: Bu metodoloji UYIK_2026_BES.pptx ana sunumunda "N=96" terimi
+  Sat─▒r 1869: weekly observations ÔåÆ N=96 per cell."
+  Sat─▒r 1906: **2) N=96 a├ğ─▒klamas─▒ PROJECT_REPORT'a eklendi.**
+  Sat─▒r 1908: `PROJECT_REPORT.txt` dosyas─▒na `B├ûL├£M 12: N=96 POOLED CONFUSION MATRIX ÔÇö GOD-MODE SAVUNMASI` ba┼şl─▒─ş─▒yla yedi alt b├Âl├╝m eklendi: k─▒sa cevap (12.1), alt
+  Sat─▒r 1927: **Tablo B3 (AMZ LSTM Champion Seed-Level + Pooled N=96)** ÔÇö say─▒lar **kendi i├ğinde tutars─▒z**:
+  Sat─▒r 1931: ─░kinci ve daha kritik problem, **Pooled N=96 sat─▒r─▒ kendi kendine ayna tutmuyor**: Acc=77/96=80.21% ile Sens=63/75 ve Spec=18/21 birlikte yaz─▒lm─▒┼ş. Am
+  Sat─▒r 1971: [View updated PROJECT_REPORT (with N=96 god-mode section)](computer://C%3A%5CUsers%5CKurt%5CDesktop%5CProje%5C01_Savunma_ve_Ana_Metinler%5CPROJECT_REP
+  Sat─▒r 2019: MADDE 2 ÔÇö N=96 PROJECT_REPORT eklemesi
+  Sat─▒r 2025: ÔÇó B├ûL├£M 12: N=96 POOLED CONFUSION MATRIX ÔÇö GOD-MODE SAVUNMASI (sat─▒r 1611)
+  Sat─▒r 2027: ÔÇó 12.2 NEDEN N=96 ÔÇö ALTERNAT─░FLERLE KIYASLA (1625)
+  Sat─▒r 2049: ÔûÂ Tablo 22 (= B3, Seed-Level + Pooled N=96) ÔÇö KR─░T─░K HATALAR DO─ŞRULANDI:
+  Sat─▒r 2058: Pooled N=96 sat─▒r─▒:
+  Sat─▒r 2078: diagonal=81, Pooled Acc = 81/96 = 84.38%) ve hemen yan─▒nda "3-seed
+
+================================================================================
+PHASE 7: SONU├ç RAPORU
+================================================================================
+
+ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+Ôòæ  N=96 NED─░R?                                                        Ôòæ
+ÔòÜÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòØ
+
+N=96 = 3 seed ├ù 32 test g├Âzlemi = 96 toplam tahmin
+
+PROBLEM: CSV'de Mean_Acc 3 seed'in ortalamas─▒, ama Sens/Spec yaln─▒zca 
+         son seed'den (Seed 98) loglanm─▒┼ş. Bu ikisi ayn─▒ tabloya 
+         konulunca aritmetik tutmuyor.
+
+├ç├ûZ├£M (PROJECT_REPORT B├Âl├╝m 12): 3 seed'in confusion matrix'lerini 
+       toplay─▒p tek bir Pooled Confusion Matrix olu┼şturmak.
+
+SORUN: R kodunda her seed'in ayr─▒ CM'si kaydedilmemi┼ş ÔÇö sadece 
+       Mean_Acc (3-seed ort.) ve son seed'in Sens/Spec'i loglanm─▒┼ş.
+       Bu y├╝zden "ger├ğek" pooled matris hesaplanam─▒yor.
+
+ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+Ôòæ  ─░K─░ FARKLI "DO─ŞRULUK" ÔÇö HEADLINE vs POOLED                        Ôòæ
+ÔòÜÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòØ
+
+1. HEADLINE (3-seed Mean):
+   Mean_Acc = (84.38 + 71.88 + 84.38) / 3 = 80.21%
+   Bu "aritmetik ortalama" ÔåÆ modelin ortalama performans─▒
+
+2. POOLED (toplam do─şru / toplam N):
+   Do─şru = 27 + 23 + 27 = 77
+   Pooled_Acc = 77/96 = 80.21%
+   
+   BEKLE ÔÇö bu sefer 77/96 tam olarak 80.21% ediyor!
+   27/32 = 0.84375, 23/32 = 0.71875, 27/32 = 0.84375
+   (27+23+27)/(32+32+32) = 77/96 = 0.80208... Ôëê 0.8021
+   
+   SONU├ç: Mean_Acc ve Pooled_Acc BU DURUMDA YAKLA┼ŞIK E┼Ş─░T!
+   (E┼şit olmalar─▒ tesad├╝f de─şil ÔÇö basit aritmetik ortalama ile 
+    toplam/N ayn─▒ N'lerde e┼şde─şerdir)
+
+KES─░N HESAP:
+  Seed 23: 27/32 = 0.8438
+  Seed 27: 23/32 = 0.7188
+  Seed 98: 27/32 = 0.8438
+  Toplam: 77/96 = 0.802083 (80.2083%)
+  CSV Mean: 0.8021
+  Fark: 0.000017
+
+ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+Ôòæ  TABLO B3 SORUNU ÔÇö KES─░N TE┼ŞH─░S                                    Ôòæ
+ÔòÜÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòØ
+
+B3'te yaz─▒lan:
+  Acc = 77/96 = 80.21% (Ô£ô Bu DO─ŞRU ÔÇö Headline Mean ile e┼şde─şer)
+  TP = 63, TN = 18, FP = 3, FN = 12  (Ô£ù BU YANLI┼Ş)
+  
+  Kontrol: TP+TN = 63+18 = 81 ÔåÆ 81/96 = 84.38% Ôëá 80.21%
+  
+HATA NEDEN─░:
+  TP=63, TN=18 de─şerleri Sens=0.84 ve Spec=0.8571 oranlar─▒ndan 
+  "pooled N=96 varm─▒┼ş gibi" hesaplanm─▒┼ş.
+  Ama CSV'deki Sens/Spec SON SEED'e (Seed 98) ait.
+  Seed 98 Acc=84.38% ÔåÆ bu y├╝zden TP+TN=81 ├ğ─▒k─▒yor (84.38%'in say─▒lar─▒).
+  
+  Yani TP=63, TN=18 asl─▒nda SEED 98'─░N DE─ŞERLER─░ ├ù 3 
+  (sanki her seed ayn─▒ sonucu ├╝retmi┼ş gibi hesaplanm─▒┼ş).
+  
+├ç├ûZ├£M:
+  Acc=77/96=80.21% DO─ŞRU kalmal─▒.
+  TP/TN/FP/FN sat─▒rlar─▒ ya d├╝zeltilmeli ya da silinmeli.
+  Ger├ğek pooled CM i├ğin her seed'in ayr─▒ CM'si gerekir 
+  (R kodunda kay─▒tl─▒ m─▒ kontrol edilmeli).
+

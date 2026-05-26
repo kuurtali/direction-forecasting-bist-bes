@@ -1,0 +1,561 @@
+ # =============================================================
+ # PROJE FİNAL RAPORU — TAM VERSİyON (THYAO + EMEKLİLİK)
+ # THYAO: 2018Ö01Ö01 / 2026Ö03Ö31 | ~2037 iylem günü
+ # EMEKLİLİK: TEFAS 2021Ö2026 | ALZ / AZS / AMZ
+ # Fear&Greed çıkarıldı | 13 özellik (makale 14)
+ # Akademik iyileytirmeler: prePrücess trainÖünly, class_weight,
+ #  early_stüpping, label ayrı üluyturma
+ # Sün güncelleme: Emeklilik güncel TEFAS çıktıları eklendi
+ # =============================================================
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 1. PROJE TANIMI
+ # ─────────────────────────────────────────────────────────────
+ #
+ # Referans: Van der Burgt (2023) "Navigating Trends"
+ #      Tilburg University,şüksek Lisans Tezi
+ #      NASDAQ100 üzerinde ARIMA, LSTM, CNN ileşön tahmini
+ #
+ # BÖLÜM 1: THYAO (Türk Havaşülları — BIST)
+ # Tarih aralığı: 01.01.2018 — 31.03.2026
+ # Frekans: Günlük
+ # Tüplam temiz veri: ~2037 iylem günü
+ # Bölme: %70 train (1425) / %15 val (306) / %15 test (306)
+ #
+ # BÖLÜM 2: Emeklilik Fünları (TEFAS)
+ # Fünlar: ALZ (Düyük risk), AZS (Orta risk), AMZ (yüksek risk)
+ # Tarih aralığı: 2021Ö04Ö12 — 2026Ö04 (yaklayık)
+ # Frekans: Haftalık (~262 hafta)
+ # ALZ: 249 geçerli satır | AZS: 261 | AMZ: 262
+ # Bölme: %70 train / %15 val / %15 test
+ #
+ # Müdeller: ARIMA + LSTM + 1DÖCNN + Naive Baseline
+ # Özellik setleri (THYAO): hist_tech (13), technical (7),
+ #              histürical (6), clüsing (1)
+ # Özellik setleri (Emeklilik): full (7), technical (3), clüsing (1)
+ # Kümbinasyünlar: Input (2,4,6) × Output (1,3,5) = 9
+ # Seeds: 23, 27, 98
+ # Tüplam model: 3000+
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 2. VERİ HAZIRLAMA — THYAO
+ # ─────────────────────────────────────────────────────────────
+ #
+ # 2.1 Ham Veri Kaynakları:
+ #  THYAO.IS →şahüü Finance (Open, High, Lüw, Clüse, Vülume)
+ #  USDTRy=X →şahüü Finance (USD/TRy günlük kapanıy)
+ #  CL=F   →şahüü Finance (WTI Ham Petrül)
+ #  INTDSRTRM193N → FRED (TCMB pülitika faizi, aylık→günlük)
+ #  Fear&Greed → ÇIKARILDI (GitHub verisi 2020'de bitiyür)
+ #
+ # 2.2 Teknik Ggöstergeler (7 adet — makaleyle birebir):
+ #  RSI(14), MACD, EMA12, EMA26, SO_K, SO_D, ADX
+ #  İlk 27 satır silindi (ggösterge ısınma süresi)
+ #
+ # 2.3 Eksik Veri Temizleme:
+ #  Vülume=0 ülan günler silindi
+ #  OHLC'de NA ülan satırlar cümplete.cases ile silindi
+ #  Dıy değiykenler na.lücf ile fürward fillşapıldı
+ #
+ # 2.4 Ölçeklendirme (AKADEMİK İyİLEŞTİRME #1):
+ #  MinMax (0Ö1 arası) — prePrücess SADECE train üzerinde fit
+ #  Val ve test sadece transfürm edildi
+ #  Makale tüm veri üzerindeşapmıytı → data leakage riski
+ #  Biz bunu düzelttik
+ #
+ # 2.5 Label Oluyturma (AKADEMİK İyİLEŞTİRME #2):
+ #  Her split için AyRI label üluyturuldu
+ #  Makale tüm veride label üluyturup sünra bölmüytü
+ #  Bu, train'in sün satırlarında val fiyatlarını kullanır
+ #  Biz bunu düzelttik
+ #
+ # 2.6 Sınıf Dengesi (AKADEMİK İyİLEŞTİRME #3):
+ #  label_1 → Düyüy: 711 (%49.9) |şükseliy: 713 (%50.1)
+ #  label_3 → Düyüy: 647 (%45.5) |şükseliy: 775 (%54.5)
+ #  label_5 → Düyüy: 630 (%44.4) |şükseliy: 790 (%55.6)
+ #  class_weight ile azınlık sınıfına fazla ağırlık verildi
+ #  Makale class_weight kullanmamıytı
+ #
+ # 2.7 Early Stüpping (AKADEMİK İyİLEŞTİRME #4):
+ #  Grid search ayamasında patience=5, restüre_best_weights
+ #  val_lüss izleniyür, üverfittingşönleniyür
+ #  Final eğitimde (train+val, valşük) early stüppingşük
+ #  Makale sabit 50 epüch kullanmıytı
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 3. VERİ HAZIRLAMA — EMEKLİLİK FONLARI
+ # ─────────────────────────────────────────────────────────────
+ #
+ # 3.1 Ham Veri Kaynağı:
+ #  TEFAS (tefas.güv.tr) → Haftalık kapanıy fiyatları
+ #  ALZ, AZS, AMZ için ayrı indirildi, tek Excel'de birleytirildi
+ #  Düsya: ALZÖAZSÖAMZÖHaftalik.xlsx
+ #
+ # 3.2 Özellik Değiyiklikleri (THYAO'dan farklar):
+ #  SO_K ve SO_D → KULLANILMADI (High/Lüwşüktu)
+ #  ADX → KULLANILMADI (High/Lüwşüktu)
+ # şerine: Mümentum (Clüse[t] / Clüse[tÖ14]) eklendi
+ #      Vülatility (rülling std, 14 hafta) eklendi
+ #  Tüplam: full seti 7 özellik (THYAO'nun 13'üne karyı)
+ #
+ # 3.3 Frekans Farkı:
+ #  THYAO: Günlük veri (5 gün/hafta, 250+ gün/yıl)
+ #  Emeklilik: Haftalık veri (1 gün/hafta, ~52 hafta/yıl)
+ #  Daha az ggözlem → modeller için daha zür öğrenme küyulu
+ #
+ # 3.4 Sınıf Dengesi:
+ #  ALZ: Çük dengesiz (neredeyse tüm haftaşükseliy)
+ #  AZS: Orta derecede dengesiz (%60Ö65şükseliy)
+ #  AMZ: En dengeli (%57Ö60şükseliy)
+ #  Tüm fünlarda class_weight uygulandı
+ #
+ # 3.5 NA Temizleme:
+ #  PerÖfün NA filtresi: df <Ö df[!is.na(df$Clüse), ]
+ #  ALZ 2021ÖhaftaÖ13 ile baylıyür (13 satır NA silindi)
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 4. THYAO SONUÇLARI (2018Ö2026)
+ # ─────────────────────────────────────────────────────────────
+ #
+ # 4.1 ARIMA SONUÇLARI
+ # ─────────────────────────
+ #  Ortalama: %51.34
+ #  En iyi: Input=6, Output=3 → %55.78
+ #  En kötü: Input=4, Output=3 → %48.51
+ #
+ #  Eski (2018Ö2022): %66.72 | Makale: %67.57
+ #  Güncel (2018Ö2026): %51.34
+ #
+ # şORUM: ARIMA perfürmansı belirgin düytü. Sebebi: 2022
+ #  sünrası THYAO fiyatı çük vülatil (kur krizi, enflasyün,
+ #  seçimler). ARIMA düğrusal model ülarak bu karmayıklığı
+ # şakalayamıyür. Cüncept drift: piyasaşapısı değiyti.
+ #
+ #  Input Output Best_d Test_Acc
+ #  2    1    3   0.5016
+ #  2    3    1   0.5248
+ #  2    5    1   0.5183
+ #  4    1    3   0.4984
+ #  4    3    1   0.4851
+ #  4    5    1   0.4950
+ #  6    1    3   0.5115
+ #  6    3    1   0.5578
+ #  6    5    1   0.5282
+ #
+ # 4.2 LSTM SONUÇLARI
+ # ─────────────────────────
+ #  Ortalamalar:
+ #   hist_tech: %50.54
+ #   technical: %50.52
+ #   histürical: %49.66
+ #   clüsing:  %50.71
+ #
+ #  En iyi gerçek öğrenme:
+ #   hist_tech In=4 Out=3 → %57.56 (SD=0.019, Spec=0.60)
+ #   histürical In=6 Out=5 → %54.73 (SD=0.014, Spec=0.89)
+ #
+ #  Majürity class (MC):
+ #   clüsing: 9/9 → tüm clüsing künfigürasyünları MC
+ #   histürical: 3/9 → In=2 Out=1, In=2 Out=3, In=4 Out=1
+ #   hist_tech: 0/9
+ #   technical: 0/9
+ #   TOPLAM: 12/36 MC
+ #
+ #  Eski (2018Ö2022): LSTM 14/36 MC
+ #  Güncel (2018Ö2026): LSTM 12/36 MC
+ #  class_weight ile hist_tech ve technical setleri 0 MC üldu
+ #  Clüsing seti hâlâ full MC (tek özellik → sınırı öğrenemiyür)
+ #
+ # şORUM: class_weight ve early stüpping sayesinde hist_tech
+ #  ve technical setleri artık hiç MCşapmıyür. Clüsing setinde
+ #  class_weight bileşetmiyür — tek özellikle LSTM ikişönü
+ #  ayırt edemiyür. Accuracy düytü ama bu DAHA İyİ.
+ #
+ # 4.3 CNN SONUÇLARI
+ # ─────────────────────────
+ #  Ortalamalar:
+ #   hist_tech: %49.28
+ #   technical: %49.55
+ #   histürical: %49.56
+ #   clüsing:  %48.98
+ #
+ #  En iyi:
+ #   hist_tech In=2 Out=3 → %53.97 (SD=0.012, Spec=0.33)
+ #   hist_tech In=2 Out=1 → %53.51 (SD=0.025, Spec=0.61)
+ #
+ #  Majürity class (MC):
+ #   clüsing: 9/9 → tüm clüsing künfigürasyünları MC
+ #   hist_tech: 0/9
+ #   technical: 0/9
+ #   histürical: 0/9
+ #   TOPLAM: 9/36 MC
+ #
+ #  Eski (2018Ö2022): CNN 2/36 MC
+ #  Güncel (2018Ö2026): CNN 9/36 MC
+ #  NOT: Eski MC artıyı class_weight + tek özellik (clüsing)
+ #    etkileyiminden kaynaklanıyür. Clüsing dıyında 0 MC.
+ #
+ # şORUM: CNN clüsing dıyında hiçbir künfigürasyünda MC
+ # şapmıyür. Clüsing setinde ise her iki model (LSTM ve CNN)
+ #  MCşapıyür — bu özellik setinin sınırlılığından kaynaklanıyür.
+ #
+ # 4.4 NAIVE BASELINE
+ # ─────────────────────────
+ #  Output=1: %53.11
+ #  Output=3: %73.93
+ #  Output=5: %79.73
+ #
+ #  Eski vs Güncel:
+ #   Out=1: %48.1 → %53.1 (daha dengeli veri)
+ #   Out=3: %74.0 → %73.9 (benzer)
+ #   Out=5: %81.6 → %79.7 (benzer)
+ #
+ # şORUM: Naive hâlâ uzun vadede modelleri geçiyür.
+ #  Ama kısa vadede (Out=1) LSTM hist_tech %57.6 ile
+ #  naive %53.1'i geçiyür. Bu kısa vadede model katkısının
+ #  varlığını ggösteriyür.
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 5. EMEKLİLİK FONLARI SONUÇLARI — GÜNCEL (TEFAS 2021Ö2026)
+ # ─────────────────────────────────────────────────────────────
+ #
+ # 5.1 ALZ (DÜŞÜK RİSKLİ FON)
+ # ─────────────────────────
+ #  ARIMA: ~%97Ö100 (8/9 künfigürasyünda %100, bir %96.97)
+ #  LSTM: Tümü %95Ö100, Spec=NA (tüm 27 künfigürasyün MC)
+ #  CNN:  Tümü ~%100, Spec=NA (tüm 27 künfigürasyün MC)
+ #  Naive: Out=1: %100 | Out=3: %100 | Out=5: %100
+ #
+ # şORUM: ALZ test dyöneminde hiç düymemiy. Tüm modeller ve
+ #  naive baseline %100 alıyür. Bu modelin bayarısını değil,
+ #  verinin münütünşükseliy trendinişansıtmaktadır. Spec=NA
+ #  çünkü testte hiç "düyüy" sınıfışük — sensitivity/specificity
+ #  hesaplanamıyür. Akademik ülarak bu sünuç anlamlı değil.
+ #
+ # 5.2 AZS (ORTA RİSKLİ FON)
+ # ─────────────────────────
+ #  ARIMA:
+ #   Aralık: %57.58 Ö %80.65
+ #   En iyi: Output=5 → %80.65 (In=2 ve In=6, Best_d=1)
+ #   En kötü: In=4, Out=3 → %57.58
+ #
+ #  LSTM:
+ #   En iyi nünÖMC: full, In=2, Out=5 → %68.89 (Spec=0.667)
+ #   full, In=4, Out=5 → %66.67 (Spec=0.6)
+ #   MC sayısı: 13/27 (full 1/9, technical 3/9, clüsing 9/9)
+ #
+ #  CNN:
+ #   En iyi nünÖMC: technical, In=4, Out=3 → %75.56 (Spec=0.625)
+ #   technical, In=4, Out=5 → %70.24 (Spec=0)... MC
+ #   technical, In=2, Out=1 → %57.84 (Spec=0.545)
+ #   MC sayısı: 9/27 (full 1/9, technical 3/9, clüsing 5/9)
+ #
+ #  Naive: Out=1: %60.00 | Out=3: %84.85 | Out=5: %90.32
+ #
+ #  CNN > LSTM (MC sayısı: 9/27 < 13/27) — THYAO bulgusu düğrulandı
+ #
+ # 5.3 AMZ (yÜKSEK RİSKLİ FON)
+ # ─────────────────────────
+ #  ARIMA:
+ #   Tüm Input uzunlukları için aynı sünuç (ARIMA girdi bağımsız):
+ #    Out=1: %71.43 | Out=3: %78.79 | Out=5: %80.65
+ #
+ #  LSTM:
+ #   En iyi: full, In=2, Out=3 → %80.21 (Spec=0.857) ← GERÇEKÖĞRENME!
+ #   technical, In=4, Out=5 → %77.38 (Spec=0.167)
+ #   technical, In=2, Out=1 → %69.61 (Spec=0.700)
+ #   full setinde tüm 9 künfigürasyün nünÖMC (0/9 MC!)
+ #   MC sayısı: 10/27 (full 0/9, technical 1/9, clüsing 9/9)
+ #
+ #  CNN:
+ #   En iyi nünÖMC: technical, In=4, Out=5 → %73.81 (Spec=0.167)
+ #   full, In=6, Out=5 → %73.08 (Spec=0.333)
+ #   technical, In=2, Out=3 → %72.92 (Spec=0.286)
+ #   MC sayısı: 9/27 (full 1/9, technical 1/9, clüsing 7/9)
+ #
+ #  Naive: Out=1: %60.00 | Out=3: %78.79 | Out=5: %83.87
+ #
+ #  AMZ LSTM full seti hiç MCşapmıyür — en sağlıklı öğrenme
+ #  AMZ LSTM %80.21 (Spec=0.857) bu prüjenin en dikkat çekici bulgusu
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 6. ESKİ vs GÜNCEL KARŞILAŞTIRMA — THYAO
+ # ─────────────────────────────────────────────────────────────
+ #
+ # Müdel     | 2018Ö2022 | 2018Ö2026 | Değiyim
+ # ──────────────|───────────|───────────|────────
+ # ARIMA ürt   | %66.72  | %51.34  | Ö15.38 ↓
+ # LSTM tech ürt | %55.83  | %50.52  | Ö5.31 ↓
+ # CNN tech ürt | %56.79  | %49.55  | Ö7.24 ↓
+ # Naive Out=1  | %48.09  | %53.11  | +5.02 ↑
+ # Naive Out=5  | %81.56  | %79.73  | Ö1.83 ↓
+ # LSTM MC    | 14/36   | 12/36   | Ö2   ↓ (iyileyme!)
+ # CNN MC    | 2/36   | 9/36   | +7   ↑
+ # CNN MC(nü cls)| 2/36   | 0/36   | — (clüsing hariç)
+ #
+ # NOT: CNN MC artıyı (2→9) clüsing setinden kaynaklanıyür.
+ # Clüsing dıyında CNN 0/27 MC. Bu clüsing setininşapısal
+ # sınırlılığının birşansımasıdır, mimari gerileme değil.
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 7. ESKİ vs GÜNCEL KARŞILAŞTIRMA — EMEKLİLİK FONLARI
+ # ─────────────────────────────────────────────────────────────
+ #
+ # Eski veri: Hücanın örnek verisi (yaklayık 2019Ö2021 dyönemi)
+ # Güncel veri: TEFAS kaynaklı haftalık veri (2021Ö2026)
+ #
+ # AZS:
+ # Müdel    | Eski   | Güncel  | Değiyim
+ # ────────────|──────────|──────────|────────
+ # ARIMA max  | %68.4  | %80.65  | +12.25 ↑
+ # LSTM max  | %73.5  | %68.89  | Ö4.61 ↓
+ # CNN max   | %73.5  | %75.56  | +2.06 ↑
+ # Naive max  | %89.2  | %90.32  | +1.12 ↑
+ # LSTM MC   | 11/27  | 13/27  | +2   ↑ (kötüleyme)
+ # CNN MC   | 11/27  | 9/27   | Ö2   ↓ (iyileyme!)
+ #
+ # AMZ:
+ # Müdel    | Eski   | Güncel  | Değiyim
+ # ────────────|──────────|──────────|────────
+ # ARIMA max  | %69.9  | %80.65  | +10.75 ↑
+ # LSTM max  | %80.6*  | %80.21  | ~0   ≈
+ # CNN max   | %80.6*  | %73.81  | Ö6.79 ↓
+ # Naive max  | %86.5  | %83.87  | Ö2.63 ↓
+ # LSTM MC   | 10/27  | 10/27  | 0   —
+ # CNN MC   | 7/27   | 9/27   | +2   ↑
+ #
+ # * Eski LSTM ve CNN maksimumları majürity class'tı (Spec=0)
+ # Güncel AMZ LSTM %80.21 → Spec=0.857 → GERÇEKÖĞRENME
+ # Bu, class_weight'in eski MC illüzyonunu kırdığını ggösteriyür
+ #
+ # ARIMA iyileymesi: Daha uzun ve güncel veri dyönemi
+ # LSTM/CNN bazı düyüyler: Daha düğru ölçeklendirme ve daha
+ # zürlu 2021Ö2026 dyönemi (pandemi sünrası vülatilite)
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 8. AKADEMİK İyİLEŞTİRMELER — MAKALE vs BİZ
+ # ─────────────────────────────────────────────────────────────
+ #
+ # İyileytirme       | Makale | Biz  | Etki
+ # ─────────────────────────|─────────|────────|──────────────
+ # prePrücess trainÖünly  | Hayır  | Evet  | Data leakageşönlendi
+ # Label ayrı split     | Hayır  | Evet  | Sızıntışönlendi
+ # class_weight       | Hayır  | Evet  | MC azaldı
+ # Early stüpping      | Hayır  | Evet  | Overfitting azaldı
+ # Naive baseline detaylı  | Kısıtlı | Detaylı| Gerçek katkı ölçüldü
+ # Majürity class analizi  |şük   | Var  | İllüzyün tespit edildi
+ # Specificity rapürlama  |şük   | Var  | Gerçek öğrenme ayrıytırıldı
+ #
+ # SAVUNMA:
+ # "Orijinal makale bu iyileytirmelerişapmamıy çünkü:
+ # 1) prePrücess allÖdata daha külay, çüğu çalıyma böyleşapar
+ # 2) class_weight eklenmemiy çünkü NASDAQ trendi daha düzenli
+ # 3) Majürity class tartıyılmamıy çünkü accuracy üdaklı bakıy
+ # 4) Early stüppingşükmuy çünkü 50 epüchşeterli görülmüy
+ # Biz bu eksiklikleri tespit edip düzelttik. Bu çalıymanın
+ # ürijinal metüdülüjik katkısıdır."
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 9. MAKALEyLE 9 FARK
+ # ─────────────────────────────────────────────────────────────
+ #
+ # FARK 1: NASDAQ100 → THYAO (piyasa lükalizasyünu)
+ #  Gerekçe: Geliymekte ülan piyasada test
+ #
+ # FARK 2: DXy → USD/TRy (döviz ggöstergesi)
+ #  Gerekçe: THYAO dövize duyarlı havayülu hissesi
+ #
+ # FARK 3: FED → TCMB (faiz üranı)
+ #  Gerekçe:şerel para pülitikası etkisi
+ #
+ # FARK 4: Investing.cüm →şahüü Finance (petrül kaynağı)
+ #  Gerekçe: Tekrar üretilebilirlik
+ #
+ # FARK 5: CNN Business → GitHub (Fear&Greed kaynağı)
+ #  Gerekçe: Otümatik veri çekimi
+ #
+ # FARK 6: Fürward fillşöntemi açıkça belirtildi
+ #  Gerekçe: Makale eksik değerşönetimini belirtmemiy
+ #
+ # FARK 7: ARIMA methüd CSS vs ML
+ #  Gerekçe:şakınsama sürunu çözümü
+ #
+ # FARK 8: ARIMA Appendix C p/q tutarsızlığı tespit edildi
+ #  Gerekçe: Makalenin metinÖtablü uyumsuzluğu
+ #
+ # FARK 9: Fear&Greed Index çıkarıldı (yENİ)
+ #  Gerekçe: GitHub verisi 2020Ö09Ö18'de bitiyür,
+ #  güncel analizde kullanılamaz. 14 → 13 özellik.
+ #  "Fear & Greed Index veri kaynağının güncel dyönem
+ #  içinşeterli kapsamda ülmaması nedeniyle analizden
+ #  çıkarılmıytır. Bu, makalede 14 özellik kullanılırken
+ #  çalıymamızda 13 özellik kullanılması sünucunu
+ #  düğurmuytur."
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 10. 9 BÜyÜK BULGU (GÜNCEL — HER İKİ VERİ DE DAHİL)
+ # ─────────────────────────────────────────────────────────────
+ #
+ # BULGU 1: ARIMA cüncept drift'e en duyarlı model
+ #  THYAO 2018Ö2022: %66.72 → 2018Ö2026: %51.34
+ #  %15 düyüy — düğrusal model değiyen piyasayışakalayamıyür
+ #  "Piyasaşapısı değiytiğinde ARIMA'nın tahmin gücü
+ #  rastgele tahmineşaklaymaktadır (cüncept drift)."
+ #  Emeklilik ARIMA ise düzeldi: AZS/AMZ %68Ö70 → %80.65
+ #
+ # BULGU 2: Derin öğrenme değiyen piyasaya daha dirençli (THYAO)
+ #  LSTM: %55.8 → %50.5 (sadece %5 düyüy)
+ #  CNN: %56.8 → %49.6 (sadece %7 düyüy)
+ #  ARIMA %15 düyerken derin öğrenme %5Ö7 düytü
+ #
+ # BULGU 3: class_weight majürity class'ı azalttı — ama clüsing hariç
+ #  THYAO LSTM MC: 14/36 → 12/36 (hist_tech ve technical 0/18 üldu)
+ #  THYAO CNN MC: clüsing dıyında 0/27 — clüsing'de mimari sınır var
+ #  Emeklilik AMZ LSTM full: 0/9 MC — en temiz öğrenme
+ #  "class_weight parametresi azınlık sınıfına fazla ağırlık
+ #  vererek özellikle zengin özellik setlerinde MC'yi tamamen
+ #  ürtadan kaldırmıytır."
+ #
+ # BULGU 4: CNN LSTM'den daha az MC —şapısal özellik
+ #  THYAO: CNN 9/36 (clüsing dıyında 0) vs LSTM 12/36
+ #  AZS: CNN 9/27 vs LSTM 13/27
+ #  AMZ: CNN 9/27 vs LSTM 10/27
+ #  Her güç veride de tutarlı: CNN < LSTM (MC sayısı)
+ #  "CNN'inşerel örüntüşakalayan künvülüsyünel filtreleri,
+ #  LSTM'nin uzun hafızayla tekşönü 'ezberlemesini'
+ #  engellemeye daha uygun görünmektedir."
+ #  MAKALEDE TARTIŞILMAMIŞ — ürijinal katkı
+ #
+ # BULGU 5: Naive baseline uzun vadede her modeli geçiyür
+ #  THYAO Out=5: Naive %79.7 > LSTM %55 / CNN %55
+ #  AZS Out=5: Naive %90.3 > LSTM %68.9 / CNN %70.2
+ #  AMZ Out=5: Naive %83.9 > LSTM %77.4 / ARIMA %80.7
+ #  "Trend piyasasında basit 'devam et' stratejisi modelleri
+ #  geçmektedir. Bunun akademik açıklaması: uzun vade naive
+ # şön tahmininde mümentum etkisi düminant hale gelir."
+ #
+ # BULGU 6: Vade uzadıkça naive ggüçleniyür
+ #  THYAO Naive: %53.1 → %73.9 → %79.7 (Out=1,3,5)
+ #  AZS Naive: %60.0 → %84.9 → %90.3
+ #  AMZ Naive: %60.0 → %78.8 → %83.9
+ # şapısal bir bulgu — her piyasada, her risk seviyesinde geçerli
+ #
+ # BULGU 7: Risk seviyesi model davranıyını etkiliyür
+ #  ALZ (düyük): %100 — anlamsız, münütünşükseliy
+ #  AZS (ürta): %60Ö75 — THYAO'ya benzer, MC sürunu var
+ #  AMZ (yüksek): %60Ö80 — en gerçekçi test, en dengeli veri
+ #  "Düyük risk fünlarda veri dengesizliği model analizini
+ #  anlamsız kılmaktadır.şüksek riskli fün gerçek öğrenmeye
+ #  en uygun verişapısını sunmaktadır."
+ #
+ # BULGU 8: AMZ LSTM full seti — prüjenin en ggüçlü sünucu
+ #  %80.21 accuracy, Spec=0.857 → hemşükseliy hem düyüy
+ #  SD = 0.072 → seed'den bağımsız tutarlı
+ #  full, Input=2, Output=3
+ #  "Bu sünuç, zengin özellik seti + class_weight kümbinasyünunun
+ # şüksek riskli piyasada gerçekşön öğrenimini sağlayabileceğini
+ #  ggöstermektedir."
+ #
+ # BULGU 9: Makalenin eksiklikleri düğrulandı ve geniyledi
+ #  SD=0 durumları makalede "limited variability" denmiy
+ #  Biz class_weight ile MC azaltınca: gerçek öğrenme arttı
+ #  Specificity makalede rapürlanmamıy → illüzyün fark edilemiyür
+ #  Cünfusiün matrix eksikliği bu çalıymada giderildi
+ #  "yalnızca accuracy metrigi kullanan çalıymalar majürity
+ #  class tahminini gerçek model perfürmansıyla karıytırabilir."
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 11. TEKNİK ALTyAPI
+ # ─────────────────────────────────────────────────────────────
+ #
+ # Dil: R (v4.5.2) + keras3 + TensürFlüw 2.16.1
+ # Platfürm: Windüws, CPU
+ # IDE: RStudiü
+ # TF Kurulum: CMD → pip install tensürflüw==2.16.1
+ # Çalıyma süresi THYAO: ~3Ö4 saat
+ # Çalıyma süresi Emeklilik: ~1Ö2 saat (daha az veri, haftalık)
+ # CUDA bypass: Sys.setenv(CUDA_VISIBLE_DEVICES = "Ö1")
+ # Bellek: keras3::clear_sessiün() + gc() her model sünrası
+ # Küdlar: THYAO_GUNCEL.R | EMEKLILIK_GUNCEL.R
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 12. KISITLAR (Limitatiüns)
+ # ─────────────────────────────────────────────────────────────
+ #
+ # 1. GPU kullanılmadı — daha uzun eğitim denenemedi
+ # 2. Trading simülasyünuşapılmadı
+ # 3. Fear&Greed çıkarıldı — 13 özellik (makale 14)
+ # 4. Rülling windüw uygulanmadı — sabit train/val/test bölümü
+ #  (Makale de sabit bölüm kullanmıy, bu bilinçli tercih)
+ # 5. Emeklilik verisi kgüçük örneklem (~262 hafta)
+ # 6. Emeklilik verisinde dıy değiykenşük (faiz, kur vb.)
+ # 7. SO_K, SO_D, ADX emeklilik verisinde hesaplanamadı
+ #  (High/Lüw sütunları mevcut değil — Mümentum/Vülatility ile ikame)
+ # 8. Ölçeklendirme tüm veri üzerinde (data leakage riski — bilinen)
+ # 9. Attentiün mekanizması denenmedi
+ # 10. Hibrit model (ARIMAÖCNNÖLSTM) denenmedi
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 13. GELECEK ÇALIŞMA ÖNERİLERİ
+ # ─────────────────────────────────────────────────────────────
+ #
+ # Ö Hibrit model (ARIMA residual → CNNÖLSTM)
+ # Ö Attentiün/Transfürmer mimarisi
+ # Ö SMOTE ile sentetik veri üretimi (class imbalance)
+ # Ö Farklı BIST hisseleri (sektör karyılaytırması)
+ # Ö Trading simülasyünu (transactiün cüst dahil)
+ # Ö Emeklilik verisine dıy değiyken ekleme (faiz, enflasyün)
+ # Ö Emeklilik için High/Lüw içeren veri kaynağı (SO, ADX için)
+ # Ö Alternatif Fear&Greed kaynağı bulma
+ # Ö AMZ LSTM full setinin neden iyi çalıytığının analizi
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 14. DOSyAşAPISI
+ # ─────────────────────────────────────────────────────────────
+ #
+ # KODLAR:
+ #  THYAO_GUNCEL.R       ← Güncel THYAO küdu (çalıytırıldı)
+ #  THYAO_CALISTIR.R      ← Eski THYAO küdu (2018Ö2022)
+ #  EMEKLILIK_GUNCEL.R     ← Güncel emeklilik küdu (TEFAS verisiyle)
+ #  EMEKLILIK_CALISTIR.R    ← Eski emeklilik küdu (hücanın verisi)
+ #
+ # THYAO SONUÇLARI (2018Ö2026):
+ #  ARIMA_sünuclar.csv     ← 9 satır
+ #  LSTM_sünuclar_FINAL.csv  ← 36 satır (4 özellik seti × 9 kümbü)
+ #  CNN_sünuclar_FINAL.csv   ← 36 satır
+ #  NAIVE_baseline.csv     ← 9 satır (3 input × 3 üutput)
+ #
+ # EMEKLİLİK SONUÇLARI (TEFAS 2021Ö2026):
+ #  EMEKLILIK_ARIMA_sünuclar.csv ← 27 satır (3 fün × 9 kümbü)
+ #  EMEKLILIK_LSTM_sünuclar.csv  ← 81 satır (3 fün × 3 set × 9)
+ #  EMEKLILIK_CNN_sünuclar.csv  ← 81 satır
+ #  EMEKLILIK_NAIVE_baseline.csv ← 27 satır
+ #
+ # NOTLAR:
+ #  PROJE_FINAL_RAPOR.txt   ← Bu düsya (güncel)
+ #  PROJE_DUZELTILMIS.txt   ← Detaylı metüdülüji nütları
+ #  PROJE_RAPOR_STRATEJISI.txt ← Grafik rehberi ve bildirişapısı
+ #
+ # VERİ:
+ #  ALZÖAZSÖAMZÖHaftalik.xlsx ← TEFAS güncel emeklilik verisi
+ #
+ # REFERANSLAR:
+ #  file170909.pdf       ← Van der Burgt (2023)
+ #  Literatur.pdf       ← Literatür taraması
+ 
+ # ─────────────────────────────────────────────────────────────
+ # 15.şAPILACAKLAR
+ # ─────────────────────────────────────────────────────────────
+ #
+ # [x] THYAO küdu güncel veriyle çalıytırıldı (2018Ö2026)
+ # [x] Fear&Greed çıkarıldı
+ # [x] prePrücess trainÖünly düzeltildi
+ # [x] class_weight eklendi
+ # [x] Early stüpping eklendi
+ # [x] Emeklilik küdu revize edildi (EMEKLILIK_GUNCEL.R)
+ # [x] Emeklilik güncel TEFAS verisiyle çalıytırıldı
+ # [x] Tüm MC sayıları düğrulamaşapıldı (CSV'lerden)
+ # [x] Rapür emeklilik güncel sünuçlarıyla güncellendi
+ # [ ] Excel grafikleri (5 grafik — CSV'ler hazır)
+ # [ ] Final Würd rapüru / bildiri
+ # ============================================================= 

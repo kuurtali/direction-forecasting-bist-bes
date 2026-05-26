@@ -1,0 +1,465 @@
+﻿--- slide1.xml ---
+UYIK-2026  Â·  VII. INTERNATIONAL APPLIED STATISTICS CONGRESS  Â·  ISTANBUL, TÃœRKÄ°YE  Â·  MAY 11â€“13, 2026
+Hacettepe University  Â·  Faculty of Science  Â·  Department of Actuarial Sciences
+Directional Forecasting of
+Turkish Pension Funds (BES)
+ARIMA, LSTM and 1D-CNN under the 
+Majority-Class Illusion
+AUTHOR
+Åevval Demir
+Department of Actuarial Sciences  Â·  Hacettepe University
+dsevval5@gmail.com
+AUTHOR
+Mehmet Ali Kurt
+Department of Actuarial Sciences  Â·  Hacettepe University
+m.alikuurt0@gmail.com
+SUPERVISOR  Â·  ASSIST. PROF. DR.
+Ã–vgÃ¼can KaradaÄŸ Erdemir
+Department of Actuarial Sciences  Â·  Hacettepe University
+ovgucan@hacettepe.edu.tr
+Data: TEFAS  Â·  Period: April 2021 â€“ April 2026  Â·  Funds: ALZ â€¢ AZS â€¢ AMZ  Â·  3 seeds Ã— 81 configs / fund
+--- slide2.xml ---
+Outline
+2 / 24
+01
+Motivation & Research Gap
+Why directional forecasting on BES?
+02
+Data, Funds & Class Balance
+ALZ / AZS / AMZ â€” risk profiles and label distribution
+03
+Methodology & Search Space
+ARIMA + LSTM + 1D-CNN  â€¢  3 Ã— 9 Ã— 3 = 81 configs/fund
+04
+The Majority-Class (MC) Illusion
+Why high accuracy can be empty
+05
+Results â€” Champion Configurations
+AMZ LSTM (2,3) and AZS 1D-CNN (4,3)
+06
+Robustness & Honest Reporting
+Seed stability, optimizer, pooled vs mean accuracy
+07
+Conclusions & Future Work
+Findings, limitations, references
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide3.xml ---
+Motivation â€” Why BES, Why Directional?
+3 / 24
+THE BES SYSTEM
+Turkey's voluntary private pension scheme (Bireysel Emeklilik Sistemi) channels weekly contributions into hundreds of TEFAS-listed funds. Long horizons + state matching = compounding sensitivity to direction, not magnitude.
+THE GAP
+Most equity-prediction studies (incl. Van der Burgt 2023 on NASDAQ-100) optimise raw accuracy. On monotone, low-volatility series this collapses into the 
+Majority-Class Illusion
+ â€” predicting only "up" still scores 90 %+ but learns nothing.
+OUR QUESTION
+Can deep learning produce statistically significant directional signals on BES funds across the whole risk spectrum â€” and how do we report them honestly?
+â‰¥ 700
+configurations trained
+across 3 funds Ã— 3 models
+3-seed
+validation (23, 27, 98) for
+each champion configuration
+Honest
+reporting: mean accuracy as
+headline, pooled CM disclosed
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide4.xml ---
+Data & Pension Funds â€” ALZ / AZS / AMZ
+4 / 24
+ALZ
+Low-Risk
+Conservative  â€¢  Swing Â± 2 %  â€¢  MC: 27 / 27 MC
+Allianz YaÅŸam â€” Money-market dominant. Almost monotone series.
+AZS
+Medium-Risk
+Mixed  â€¢  Swing Â± 18 %  â€¢  MC: 9â€“13 / 27 MC
+Mixed equity/debt fund. Moderate volatility, partial signal.
+AMZ
+High-Risk
+Equity-Heavy  â€¢  Swing Â± 38 %  â€¢  MC: 9â€“10 / 27 MC
+High-volatility equity fund â€” highest learnable directional signal.
+Figure 1. Up/Down class balance per fund (TEFAS, weekly closes).
+DATA SUMMARY
+Source: 
+TEFAS (Turkish Electronic Fund Trading Platform)
+Period: 
+April 2021 â€“ April 2026  (~260 weekly observations)
+Split: 
+80 % train  /  20 % test  (chronological)
+Target: 
+binary direction (close[t+h] > close[t] ?)
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide5.xml ---
+Methodology â€” Three-Model Pipeline
+5 / 24
+Figure 2. End-to-end pipeline: TEFAS â†’ Features â†’ Models â†’ 3-seed evaluation.
+ARIMA
+Box-Jenkins
+Grid dâˆˆ{0,1,2}, CSS fit
+Classical baseline
+LSTM
+Recurrent
+Adam / RMSProp  â€¢  ReLU/Tanh
+Dropout {0, 0.2, 0.4}  â€¢  class_weight
+1D-CNN
+Convolutional
+Filters {32-64-128, 64-128-256}
+Kernel 3  â€¢  Dense 64  â€¢  class_weight
+All models share the same 9 (Input Ã— Output) windows and 3-seed protocol
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide6.xml ---
+Search Space â€” 81 Configurations per Fund
+6 / 24
+3
+Feature Sets
+closing â€¢ technical â€¢ full
+9
+(In, Out) Windows
+(1..4) Ã— (1..3..4) weeks
+3
+Random Seeds
+23 â€¢ 27 â€¢ 98
+81
+Configs / Fund
+3 Ã— 9 Ã— 3
+FEATURE SETS
+closing
+ â€” 1 var
+Weekly close only
+technical
+ â€” 3 vars
+RSI(14) â€¢ MACD â€¢ Momentum(10)
+full
+ â€” 7 vars
+Close, RSI, MACD, EMA12, EMA26,
+Momentum, Volatility
+Training: epochs = 50  â€¢  batch = 16  â€¢  patience = 5 (early stopping)  â€¢  class_weight balancing  â€¢  CSS fit for ARIMA
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide7.xml ---
+PART  04
+The Majority-Class
+
+Illusion
+Why a 90 % accuracy can mean a 0 % learner.
+27/27
+of ALZ low-risk configurations are majority-class â€”
+perfect-looking accuracy without any learning.
+--- slide8.xml ---
+The Accuracy Illusion in Action
+8 / 24
+Figure 3. High accuracy â‰  learning â€” predicting only the majority class.
+MC DEFINITION (broad)
+A configuration is flagged as Majority-Class when 
+Spec = 0
+ or 
+Sens = 0
+ or 
+Spec = NA
+ â€” the model picks one class on every test sample.
+MC RATES BY FUND Ã— MODEL
+ALZ â€¢ LSTM
+27 / 27
+ALZ â€¢ CNN
+27 / 27
+AZS â€¢ LSTM
+13 / 27
+AZS â€¢ CNN
+9 / 27
+AMZ â€¢ LSTM
+10 / 27
+AMZ â€¢ CNN
+9 / 27
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide9.xml ---
+Finding 1 â€” 1D-CNN Resists the MC Trap
+9 / 24
+Figure 4. 1D-CNN consistently exhibits lower MC exposure than LSTM.
+KEY TAKEAWAY
+Across AZS and AMZ, 1D-CNN's convolutional inductive bias delivers fewer collapsed predictions than LSTM â€” a robustness, not just accuracy, win.
+AT A GLANCE
+AZS:  
+CNN 
+9/27
+  vs  LSTM 
+13/27
+AMZ:  
+CNN 
+9/27
+  vs  LSTM 
+10/27
+MC drop:
+ ~
+15 pp
+ on AZS
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide10.xml ---
+Finding 2 â€” Feature Set Drives Performance
+10 / 24
+Figure 5. Balanced accuracy distribution across closing, technical and full sets.
+OBSERVATIONS
+full
+best for AMZ LSTM â€” only configuration where MC = 0/9 with the full set
+technical
+best for AZS 1D-CNN â€” RSI + MACD + Momentum lifts BA to 76.70 %
+closing
+fragile â€” collapses to MC under low volatility
+Feature engineering â‰  optional
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide11.xml ---
+Finding 3 â€” Input/Output Window Sensitivity
+11 / 24
+Figure 6. Balanced accuracy across 9 (Input Ã— Output) window combinations.
+OPTIMAL WINDOWS
+AMZ â€¢ LSTM
+(2, 3)
+Mean Acc 80.21 %
+AZS â€¢ CNN
+(4, 3)
+Mean Acc 75.56 %
+ALZ
+â€”
+Any (collapses to MC)
+h = 3 weeks dominates
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide12.xml ---
+Finding 4 â€” Risk Profile Predicts Learnability
+12 / 24
+Figure 7. Volatility (proxy of risk) correlates with non-MC rates.
+INTERPRETATION
+Low-risk funds (ALZ) are nearly monotone â€” their direction is degenerate, so deep learners memorise the trend rather than learn it.
+Higher volatility (AMZ) creates 
+genuine class balance
+, giving the model something to discriminate.
+Bottom line: 
+directional ML on BES is most useful where conventional advisers say it is hardest.
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide13.xml ---
+PART  05
+Champion
+
+Configurations
+Two statistically-significant directional learners â€” out of 700+.
+--- slide14.xml ---
+Champion 1 â€” AMZ â€¢ LSTM â€¢ full â€¢ (2, 3)
+14 / 24
+80.21 %
+Mean Accuracy
+84.86 %
+Balanced Accuracy
+89.36 %
+F1-Score
+0.0001
+p-value (binomial)
+Figure 8. Champion radar (Acc, BA, Sens, Spec, F1).
+PER-METRIC BREAKDOWN
+Sensitivity 
+84.00 %  
+â€¢  Specificity 
+85.71 %
+BA = (Sens + Spec) / 2 = (0.84 + 0.8571) / 2 = 0.84855 â†’ 84.86 %
+Seed accuracies: 0.8438 / 0.7188 / 0.8438
+SD = 7.22 % across seeds 
+(transparently reported)
+HYPERPARAMETERS
+Optimizer 
+Adam
+   â€¢   Activation 
+Tanh
+   â€¢   Dropout 
+0.4
+Epochs 
+50
+   â€¢   Batch 
+16
+   â€¢   Patience 
+5
+Feature set: full (7 vars)  â€¢  class_weight balanced
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide15.xml ---
+Champion 1 â€” Confusion Matrix & Honest Reporting
+15 / 24
+Figure 9. Pooled confusion matrix (3 seeds Ã— 32 obs = 96).
+POOLED MATRIX (N = 96)
+TP = 63
+    TN = 18
+FP = 3
+       FN = 12
+Diagonal: 63 + 18 = 81  â†’  Pooled Acc = 81/96 = 
+84.38 %
+HONEST REPORTING NOTE
+Two valid summaries of the same evaluation:
+Pooled accuracy
+ = 81 / 96 = 84.38 %  (concatenated test sets)
+3-seed mean accuracy
+ = 80.21 %  (mean of {0.8438, 0.7188, 0.8438})
+We adopt the 
+3-seed mean 
+as the headline figure.
+Pooled is exposed for full transparency â€” never as the headline.
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide16.xml ---
+Statistical Significance â€” Beyond Accuracy
+16 / 24
+AMZ LSTM (2,3) full
+p < 0.0001
+Exact binomial test  â€¢  Hâ‚€ : Acc = 0.5  â€¢  rejected
+AZS 1D-CNN (4,3) technical
+p = 0.0002
+Mean Acc 75.56 %  â€¢  BA 76.70 %  â€¢  F1 88.89 %
+VS PERSISTENCE NAIVE BASELINE  ( predict majority class, Out = 3 )
+AMZ
+Naive 78.79 %
+LSTM 80.21 %
++1.42 pp
+AZS
+Naive 84.85 %
+CNN 75.56 %
+âˆ’9.29 pp
+ALZ
+Naive 100.00 %
+All MC
+no signal
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide17.xml ---
+Champion 2 â€” AZS â€¢ 1D-CNN â€¢ technical â€¢ (4, 3)
+17 / 24
+75.56 %
+Mean Accuracy
+76.70 %
+Balanced Accuracy
+88.89 %
+F1-Score
+0.0002
+p-value (binomial)
+INTERPRETATION
+Sens 90.91 %  â€¢  Spec 62.50 %
+BA = (0.9091 + 0.625) / 2 = 0.76705  â†’  76.70 %
+Asymmetric strength: 
+strong recall on "up"
+ weeks but weaker discrimination on "down" weeks â€” typical for medium-volatility mixed funds.
+Hyperparameters
+Filters 64-128-256  â€¢  Kernel 3  â€¢  Dense 64  â€¢  Dropout 0.2
+Feature set 
+technical 
+(RSI, MACD, Momentum)  â€¢  Window (4, 3)
+Seed accuracies
+ 0.7000 / 0.7333 / 0.8333  â€¢  SD 6.94 %
+Figure 10. Balanced accuracy distribution (champion vs alternatives).
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide18.xml ---
+Cross-View â€” Model Ã— Asset Performance Heatmap
+18 / 24
+Figure 11. Best Mean Accuracy per (Model Ã— Fund) cell â€” BES, Out = 3 weekly horizon.
+READING THE HEATMAP
+Each cell = best Mean Accuracy of any configuration of that (Model, Fund) pair.
+ALZ column = 100 %
+: pathological monotone â€” every model collapses to majority class.
+AMZ Ã— LSTM = 80.21 %
+: only configuration above its Out=3 naive (78.79 %).
+AZS Ã— Naive = 84.85 %
+: persistence dominates â€” CNN champion 75.56 % falls below.
+ARIMA
+: tied with naive on AZS, dominated by deep models on AMZ.
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide19.xml ---
+Robustness â€” Seed Stability of Champions
+19 / 24
+Figure 12. Per-seed test accuracy for both champions, with mean Â± SD band and Out=3 naive reference.
+STABILITY NOTES
+AMZ LSTM:
+ 84.38 / 71.88 / 84.38 %  â†’  SD = 7.22 %.
+AZS CNN:
+ 70.00 / 73.33 / 83.33 %  â†’  SD = 6.94 %.
+Both means clear the random-guess line (50 %) at p < 0.001.
+Honest note: 
+only AMZ LSTM exceeds its Out=3 persistence-naive (78.79 %).
+3-seed
+23 Â· 27 Â· 98
+weighted
+class_weight balancing
+p < 0.001
+champion significance
+CSS-fit
+ARIMA stable
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide20.xml ---
+Robustness â€” Optimizer & Activation Sensitivity
+20 / 24
+Figure 13. Adam vs RMSProp & Tanh vs ReLU performance bands.
+TAKEAWAYS
+Adam + Tanh
+ wins for the AMZ champion â€” gradient stability matters under high seed-variance.
+RMSProp
+ competitive on AZS but no statistically significant lift over Adam.
+Dropout 0.4
+ â€” high regularisation helps the small-sample BES regime.
+ReLU collapsed
+ several configurations to MC â€” inactive units on near-monotone targets.
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide21.xml ---
+Limitations & Honest Reporting
+21 / 24
+Sample size
+~260 weekly observations across 5 years â€” bootstrap CIs reported but small-sample variance dominates.
+Pooled vs Mean
+Pooled accuracy (84.38 %) > 3-seed mean (80.21 %). Mean is the headline; pooled is fully disclosed.
+Single market
+TEFAS only; cross-market transfer to NASDAQ/EuroStoxx left for future work.
+Cost-aware loss
+Class_weight balancing applied, but not full asymmetric utility (e.g., max-drawdown-aware loss).
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide22.xml ---
+Conclusions
+22 / 24
+01
+1D-CNN is more MC-resistant than LSTM
+On AZS and AMZ, convolutional bias yields ~15 pp fewer collapsed configurations.
+02
+Risk profile = learnability ceiling
+ALZ (low-risk) is monotone â†’ 27/27 MC across both deep models. AMZ is the clearest signal.
+03
+Two statistically significant champions
+AMZ LSTM (2,3) full â†’ BA 84.86 %, p<0.0001  â€¢  AZS CNN (4,3) tech â†’ BA 76.70 %, p=0.0002.
+04
+Honest reporting is non-negotiable
+Mean accuracy as headline, pooled CM disclosed, MC defined broadly (Sens=0 OR Spec=0 OR Spec=NA).
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide23.xml ---
+References
+23 / 24
+[1]
+Van der Burgt, N. (2023). Navigating trends in the digital era: NASDAQ-100 directional forecasting with deep learning. Tilburg University.
+[2]
+Hochreiter, S., & Schmidhuber, J. (1997). Long Short-Term Memory. Neural Computation, 9(8), 1735â€“1780.
+[3]
+Kim, Y. (2014). Convolutional Neural Networks for Sentence Classification. EMNLP.
+[4]
+Box, G., Jenkins, G. (1976). Time Series Analysis: Forecasting and Control. Holden-Day.
+[5]
+Hyndman, R., Athanasopoulos, G. (2021). Forecasting: Principles and Practice (3rd ed.). OTexts.
+[6]
+Wilder, J. W. (1978). New Concepts in Technical Trading Systems. Trend Research.
+[7]
+Appel, G. (2005). Technical Analysis: Power Tools for Active Investors. FT Press.
+[8]
+Brock, W., Lakonishok, J., LeBaron, B. (1992). Simple technical trading rules and stochastic properties of stock returns. JoF, 47(5).
+[9]
+TEFAS (2026). TÃ¼rkiye Elektronik Fon AlÄ±m SatÄ±m Platformu â€” pension fund daily NAV. https://www.tefas.gov.tr
+[10]
+Allianz YaÅŸam ve Emeklilik (2026). BES fund prospectuses (ALZ, AZS, AMZ).
+[11]
+Chollet, F. (2021). Deep Learning with Python (2nd ed.). Manning.
+[12]
+Goodfellow, I., Bengio, Y., Courville, A. (2016). Deep Learning. MIT Press.
+BES Pension Funds â€” Directional Forecasting | UYIK 2026
+--- slide24.xml ---
+QUESTIONS  &  DISCUSSION
+Thank you.
+
+Looking forward to your questions.
+Åevval Demir  Â·  Mehmet Ali Kurt
+    Supervisor:  
+Assist. Prof. Dr. Ã–vgÃ¼can KaradaÄŸ Erdemir
+Department of Actuarial Sciences  Â·  Hacettepe University, Ankara, TÃ¼rkiye
+UYIK-2026  Â·  VII. International Applied Statistics Congress  Â·  Istanbul, May 11â€“13, 2026

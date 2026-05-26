@@ -1,0 +1,251 @@
+[
+    {
+        "File": "01_Ana_Raporlar\\1_SAYFALIK_YONETICI_OZETI.docx",
+        "Audit": [
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13",
+            "Found Matrices: 248",
+            "Found Correct_Facts: indirim"
+        ]
+    },
+    {
+        "File": "01_Ana_Raporlar\\EK_GORSEL_PORTFOLYO.docx",
+        "Audit": [
+            "Found Accuracies: 100%",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13"
+        ]
+    },
+    {
+        "File": "01_Ana_Raporlar\\JURI_SAVUNMA_VE_BILINMESI_GEREKENLER.txt",
+        "Audit": [
+            "Found Accuracies: 80\\.21%",
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13"
+        ]
+    },
+    {
+        "File": "01_Ana_Raporlar\\PROJE_ADIMLAR.txt",
+        "Audit": [
+            "Found Accuracies: 80\\.21%",
+            "Found Accuracies: 75\\.56%",
+            "Found Accuracies: 100%",
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13",
+            "Found Matrices: 248",
+            "Found Forbidden: T-test",
+            "Found Correct_Facts: Binomial Test",
+            "Found Correct_Facts: Seed Validation",
+            "Found Correct_Facts: 16\\.23 puan",
+            "WARNING: Forbidden term found: T-test"
+        ]
+    },
+    {
+        "File": "01_Ana_Raporlar\\PROJE_RAPOR.txt",
+        "Audit": [
+            "Found Accuracies: 80\\.21%",
+            "Found Accuracies: 75\\.56%",
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13",
+            "Found Matrices: 248",
+            "Found Correct_Facts: Binomial Test",
+            "Found Correct_Facts: 16\\.23 puan",
+            "Found Correct_Facts: indirim"
+        ]
+    },
+    {
+        "File": "01_Ana_Raporlar\\SAVUNMA_DESTEK_KARTLARI.docx",
+        "Audit": [
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13"
+        ]
+    },
+    {
+        "File": "01_Ana_Raporlar\\SUNUM_SLAYT_YAPISI.docx",
+        "Audit": [
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13"
+        ]
+    },
+    {
+        "File": "01_Ana_Raporlar\\TAM_SUNUM_RAPORU_GUNCELLENDI.docx",
+        "Audit": [
+            "Found Accuracies: 80\\.21%",
+            "Found Accuracies: 100%",
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13",
+            "Found Matrices: 270",
+            "Found Correct_Facts: Seed Validation",
+            "Found Correct_Facts: N_eff"
+        ]
+    },
+    {
+        "File": "01_Ana_Raporlar\\TEKNIK_SUNUM_RAPORU_GUNCELLENDI_v2.docx",
+        "Audit": [
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13",
+            "Found Matrices: 155",
+            "Found Matrices: 157",
+            "Found Matrices: 270",
+            "Found Correct_Facts: N_eff"
+        ]
+    },
+    {
+        "File": "02_Akademik_Makale\\MAKALE_TASLAK_METODOLOJI.txt",
+        "Audit": [
+            "Found Matrices: 14"
+        ]
+    },
+    {
+        "File": "02_Akademik_Makale\\MAKALE_YAZIM_REHBERI.txt",
+        "Audit": [
+            "Found Accuracies: 80\\.21%",
+            "Found Accuracies: 75\\.56%",
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13"
+        ]
+    },
+    {
+        "File": "03_Ekler_Appendices\\Appendix_A_Formuller.txt",
+        "Audit": [
+            "Found Matrices: 14"
+        ]
+    },
+    {
+        "File": "03_Ekler_Appendices\\Appendix_D_Karmasiklik_Matrisleri.txt",
+        "Audit": [
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13",
+            "Found Matrices: 155",
+            "Found Matrices: 157",
+            "Found Matrices: 270",
+            "Found Matrices: 248"
+        ]
+    },
+    {
+        "File": "03_Ekler_Appendices\\Appendix_G_Ozellik_Setleri.txt",
+        "Audit": [
+            "Found Matrices: 14"
+        ]
+    },
+    {
+        "File": "03_Ekler_Appendices\\Appendix_H_Karar_Matrisi.txt",
+        "Audit": [
+            "Found Accuracies: 58\\.71%"
+        ]
+    },
+    {
+        "File": "03_Ekler_Appendices\\APPENDIX_I_SONUCLARI.txt",
+        "Audit": [
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13",
+            "Found Matrices: 155",
+            "Found Matrices: 157",
+            "Found Forbidden: 6\\.0",
+            "WARNING: Forbidden term found: 6\\.0"
+        ]
+    },
+    {
+        "File": "03_Ekler_Appendices\\APPENDIX_TABLOLARI_OTOMATIK.html",
+        "Audit": [
+            "Found Accuracies: 100%",
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13",
+            "Found Matrices: 155",
+            "Found Matrices: 248"
+        ]
+    },
+    {
+        "File": "05_Kaynak_Kodlar\\EMEKLILIK_GUNCEL.R",
+        "Audit": [
+            "Found Matrices: 14",
+            "Found Matrices: 13"
+        ]
+    },
+    {
+        "File": "05_Kaynak_Kodlar\\THYAO_GUNCEL.R",
+        "Audit": [
+            "Found Matrices: 14"
+        ]
+    },
+    {
+        "File": "06_Ham_Veri_ve_Sonuclar\\CSV_TUM_SONUCLAR.html",
+        "Audit": [
+            "Found Accuracies: 100%",
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13",
+            "Found Matrices: 155",
+            "Found Matrices: 157",
+            "Found Matrices: 270",
+            "Found Matrices: 248"
+        ]
+    },
+    {
+        "File": "07_Arsiv_ve_Denetim\\FINAL_KANIT_RAPORU.txt",
+        "Audit": [
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13",
+            "Found Matrices: 155",
+            "Found Matrices: 157",
+            "Found Forbidden: T-test",
+            "Found Correct_Facts: Binomial Test",
+            "Found Correct_Facts: N_eff",
+            "WARNING: Forbidden term found: T-test"
+        ]
+    },
+    {
+        "File": "07_Arsiv_ve_Denetim\\GRAFIK_VE_MATRIS_REHBERI_ARCHIVE.txt",
+        "Audit": [
+            "Found Matrices: 14",
+            "Found Matrices: 13"
+        ]
+    },
+    {
+        "File": "07_Arsiv_ve_Denetim\\MC_KANIT_RAPORU.txt",
+        "Audit": [
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13",
+            "Found Matrices: 155",
+            "Found Matrices: 270"
+        ]
+    },
+    {
+        "File": "08_Literatur\\C\u00a6\u011fevirisi.docx",
+        "Audit": [
+            "Found Matrices: 63",
+            "Found Matrices: 14",
+            "Found Matrices: 55",
+            "Found Matrices: 13"
+        ]
+    }
+]

@@ -1,0 +1,571 @@
+ ﻿============================================================
+ MC KANIT RAPORU Ö GENIS TANIM: Spec=0 VEyA Sens=0 VEyA Spec=NA
+ Tarih: 2026Ö04Ö09 02:18
+ ============================================================
+ 
+ ################################################################
+ # ESKI THYAO LSTM (2018Ö2022) Ö 36 SATIR
+ ################################################################
+ hist_tech  In=2 Out=1 Acc=0.5201 Sens=0.5185 Spec=0.5811
+ hist_tech  In=2 Out=3 Acc=0.5463 Sens=0.6311 Spec=0.5  
+ hist_tech  In=2 Out=5 Acc=0.6142 Sens=0.7955 Spec=0.3478
+ hist_tech  In=4 Out=1 Acc=0.5148 Sens=0.6226 Spec=0.4595
+ hist_tech  In=4 Out=3 Acc=0.5487 Sens=0.7833 Spec=0.2069
+ hist_tech  In=4 Out=5 Acc=0.5663 Sens=0.7308 Spec=0.4783
+ hist_tech  In=6 Out=1 Acc=0.5281 Sens=0.8  Spec=0.1781
+ hist_tech  In=6 Out=3 Acc=0.4943 Sens=0.8559 Spec=0.1552
+ hist_tech  In=6 Out=5 Acc=0.5172 Sens=0.6641 Spec=0.2826
+ technical  In=2 Out=1 Acc=0.4799 Sens=0.463 Spec=0.5405
+ technical  In=2 Out=3 Acc=0.5815 Sens=0.8443 Spec=0.1034
+ technical  In=2 Out=5 Acc=0.4757 Sens=0.5682 Spec=0.413 
+ technical  In=4 Out=1 Acc=0.4463 Sens=0.5566 Spec=0.3378
+ technical  In=4 Out=3 Acc=0.5412 Sens=0.6833 Spec=0.3966
+ technical  In=4 Out=5 Acc=0.6117 Sens=0.8385 Spec=0.1739
+ technical  In=6 Out=1 Acc=0.5506 Sens=1   Spec=0   <<<< MC
+ technical  In=6 Out=3 Acc=0.6231 Sens=1   Spec=0   <<<< MC
+ technical  In=6 Out=5 Acc=0.7146 Sens=0.9922 Spec=0.0217
+ histürical  In=2 Out=1 Acc=0.4542 Sens=0.463 Spec=0.5676
+ histürical  In=2 Out=3 Acc=0.6778 Sens=1   Spec=0   <<<< MC
+ histürical  In=2 Out=5 Acc=0.7416 Sens=1   Spec=0   <<<< MC
+ histürical  In=4 Out=1 Acc=0.4444 Sens=0.1792 Spec=0.8378
+ histürical  In=4 Out=3 Acc=0.6742 Sens=1   Spec=0   <<<< MC
+ histürical  In=4 Out=5 Acc=0.7386 Sens=1   Spec=0   <<<< MC
+ histürical  In=6 Out=1 Acc=0.427 Sens=0.1905 Spec=0.8356
+ histürical  In=6 Out=3 Acc=0.6004 Sens=0.9661 Spec=0.0172
+ histürical  In=6 Out=5 Acc=0.7356 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=1 Acc=0.5934 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=3 Acc=0.6778 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=5 Acc=0.7416 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=1 Acc=0.5889 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=3 Acc=0.6742 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=5 Acc=0.7386 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=1 Acc=0.5899 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=3 Acc=0.6705 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=5 Acc=0.7356 Sens=1   Spec=0   <<<< MC
+ ÖÖÖ ESKI THYAO LSTM (2018Ö2022) TOPLAM MC: 16 / 36 ÖÖÖ
+ 
+ ################################################################
+ # ESKI THYAO CNN (2018Ö2022) Ö 36 SATIR
+ ################################################################
+ hist_tech  In=2 Out=1 Acc=0.5018 Sens=0.6574 Spec=0.4054
+ hist_tech  In=2 Out=3 Acc=0.5444 Sens=0.7869 Spec=0.2414
+ hist_tech  In=2 Out=5 Acc=0.6199 Sens=0.75  Spec=0.2826
+ hist_tech  In=4 Out=1 Acc=0.4704 Sens=0.3491 Spec=0.7027
+ hist_tech  In=4 Out=3 Acc=0.5112 Sens=0.575 Spec=0.5  
+ hist_tech  In=4 Out=5 Acc=0.5777 Sens=0.7923 Spec=0.2391
+ hist_tech  In=6 Out=1 Acc=0.5 Sens=0.6571 Spec=0.4658
+ hist_tech  In=6 Out=3 Acc=0.5436 Sens=0.6356 Spec=0.4483
+ hist_tech  In=6 Out=5 Acc=0.5287 Sens=0.6484 Spec=0.3478
+ technical  In=2 Out=1 Acc=0.4432 Sens=0.6574 Spec=0.3108
+ technical  In=2 Out=3 Acc=0.563 Sens=0.7869 Spec=0.2241
+ technical  In=2 Out=5 Acc=0.4925 Sens=0.7197 Spec=0.1087
+ technical  In=4 Out=1 Acc=0.4722 Sens=0.6792 Spec=0.3108
+ technical  In=4 Out=3 Acc=0.6367 Sens=1   Spec=0   <<<< MC
+ technical  In=4 Out=5 Acc=0.642 Sens=0.8077 Spec=0.3696
+ technical  In=6 Out=1 Acc=0.5337 Sens=0.981 Spec=0.0274
+ technical  In=6 Out=3 Acc=0.6364 Sens=1   Spec=0   <<<< MC
+ technical  In=6 Out=5 Acc=0.6916 Sens=0.875 Spec=0.2391
+ histürical  In=2 Out=1 Acc=0.5147 Sens=0.7407 Spec=0.3378
+ histürical  In=2 Out=3 Acc=0.5685 Sens=0.8689 Spec=0.1724
+ histürical  In=2 Out=5 Acc=0.5169 Sens=0.7576 Spec=0.3043
+ histürical  In=4 Out=1 Acc=0.4759 Sens=0.5849 Spec=0.3649
+ histürical  In=4 Out=3 Acc=0.4176 Sens=0.3833 Spec=0.6034
+ histürical  In=4 Out=5 Acc=0.4318 Sens=0.4231 Spec=0.5217
+ histürical  In=6 Out=1 Acc=0.427 Sens=0.2095 Spec=0.7808
+ histürical  In=6 Out=3 Acc=0.4754 Sens=0.5085 Spec=0.5  
+ histürical  In=6 Out=5 Acc=0.5268 Sens=0.6328 Spec=0.2826
+ clüsing   In=2 Out=1 Acc=0.5311 Sens=0.787 Spec=0.2703
+ clüsing   In=2 Out=3 Acc=0.6019 Sens=0.8525 Spec=0.2759
+ clüsing   In=2 Out=5 Acc=0.6461 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=1 Acc=0.5111 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=3 Acc=0.4906 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=5 Acc=0.4242 Sens=0.9462 Spec=0.0217
+ clüsing   In=6 Out=1 Acc=0.515 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=3 Acc=0.6705 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=5 Acc=0.7356 Sens=1   Spec=0   <<<< MC
+ ÖÖÖ ESKI THYAO CNN (2018Ö2022) TOPLAM MC: 8 / 36 ÖÖÖ
+ 
+ ################################################################
+ # GUNCEL THYAO LSTM (2018Ö2026) Ö 36 SATIR
+ ################################################################
+ hist_tech  In=2 Out=1 Acc=0.5285 Sens=0.6316 Spec=0.4671
+ hist_tech  In=2 Out=3 Acc=0.4945 Sens=0.6815 Spec=0.4276
+ hist_tech  In=2 Out=5 Acc=0.4844 Sens=0.5253 Spec=0.4648
+ hist_tech  In=4 Out=1 Acc=0.4868 Sens=0.2267 Spec=0.7763
+ hist_tech  In=4 Out=3 Acc=0.5756 Sens=0.5742 Spec=0.6  
+ hist_tech  In=4 Out=5 Acc=0.4843 Sens=0.3269 Spec=0.669 
+ hist_tech  In=6 Out=1 Acc=0.4978 Sens=0.3919 Spec=0.6382
+ hist_tech  In=6 Out=3 Acc=0.5101 Sens=0.3399 Spec=0.7241
+ hist_tech  In=6 Out=5 Acc=0.4865 Sens=0.2857 Spec=0.7183
+ technical  In=2 Out=1 Acc=0.5263 Sens=0.5066 Spec=0.5658
+ technical  In=2 Out=3 Acc=0.511 Sens=0.6115 Spec=0.469 
+ technical  In=2 Out=5 Acc=0.4978 Sens=0.2215 Spec=0.8239
+ technical  In=4 Out=1 Acc=0.5121 Sens=0.46  Spec=0.6053
+ technical  In=4 Out=3 Acc=0.5078 Sens=0.7226 Spec=0.3655
+ technical  In=4 Out=5 Acc=0.4922 Sens=0.3974 Spec=0.6408
+ technical  In=6 Out=1 Acc=0.5078 Sens=0.3716 Spec=0.6711
+ technical  In=6 Out=3 Acc=0.5224 Sens=0.8889 Spec=0.1931
+ technical  In=6 Out=5 Acc=0.4696 Sens=0.1429 Spec=0.9225
+ histürical  In=2 Out=1 Acc=0.489 Sens=0.3421 Spec=0.6711
+ histürical  In=2 Out=3 Acc=0.4779 Sens=0   Spec=1   <<<< MC
+ histürical  In=2 Out=5 Acc=0.4711 Sens=0.1392 Spec=0.8592
+ histürical  In=4 Out=1 Acc=0.5 Sens=0.0533 Spec=0.9737
+ histürical  In=4 Out=3 Acc=0.4833 Sens=0   Spec=1   <<<< MC
+ histürical  In=4 Out=5 Acc=0.4866 Sens=0.1859 Spec=0.8592
+ histürical  In=6 Out=1 Acc=0.4878 Sens=0   Spec=1   <<<< MC
+ histürical  In=6 Out=3 Acc=0.5268 Sens=0.4314 Spec=0.6552
+ histürical  In=6 Out=5 Acc=0.5473 Sens=0.2597 Spec=0.8873
+ clüsing   In=2 Out=1 Acc=0.5 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=3 Acc=0.5199 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=5 Acc=0.5267 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=1 Acc=0.5033 Sens=0   Spec=1   <<<< MC
+ clüsing   In=4 Out=3 Acc=0.4944 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=5 Acc=0.4922 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=1 Acc=0.5022 Sens=0   Spec=1   <<<< MC
+ clüsing   In=6 Out=3 Acc=0.5045 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=5 Acc=0.5203 Sens=1   Spec=0   <<<< MC
+ ÖÖÖ GUNCEL THYAO LSTM (2018Ö2026) TOPLAM MC: 12 / 36 ÖÖÖ
+ 
+ ################################################################
+ # GUNCEL THYAO CNN (2018Ö2026) Ö 36 SATIR
+ ################################################################
+ hist_tech  In=2 Out=1 Acc=0.5351 Sens=0.5132 Spec=0.6118
+ hist_tech  In=2 Out=3 Acc=0.5397 Sens=0.758 Spec=0.331 
+ hist_tech  In=2 Out=5 Acc=0.5089 Sens=0.4051 Spec=0.6268
+ hist_tech  In=4 Out=1 Acc=0.4536 Sens=0.4  Spec=0.5592
+ hist_tech  In=4 Out=3 Acc=0.4611 Sens=0.1742 Spec=0.8138
+ hist_tech  In=4 Out=5 Acc=0.4776 Sens=0.4038 Spec=0.5704
+ hist_tech  In=6 Out=1 Acc=0.51 Sens=0.0811 Spec=0.9408
+ hist_tech  In=6 Out=3 Acc=0.4955 Sens=0.4379 Spec=0.5724
+ hist_tech  In=6 Out=5 Acc=0.4538 Sens=0.2857 Spec=0.6972
+ technical  In=2 Out=1 Acc=0.5307 Sens=0.6908 Spec=0.4013
+ technical  In=2 Out=3 Acc=0.4978 Sens=0.6433 Spec=0.3655
+ technical  In=2 Out=5 Acc=0.4744 Sens=0.4937 Spec=0.5  
+ technical  In=4 Out=1 Acc=0.4735 Sens=0.6  Spec=0.3882
+ technical  In=4 Out=3 Acc=0.5033 Sens=0.4129 Spec=0.6621
+ technical  In=4 Out=5 Acc=0.4955 Sens=0.3141 Spec=0.7394
+ technical  In=6 Out=1 Acc=0.4989 Sens=0.6014 Spec=0.4079
+ technical  In=6 Out=3 Acc=0.4832 Sens=0.5033 Spec=0.5172
+ technical  In=6 Out=5 Acc=0.5023 Sens=0.5714 Spec=0.4718
+ histürical  In=2 Out=1 Acc=0.4814 Sens=0.5921 Spec=0.4342
+ histürical  In=2 Out=3 Acc=0.4779 Sens=0.172 Spec=0.8414
+ histürical  In=2 Out=5 Acc=0.4989 Sens=0.462 Spec=0.5704
+ histürical  In=4 Out=1 Acc=0.4691 Sens=0.5933 Spec=0.4013
+ histürical  In=4 Out=3 Acc=0.4767 Sens=0.4645 Spec=0.5034
+ histürical  In=4 Out=5 Acc=0.4821 Sens=0.4359 Spec=0.5423
+ histürical  In=6 Out=1 Acc=0.5133 Sens=0.6486 Spec=0.4342
+ histürical  In=6 Out=3 Acc=0.5302 Sens=0.7712 Spec=0.2897
+ histürical  In=6 Out=5 Acc=0.5304 Sens=0.6299 Spec=0.4437
+ clüsing   In=2 Out=1 Acc=0.5 Sens=0   Spec=1   <<<< MC
+ clüsing   In=2 Out=3 Acc=0.4801 Sens=0   Spec=1   <<<< MC
+ clüsing   In=2 Out=5 Acc=0.4733 Sens=0   Spec=1   <<<< MC
+ clüsing   In=4 Out=1 Acc=0.5022 Sens=0   Spec=1   <<<< MC
+ clüsing   In=4 Out=3 Acc=0.4944 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=5 Acc=0.4765 Sens=0   Spec=1   <<<< MC
+ clüsing   In=6 Out=1 Acc=0.5067 Sens=0   Spec=1   <<<< MC
+ clüsing   In=6 Out=3 Acc=0.4821 Sens=0   Spec=1   <<<< MC
+ clüsing   In=6 Out=5 Acc=0.4932 Sens=1   Spec=0   <<<< MC
+ ÖÖÖ GUNCEL THYAO CNN (2018Ö2026) TOPLAM MC: 9 / 36 ÖÖÖ
+ 
+ ################################################################
+ # ALZ ESKI LSTM Ö 27 SATIR
+ ################################################################
+ full     In=2 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=2 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=2 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=4 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=4 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=4 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=6 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=6 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=6 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=2 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=2 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=2 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=4 Out=1 Acc=0.9737 Sens=1   Spec=NA   <<<< MC
+ technical  In=4 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=4 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=6 Out=1 Acc=0.9907 Sens=1   Spec=NA   <<<< MC
+ technical  In=6 Out=3 Acc=0.9608 Sens=1   Spec=NA   <<<< MC
+ technical  In=6 Out=5 Acc=0.9375 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=2 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=2 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=2 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=4 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=4 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=4 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=6 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=6 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=6 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ ÖÖÖ ALZ ESKI LSTM TOPLAM MC: 27 / 27 ÖÖÖ
+ 
+ ################################################################
+ # ALZ GUNCEL LSTM Ö 27 SATIR
+ ################################################################
+ full     In=2 Out=1 Acc=0.9792 Sens=1   Spec=NA   <<<< MC
+ full     In=2 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=2 Out=5 Acc=0.9762 Sens=1   Spec=NA   <<<< MC
+ full     In=4 Out=1 Acc=0.9556 Sens=0.9667 Spec=NA   <<<< MC
+ full     In=4 Out=3 Acc=0.9881 Sens=1   Spec=NA   <<<< MC
+ full     In=4 Out=5 Acc=0.9872 Sens=1   Spec=NA   <<<< MC
+ full     In=6 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=6 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=6 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=2 Out=1 Acc=0.9062 Sens=0.9062 Spec=NA   <<<< MC
+ technical  In=2 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=2 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=4 Out=1 Acc=0.9778 Sens=1   Spec=NA   <<<< MC
+ technical  In=4 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=4 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=6 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=6 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=6 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=2 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=2 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=2 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=4 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=4 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=4 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=6 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=6 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=6 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ ÖÖÖ ALZ GUNCEL LSTM TOPLAM MC: 27 / 27 ÖÖÖ
+ 
+ ################################################################
+ # ALZ ESKI CNN Ö 27 SATIR
+ ################################################################
+ full     In=2 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=2 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=2 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=4 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=4 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=4 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=6 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=6 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=6 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=2 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=2 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=2 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=4 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=4 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=4 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=6 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=6 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=6 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=2 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=2 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=2 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=4 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=4 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=4 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=6 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=6 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=6 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ ÖÖÖ ALZ ESKI CNN TOPLAM MC: 27 / 27 ÖÖÖ
+ 
+ ################################################################
+ # ALZ GUNCEL CNN Ö 27 SATIR
+ ################################################################
+ full     In=2 Out=1 Acc=0.9792 Sens=1   Spec=NA   <<<< MC
+ full     In=2 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=2 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=4 Out=1 Acc=0.9556 Sens=1   Spec=NA   <<<< MC
+ full     In=4 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=4 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=6 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=6 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ full     In=6 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=2 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=2 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=2 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=4 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=4 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=4 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=6 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=6 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ technical  In=6 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=2 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=2 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=2 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=4 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=4 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=4 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=6 Out=1 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=6 Out=3 Acc=1 Sens=1   Spec=NA   <<<< MC
+ clüsing   In=6 Out=5 Acc=1 Sens=1   Spec=NA   <<<< MC
+ ÖÖÖ ALZ GUNCEL CNN TOPLAM MC: 27 / 27 ÖÖÖ
+ 
+ ################################################################
+ # AZS ESKI LSTM Ö 27 SATIR
+ ################################################################
+ full     In=2 Out=1 Acc=0.6833 Sens=0.8148 Spec=0.5385
+ full     In=2 Out=3 Acc=0.5877 Sens=0.8846 Spec=0   <<<< MC
+ full     In=2 Out=5 Acc=0.6667 Sens=0.9583 Spec=0.0833
+ full     In=4 Out=1 Acc=0.5263 Sens=0.72  Spec=0.3846
+ full     In=4 Out=3 Acc=0.7037 Sens=1   Spec=0   <<<< MC
+ full     In=4 Out=5 Acc=0.6765 Sens=1   Spec=0   <<<< MC
+ full     In=6 Out=1 Acc=0.6667 Sens=0.9583 Spec=0.1667
+ full     In=6 Out=3 Acc=0.6863 Sens=0.88  Spec=0.2222
+ full     In=6 Out=5 Acc=0.5833 Sens=0.9565 Spec=0   <<<< MC
+ technical  In=2 Out=1 Acc=0.4417 Sens=0.8519 Spec=0.2308
+ technical  In=2 Out=3 Acc=0.5439 Sens=1   Spec=0   <<<< MC
+ technical  In=2 Out=5 Acc=0.6481 Sens=1   Spec=0   <<<< MC
+ technical  In=4 Out=1 Acc=0.5526 Sens=1   Spec=0   <<<< MC
+ technical  In=4 Out=3 Acc=0.5926 Sens=0.8846 Spec=0   <<<< MC
+ technical  In=4 Out=5 Acc=0.6765 Sens=1   Spec=0   <<<< MC
+ technical  In=6 Out=1 Acc=0.4815 Sens=0.75  Spec=0.0833
+ technical  In=6 Out=3 Acc=0.5784 Sens=0.88  Spec=0.1111
+ technical  In=6 Out=5 Acc=0.5729 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=1 Acc=0.675 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=3 Acc=0.6842 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=5 Acc=0.6667 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=1 Acc=0.6579 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=3 Acc=0.7222 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=5 Acc=0.6765 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=1 Acc=0.6667 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=3 Acc=0.7353 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=5 Acc=0.7188 Sens=1   Spec=0   <<<< MC
+ ÖÖÖ AZS ESKI LSTM TOPLAM MC: 19 / 27 ÖÖÖ
+ 
+ ################################################################
+ # AZS GUNCEL LSTM Ö 27 SATIR
+ ################################################################
+ full     In=2 Out=1 Acc=0.5392 Sens=0.7391 Spec=0.4545
+ full     In=2 Out=3 Acc=0.4375 Sens=0.6087 Spec=0.3333
+ full     In=2 Out=5 Acc=0.6889 Sens=0.7917 Spec=0.6667
+ full     In=4 Out=1 Acc=0.4688 Sens=0.5  Spec=0.5  
+ full     In=4 Out=3 Acc=0.5 Sens=0.7273 Spec=0.25 
+ full     In=4 Out=5 Acc=0.6667 Sens=0.913 Spec=0.6  
+ full     In=6 Out=1 Acc=0.5889 Sens=0.7143 Spec=0.6667
+ full     In=6 Out=3 Acc=0.5476 Sens=0.8095 Spec=0.4286
+ full     In=6 Out=5 Acc=0.6026 Sens=0.8095 Spec=0   <<<< MC
+ technical  In=2 Out=1 Acc=0.4608 Sens=0.3043 Spec=0.8182
+ technical  In=2 Out=3 Acc=0.5104 Sens=0.6087 Spec=0.3333
+ technical  In=2 Out=5 Acc=0.6222 Sens=0.875 Spec=0   <<<< MC
+ technical  In=4 Out=1 Acc=0.3854 Sens=0.5909 Spec=0.4  
+ technical  In=4 Out=3 Acc=0.5778 Sens=1   Spec=0   <<<< MC
+ technical  In=4 Out=5 Acc=0.6548 Sens=0.9565 Spec=0   <<<< MC
+ technical  In=6 Out=1 Acc=0.6111 Sens=0.9048 Spec=0.2222
+ technical  In=6 Out=3 Acc=0.5952 Sens=0.8571 Spec=0.2857
+ technical  In=6 Out=5 Acc=0.6538 Sens=1   Spec=0.2  
+ clüsing   In=2 Out=1 Acc=0.6765 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=3 Acc=0.7188 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=5 Acc=0.2 Sens=0   Spec=1   <<<< MC
+ clüsing   In=4 Out=1 Acc=0.3125 Sens=0   Spec=1   <<<< MC
+ clüsing   In=4 Out=3 Acc=0.4222 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=5 Acc=0.1786 Sens=0   Spec=1   <<<< MC
+ clüsing   In=6 Out=1 Acc=0.5667 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=3 Acc=0.4167 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=5 Acc=0.1923 Sens=0   Spec=1   <<<< MC
+ ÖÖÖ AZS GUNCEL LSTM TOPLAM MC: 13 / 27 ÖÖÖ
+ 
+ ################################################################
+ # AZS ESKI CNN Ö 27 SATIR
+ ################################################################
+ full     In=2 Out=1 Acc=0.6083 Sens=0.8519 Spec=0.1538
+ full     In=2 Out=3 Acc=0.6579 Sens=0.8462 Spec=0.3333
+ full     In=2 Out=5 Acc=0.6481 Sens=0.9583 Spec=0.0833
+ full     In=4 Out=1 Acc=0.6404 Sens=0.76  Spec=0.4615
+ full     In=4 Out=3 Acc=0.6852 Sens=1   Spec=0   <<<< MC
+ full     In=4 Out=5 Acc=0.6667 Sens=1   Spec=0   <<<< MC
+ full     In=6 Out=1 Acc=0.6481 Sens=0.9167 Spec=0.1667
+ full     In=6 Out=3 Acc=0.6667 Sens=0.88  Spec=0.1111
+ full     In=6 Out=5 Acc=0.7083 Sens=1   Spec=0   <<<< MC
+ technical  In=2 Out=1 Acc=0.6083 Sens=1   Spec=0   <<<< MC
+ technical  In=2 Out=3 Acc=0.6842 Sens=1   Spec=0   <<<< MC
+ technical  In=2 Out=5 Acc=0.6667 Sens=1   Spec=0   <<<< MC
+ technical  In=4 Out=1 Acc=0.4825 Sens=0.68  Spec=0.1538
+ technical  In=4 Out=3 Acc=0.6852 Sens=1   Spec=0   <<<< MC
+ technical  In=4 Out=5 Acc=0.5588 Sens=0.9565 Spec=0   <<<< MC
+ technical  In=6 Out=1 Acc=0.6944 Sens=0.7917 Spec=0.6667
+ technical  In=6 Out=3 Acc=0.6078 Sens=0.96  Spec=0   <<<< MC
+ technical  In=6 Out=5 Acc=0.6979 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=1 Acc=0.675 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=3 Acc=0.6842 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=5 Acc=0.6667 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=1 Acc=0.6579 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=3 Acc=0.7222 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=5 Acc=0.6765 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=1 Acc=0.6667 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=3 Acc=0.7353 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=5 Acc=0.7188 Sens=1   Spec=0   <<<< MC
+ ÖÖÖ AZS ESKI CNN TOPLAM MC: 19 / 27 ÖÖÖ
+ 
+ ################################################################
+ # AZS GUNCEL CNN Ö 27 SATIR
+ ################################################################
+ full     In=2 Out=1 Acc=0.549 Sens=0.6087 Spec=0.4545
+ full     In=2 Out=3 Acc=0.4375 Sens=0.6522 Spec=0   <<<< MC
+ full     In=2 Out=5 Acc=0.6556 Sens=0.75  Spec=0.6667
+ full     In=4 Out=1 Acc=0.5729 Sens=0.7727 Spec=0.4  
+ full     In=4 Out=3 Acc=0.5444 Sens=0.7273 Spec=0.125 
+ full     In=4 Out=5 Acc=0.5833 Sens=0.6957 Spec=0.2  
+ full     In=6 Out=1 Acc=0.5222 Sens=0.4762 Spec=0.6667
+ full     In=6 Out=3 Acc=0.5952 Sens=0.7619 Spec=0.2857
+ full     In=6 Out=5 Acc=0.4359 Sens=0.5714 Spec=0.2  
+ technical  In=2 Out=1 Acc=0.5784 Sens=0.6522 Spec=0.5455
+ technical  In=2 Out=3 Acc=0.5417 Sens=0.6087 Spec=0.6667
+ technical  In=2 Out=5 Acc=0.5 Sens=0.6667 Spec=0.1667
+ technical  In=4 Out=1 Acc=0.6042 Sens=0.8182 Spec=0.3  
+ technical  In=4 Out=3 Acc=0.7556 Sens=0.9091 Spec=0.625 
+ technical  In=4 Out=5 Acc=0.7024 Sens=0.9565 Spec=0   <<<< MC
+ technical  In=6 Out=1 Acc=0.3556 Sens=0.381 Spec=0.4444
+ technical  In=6 Out=3 Acc=0.6548 Sens=1   Spec=0   <<<< MC
+ technical  In=6 Out=5 Acc=0.641 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=1 Acc=0.6765 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=3 Acc=0.7188 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=5 Acc=0.6 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=1 Acc=0.4375 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=3 Acc=0.6222 Sens=1   Spec=0.5  
+ clüsing   In=4 Out=5 Acc=0.3214 Sens=0.5217 Spec=1   
+ clüsing   In=6 Out=1 Acc=0.3778 Sens=0.6667 Spec=0.2222
+ clüsing   In=6 Out=3 Acc=0.25 Sens=0   Spec=1   <<<< MC
+ clüsing   In=6 Out=5 Acc=0.2308 Sens=0.3333 Spec=0.2  
+ ÖÖÖ AZS GUNCEL CNN TOPLAM MC: 9 / 27 ÖÖÖ
+ 
+ ################################################################
+ # AMZ ESKI LSTM Ö 27 SATIR
+ ################################################################
+ full     In=2 Out=1 Acc=0.5083 Sens=0.5769 Spec=0.4286
+ full     In=2 Out=3 Acc=0.5 Sens=0.6923 Spec=0.1667
+ full     In=2 Out=5 Acc=0.8056 Sens=1   Spec=0   <<<< MC
+ full     In=4 Out=1 Acc=0.5088 Sens=0.75  Spec=0.1429
+ full     In=4 Out=3 Acc=0.6204 Sens=0.75  Spec=0.4167
+ full     In=4 Out=5 Acc=0.7647 Sens=0.9259 Spec=0.1429
+ full     In=6 Out=1 Acc=0.6481 Sens=0.8636 Spec=0.4286
+ full     In=6 Out=3 Acc=0.4902 Sens=0.7273 Spec=0.4167
+ full     In=6 Out=5 Acc=0.6458 Sens=0.8  Spec=0.1429
+ technical  In=2 Out=1 Acc=0.5083 Sens=0.7692 Spec=0.1429
+ technical  In=2 Out=3 Acc=0.6228 Sens=1   Spec=0   <<<< MC
+ technical  In=2 Out=5 Acc=0.6481 Sens=0.8276 Spec=0.1429
+ technical  In=4 Out=1 Acc=0.5702 Sens=0.9167 Spec=0.4286
+ technical  In=4 Out=3 Acc=0.6667 Sens=0.7083 Spec=0.75 
+ technical  In=4 Out=5 Acc=0.5294 Sens=0.9259 Spec=0   <<<< MC
+ technical  In=6 Out=1 Acc=0.4722 Sens=0.5909 Spec=0.7857
+ technical  In=6 Out=3 Acc=0.5784 Sens=0.9091 Spec=0.3333
+ technical  In=6 Out=5 Acc=0.6458 Sens=0.84  Spec=0.5714
+ clüsing   In=2 Out=1 Acc=0.65 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=3 Acc=0.6842 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=5 Acc=0.8056 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=1 Acc=0.6316 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=3 Acc=0.6667 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=5 Acc=0.7941 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=1 Acc=0.6111 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=3 Acc=0.6471 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=5 Acc=0.7812 Sens=1   Spec=0   <<<< MC
+ ÖÖÖ AMZ ESKI LSTM TOPLAM MC: 12 / 27 ÖÖÖ
+ 
+ ################################################################
+ # AMZ GUNCEL LSTM Ö 27 SATIR
+ ################################################################
+ full     In=2 Out=1 Acc=0.4706 Sens=0.625 Spec=0.3  
+ full     In=2 Out=3 Acc=0.8021 Sens=0.84  Spec=0.8571
+ full     In=2 Out=5 Acc=0.6778 Sens=0.8333 Spec=0.5  
+ full     In=4 Out=1 Acc=0.5625 Sens=0.6087 Spec=0.6667
+ full     In=4 Out=3 Acc=0.4778 Sens=0.6957 Spec=0.4286
+ full     In=4 Out=5 Acc=0.4762 Sens=0.5455 Spec=0.3333
+ full     In=6 Out=1 Acc=0.4556 Sens=0.4286 Spec=0.7778
+ full     In=6 Out=3 Acc=0.4762 Sens=0.6667 Spec=0.4286
+ full     In=6 Out=5 Acc=0.4615 Sens=0.65  Spec=0.1667
+ technical  In=2 Out=1 Acc=0.6961 Sens=0.7083 Spec=0.7  
+ technical  In=2 Out=3 Acc=0.5417 Sens=0.64  Spec=0.4286
+ technical  In=2 Out=5 Acc=0.6 Sens=0.6667 Spec=0.6667
+ technical  In=4 Out=1 Acc=0.5208 Sens=0.6087 Spec=0.6667
+ technical  In=4 Out=3 Acc=0.5556 Sens=0.7391 Spec=0.1429
+ technical  In=4 Out=5 Acc=0.7738 Sens=0.9545 Spec=0.1667
+ technical  In=6 Out=1 Acc=0.3889 Sens=0.4762 Spec=0.6667
+ technical  In=6 Out=3 Acc=0.6786 Sens=0.9524 Spec=0   <<<< MC
+ technical  In=6 Out=5 Acc=0.641 Sens=0.9  Spec=0.1667
+ clüsing   In=2 Out=1 Acc=0.2941 Sens=0   Spec=1   <<<< MC
+ clüsing   In=2 Out=3 Acc=0.7812 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=5 Acc=0.8 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=1 Acc=0.2812 Sens=0   Spec=1   <<<< MC
+ clüsing   In=4 Out=3 Acc=0.7667 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=5 Acc=0.7857 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=1 Acc=0.5667 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=3 Acc=0.75 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=5 Acc=0.7692 Sens=1   Spec=0   <<<< MC
+ ÖÖÖ AMZ GUNCEL LSTM TOPLAM MC: 10 / 27 ÖÖÖ
+ 
+ ################################################################
+ # AMZ ESKI CNN Ö 27 SATIR
+ ################################################################
+ full     In=2 Out=1 Acc=0.6333 Sens=0.8462 Spec=0.2857
+ full     In=2 Out=3 Acc=0.4825 Sens=0.7308 Spec=0   <<<< MC
+ full     In=2 Out=5 Acc=0.75 Sens=1   Spec=0   <<<< MC
+ full     In=4 Out=1 Acc=0.5175 Sens=0.7917 Spec=0.0714
+ full     In=4 Out=3 Acc=0.5463 Sens=0.75  Spec=0.1667
+ full     In=4 Out=5 Acc=0.6863 Sens=0.8148 Spec=0.5714
+ full     In=6 Out=1 Acc=0.5833 Sens=0.7273 Spec=0.6429
+ full     In=6 Out=3 Acc=0.4412 Sens=0.7273 Spec=0.0833
+ full     In=6 Out=5 Acc=0.5417 Sens=0.72  Spec=0.2857
+ technical  In=2 Out=1 Acc=0.55 Sens=0.7692 Spec=0.1429
+ technical  In=2 Out=3 Acc=0.5 Sens=0.8846 Spec=0   <<<< MC
+ technical  In=2 Out=5 Acc=0.7778 Sens=1   Spec=0   <<<< MC
+ technical  In=4 Out=1 Acc=0.5351 Sens=0.75  Spec=0.2143
+ technical  In=4 Out=3 Acc=0.4444 Sens=0.6667 Spec=0.25 
+ technical  In=4 Out=5 Acc=0.7549 Sens=1   Spec=0   <<<< MC
+ technical  In=6 Out=1 Acc=0.4259 Sens=0.7273 Spec=0.2143
+ technical  In=6 Out=3 Acc=0.5392 Sens=0.8636 Spec=0   <<<< MC
+ technical  In=6 Out=5 Acc=0.6875 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=1 Acc=0.65 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=3 Acc=0.6842 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=5 Acc=0.8056 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=1 Acc=0.5702 Sens=0.7917 Spec=0.4286
+ clüsing   In=4 Out=3 Acc=0.6667 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=5 Acc=0.7941 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=1 Acc=0.537 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=3 Acc=0.6471 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=5 Acc=0.7812 Sens=1   Spec=0   <<<< MC
+ ÖÖÖ AMZ ESKI CNN TOPLAM MC: 15 / 27 ÖÖÖ
+ 
+ ################################################################
+ # AMZ GUNCEL CNN Ö 27 SATIR
+ ################################################################
+ full     In=2 Out=1 Acc=0.5294 Sens=0.7917 Spec=0.1  
+ full     In=2 Out=3 Acc=0.5 Sens=0.72  Spec=0.1429
+ full     In=2 Out=5 Acc=0.7667 Sens=1   Spec=0   <<<< MC
+ full     In=4 Out=1 Acc=0.6042 Sens=0.7826 Spec=0.6667
+ full     In=4 Out=3 Acc=0.5889 Sens=0.7391 Spec=0.1429
+ full     In=4 Out=5 Acc=0.4762 Sens=0.5  Spec=0.5  
+ full     In=6 Out=1 Acc=0.6111 Sens=0.7619 Spec=0.3333
+ full     In=6 Out=3 Acc=0.631 Sens=0.8571 Spec=0.4286
+ full     In=6 Out=5 Acc=0.7308 Sens=0.9  Spec=0.3333
+ technical  In=2 Out=1 Acc=0.6373 Sens=0.875 Spec=0.3  
+ technical  In=2 Out=3 Acc=0.7292 Sens=0.96  Spec=0.2857
+ technical  In=2 Out=5 Acc=0.6444 Sens=1   Spec=0   <<<< MC
+ technical  In=4 Out=1 Acc=0.4792 Sens=0.4348 Spec=0.6667
+ technical  In=4 Out=3 Acc=0.5556 Sens=0.5652 Spec=0.5714
+ technical  In=4 Out=5 Acc=0.7381 Sens=0.9545 Spec=0.1667
+ technical  In=6 Out=1 Acc=0.6111 Sens=0.6667 Spec=0.6667
+ technical  In=6 Out=3 Acc=0.5952 Sens=0.8095 Spec=0.4286
+ technical  In=6 Out=5 Acc=0.7179 Sens=0.95  Spec=0.3333
+ clüsing   In=2 Out=1 Acc=0.5686 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=3 Acc=0.7812 Sens=1   Spec=0   <<<< MC
+ clüsing   In=2 Out=5 Acc=0.8 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=1 Acc=0.2917 Sens=0.0435 Spec=1   
+ clüsing   In=4 Out=3 Acc=0.7667 Sens=1   Spec=0   <<<< MC
+ clüsing   In=4 Out=5 Acc=0.7857 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=1 Acc=0.4333 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=3 Acc=0.7143 Sens=1   Spec=0   <<<< MC
+ clüsing   In=6 Out=5 Acc=0.7436 Sens=0.9  Spec=0.3333
+ ÖÖÖ AMZ GUNCEL CNN TOPLAM MC: 9 / 27 ÖÖÖ
+ 
+ ================================================================
+ OZET TABLO
+ ================================================================
+ Varlik | Mudel | Eski  | Guncel | Fark
+ --------|-------|--------|--------|-----
+ THYAO  | LSTM | 16/36 | 12/36  | -4
+ THYAO  | CNN  | 8/36  | 9/36  | +1
+ ALZ   | LSTM | 27/27 | 27/27  | 0  (Tum konfigurasyonlar MC)
+ ALZ   | CNN  | 27/27 | 27/27  | 0  (Tum konfigurasyonlar MC)
+ AZS   | LSTM | 19/27 | 13/27  | -6
+ AZS   | CNN  | 19/27 | 9/27  | -10
+ AMZ   | LSTM | 12/27 | 10/27  | -2
+ AMZ   | CNN  | 15/27 | 9/27  | -6
+ 
+ NOT: ALZ satirlari 17 Nisan 2026 tarihinde eklenmistir.
+ Genis MC tanimi: Spec=0 VEYA Sens=0 VEYA Spec=NA
+ CSV anayasasi dogrulamasi: EMEKLILIK_LSTM_sonuclar.csv + EMEKLILIK_CNN_sonuclar.csv
+ 

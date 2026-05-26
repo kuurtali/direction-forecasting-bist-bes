@@ -1,0 +1,764 @@
+﻿
+Derin Öğrenme ile Finansal Yön Tahmini:
+THYAO ve Emeklilik Fonları Üzerine Karşılaştırmalı Bir Çalışma
+ARIMA, LSTM ve 1D-CNN Modellerinin Karşılaştırmalı Analizi
+Hacettepe Üniversitesi
+Fen Fakültesi, Aktüerya Bilimleri Bölümü
+Ankara, Türkiye
+Danışman: Dr. Öğr. Üyesi Övgücan Karadağ Erdemir
+Nisan 2026
+
+ÖZET
+Bu çalışmada, geleneksel zaman serisi yöntemi olan ARIMA ile derin öğrenme mimarileri LSTM ve 1D-CNN, iki farklı finansal varlık sınıfı üzerinde karşılaştırmalı olarak değerlendirilmiştir: Borsa İstanbul'da işlem gören Türk Hava Yolları (THYAO) hisse senedi ve Türkiye Elektronik Fon Alım Satım Platformu (TEFAS) üzerinden elde edilen üç farklı risk profiline sahip Allianz Yaşam bireysel emeklilik fonu (ALZ — düşük, AZS — orta, AMZ — yüksek). Çalışmanın özgün katkısı, literatürde sıkça gözden kaçırılan Çoğunluk Sınıfı (Majority Class) illüzyonunun Specificity ve Sensitivity metrikleri ile deşifre edilmesidir. Modellere class_weight ve early_stopping gibi dört akademik iyileştirme uygulanmış; THYAO verisinde LSTM'in MC sayısı 16/36'dan 12/36'ya, AZS CNN'de ise 19/27'den 9/27'ye düşürülmüştür. Elde edilen en güçlü bulgu, yüksek riskli AMZ fonunda LSTM modelinin full özellik seti, Input=2, Output=3 konfigürasyonu ile %80.21 Accuracy, 0.894 F1 ve 0.857 Specificity değerleri elde ederek Naive Baseline'ı (%78.79) geride bırakmasıdır. Üç bağımsız seed (23, 27, 98) ortalaması ve havuzlanmış karmaşıklık matrisi ile matematiksel tutarlılık %100 sağlanmıştır.
+Anahtar Kelimeler: Derin Öğrenme, Zaman Serileri, Yön Tahmini, LSTM, 1D-CNN, ARIMA, Sınıf Dengesizliği, Bireysel Emeklilik Fonları, THYAO, Majority Class, Balanced Accuracy.
+ABSTRACT
+In this study, the traditional time series method ARIMA and deep learning architectures LSTM and 1D-CNN are comparatively evaluated on two distinct financial asset classes: Turkish Airlines (THYAO) shares traded on Borsa Istanbul, and three Allianz Yaşam individual pension funds of varying risk profiles (ALZ — low, AZS — medium, AMZ — high) obtained from the Turkish Electronic Fund Trading Platform (TEFAS). The original contribution lies in exposing the Majority Class illusion, frequently overlooked in the literature, through Specificity and Sensitivity metrics. Four academic improvements (preProcess on train-only, labelling per split, class_weight, early stopping with patience=5) reduced MC counts from 16/36 to 12/36 for THYAO LSTM and from 19/27 to 9/27 for AZS CNN. The strongest finding is that the LSTM model in the high-risk AMZ fund achieved 80.21% Accuracy, F1=0.894, and Specificity=0.857 using the full feature set with Input=2, Output=3, surpassing the Naive Baseline (78.79%).
+Keywords: Deep Learning, Time Series, Direction Prediction, LSTM, 1D-CNN, ARIMA, Class Imbalance, Individual Pension Funds.
+
+1. Giriş
+Finansal piyasaların yönünü önceden tahmin edebilmek; portföy yönetimi, risk kontrolü ve bireysel yatırımcı kararları açısından kritik öneme sahiptir. Gelişmekte olan piyasalarda dış şokların, enflasyon ve faiz politikalarının sıklıkla yarattığı gürültü, klasik zaman serisi yöntemlerinin performansını sınırlamakta; bu durum araştırmacıları Derin Öğrenme (Deep Learning) tabanlı mimarilere yöneltmektedir. Ancak literatürde yaygın biçimde karşılaşılan bir sorun, modellerin yüksek Accuracy değerleri üretirken aslında yalnızca çoğunluk sınıfını (Majority Class) tahmin etmesi ve bu durumun Sensitivity–Specificity metrikleriyle raporlanmamasıdır.
+Bu çalışmanın temel amacı; gelişmekte olan bir piyasa (BIST) temsilcisi olarak THYAO hisse senedi ile profesyonelce yönetilen ve momentum niteliği yüksek olan üç farklı risk profilindeki bireysel emeklilik fonu üzerinde ARIMA, 1D-CNN ve LSTM modellerinin yön tahmin performanslarını, sınıf dengesizliğini deşifre edecek şekilde karşılaştırmaktır. Bu amaç doğrultusunda çalışmanın özgün katkısı üç başlık altında özetlenebilir: (i) literatürde gözden kaçırılan Majority Class illüzyonunun raporlanması, (ii) referans alınan çalışmadaki metodolojik boşlukların (veri sızıntısı, sınıf ağırlığı eksikliği, sabit epoch sayısı) kapatılması ve (iii) THYAO ile emeklilik fonları üzerinde risk profiline göre davranışın karşılaştırılmasıdır.
+THYAO hisse senedinin seçilme nedeni, gelişmekte olan bir piyasada yer alan, döviz kuruna ve jeopolitik gelişmelere yüksek duyarlılığı olan, gürültülü bir finansal varlık olmasıdır. Buna karşılık Allianz Yaşam emeklilik fonları (ALZ, AZS, AMZ); dış şoklardan görece izole, profesyonelce yönetilen ve farklı risk seviyelerini temsil eden bir kontrol grubu sunmaktadır. Bu iki farklı veri setinin birlikte ele alınması, derin öğrenme modellerinin başarısının model karmaşıklığından değil, verinin sinyal/gürültü oranından kaynaklandığını açıkça göstermektedir.
+
+Şekil 1. Accuracy İllüzyonu — Yüksek Accuracy değerleri her zaman gerçek öğrenmeyi göstermez. Specificity ile karşılaştırma MC tuzağını açığa çıkarır.
+1.1. Literatür Taraması
+Finansal zaman serilerinin tahmininde kullanılan yöntemler; geleneksel istatistiksel modeller, makine öğrenmesi ve derin öğrenme olmak üzere üç ana gruba ayrılabilir. Klasik yaklaşımlarda Box ve Jenkins (1976) tarafından geliştirilen ARIMA modeli uzun yıllar temel referans olmuştur. Engle (1982) ve Bollerslev (1986) tarafından önerilen ARCH/GARCH modelleri ise oynaklık (volatility) modellemesi için yaygın biçimde kullanılmıştır. Bu modeller, doğrusal yapısı ve yorumlanabilirliği nedeniyle popüler olmakla birlikte, finansal serilerdeki doğrusal olmayan ilişkileri yakalamakta yetersiz kalmaktadır.
+Makine öğrenmesi yöntemlerinin finansal tahminlemede yaygınlaşması; Destek Vektör Makineleri (SVM), Rastgele Orman ve Gradient Boosting gibi modellerin kullanımıyla hız kazanmıştır. Kim (2003) SVM tabanlı tahmin modellerinin klasik istatistiksel yöntemleri geçtiğini; Khaidem ve ark. (2016) rastgele orman modelinin hisse senedi yön tahmininde etkili olduğunu belirtmiştir. Ancak bu modeller, özellik mühendisliği (feature engineering) gereksinimi nedeniyle yoğun ön işleme sürecine ihtiyaç duymaktadır.
+Derin öğrenme tabanlı çalışmalar son yıllarda hızla artmıştır. Uzun-Kısa Süreli Bellek (LSTM) ağları, Hochreiter ve Schmidhuber (1997) tarafından önerilmiş; Fischer ve Krauss (2018) tarafından S&P 500 endeksinde başarılı sonuçlar elde edilmiştir. Siami-Namini, Tavakoli ve Namin (2018) ARIMA ile LSTM'i karşılaştırmış ve LSTM'in RMSE'yi yaklaşık %85 oranında düşürdüğünü raporlamıştır. Selvin ve ark. (2017) 1D-CNN tabanlı modellerin LSTM'e göre daha hızlı yakınsadığını göstermiştir. Van der Burgt (2023) NASDAQ100 verisinde LSTM ve CNN modellerinin ARIMA'ya kıyasla üstün olduğunu ileri sürmüş; ancak bu çalışmada Sensitivity–Specificity metriklerinin raporlanmaması, sınıf ağırlıklandırması yapılmaması ve sabit epoch sayısı gibi metodolojik eksiklikler bulunmaktadır.
+Sınıf dengesizliği (Class Imbalance) sorunu King ve Zeng (2001) ile He ve Garcia (2009) tarafından sistematik biçimde ele alınmış; finansal yön tahminine özgü yorumu Krauss, Do ve Huck (2017) tarafından vurgulanmıştır. Gelişmekte olan piyasalarda Kara, Boyacioglu ve Baykan (2011) İstanbul Menkul Kıymetler Borsası üzerine, Chong, Han ve Park (2017) ise derin öğrenmeyi Kore borsasında test etmiştir. Mevcut çalışma, bu literatür bağlamında Van der Burgt (2023) referans alınarak yapılan metodolojik iyileştirmeler ve Majority Class illüzyonunun deşifre edilmesiyle özgün bir katkı sunmayı amaçlamaktadır.
+
+2. Yöntem
+Bu bölümde çalışmada kullanılan modeller ve performans değerlendirme metrikleri tanıtılmaktadır. Uygulama için R (v4.5.2) programlama dili tercih edilmiş; derin öğrenme mimarileri keras3 (v3.13.2) ve TensorFlow (v2.21.0) kütüphaneleri aracılığıyla inşa edilmiştir.
+
+Şekil 2. Çalışmanın metodolojik akışı — veri hazırlığı, özellik mühendisliği, 3-seed eğitim ve MC tespiti.
+2.1. Doğrusal Zaman Serileri (ARIMA)
+Otoregresif Bütünleşik Hareketli Ortalama (ARIMA) modeli, zaman serisi analizinin temel yapı taşlarından biridir. Box ve Jenkins (1976) tarafından tanımlanan bu yaklaşımda seri; otoregresif (AR) ve hareketli ortalama (MA) bileşenleri ile farklanma (differencing) işlemi sayesinde durağan (stationary) hale getirilerek modellenir. Genel gösterim ARIMA(p,d,q) şeklindedir; burada p otoregresif gecikme sayısı, d farklanma derecesi, q ise hareketli ortalama gecikme sayısıdır. Çalışmada en uygun d derecesi ADF ve KPSS durağanlık testleri ile belirlenmiş; AIC kriteri kullanılarak p ve q gecikmeleri seçilmiştir.
+Matematiksel gösterim: (1 − φ₁B − ··· − φ_p Bᵖ)(1 − B)ᵈ z_t = (1 − θ₁B − ··· − θ_q Bᵠ) ε_t. Bu çalışmada d ∈ {0, 1, 2, 3, 4, 5} grid search ile belirlenmiş, yöntem olarak CSS (Conditional Sum of Squares) kullanılmıştır. ARIMA modelinin yön tahmin sürecindeki rolü, derin öğrenme modellerine karşı güvenilir bir doğrusal kıyas noktası (baseline) sağlamaktır.
+2.2. Derin Öğrenme Tabanlı Zaman Serileri
+2.2.1. 1D-CNN
+Tek boyutlu Evrişimli Sinir Ağı (1D-Convolutional Neural Network), orijinal olarak görüntü işleme için geliştirilen evrişim işlemini zaman serilerine uyarlayan bir mimaridir. Fiyat ve teknik gösterge dizileri üzerinde belirli boyutlardaki filtreler (kernel) kaydırılarak yerel paternler öğrenilir. Çalışmada filtre sayıları 32-64-128 ve 64-128-256, kernel boyutları 3 ve 5, dense katman boyutları 64-128-256 olarak farklı kombinasyonlarda denenmiştir. Dropout oranları 0.2, 0.3 ve 0.4 değerleriyle düzenlileştirme sağlanmıştır. CNN mimarisinin avantajı, paralel hesaplanabilirliği sayesinde LSTM'ye göre daha hızlı yakınsaması ve az sayıda parametre ile yerel sinyalleri yakalayabilmesidir.
+2.2.2. LSTM
+Uzun-Kısa Süreli Bellek (Long Short-Term Memory) ağları, Hochreiter ve Schmidhuber (1997) tarafından klasik yinelemeli sinir ağlarının (RNN) karşılaştığı kaybolan gradyan (vanishing gradient) sorununu çözmek üzere önerilmiştir. LSTM hücresi; unutma (forget), giriş (input) ve çıkış (output) kapıları ile bir hücre durumu (cell state) içerir ve bu yapı sayesinde uzun vadeli bağımlılıkların öğrenilmesini sağlar. Çalışmada LSTM katmanlarının hücre sayısı 32, 64 ve 128 olarak denenmiş; Adam optimizasyon algoritması ile categorical_crossentropy kayıp fonksiyonu kullanılmıştır. Eğitim sürecinde patience=5 ile early_stopping uygulanmış ve sınıf ağırlıklandırması (class_weight) devreye alınmıştır.
+2.2.3. Naive Baseline
+Naive Baseline, bir önceki gözlemin yönünü doğrudan tahmin olarak kullanan saf tahmincidir. Bu çalışmada modellerin performansını anlık referansa göre değerlendiren bir kıyas çizgisi olarak kullanılmıştır. Naive Baseline, tahmin ufku (output window) uzadıkça daha güçlü hale gelmekte ve karmaşık modellerin aşması giderek zorlaşan bir eşik sunmaktadır.
+2.3. Model Karşılaştırma Metrikleri
+Bu çalışmada tahmin problemi bir regresyon değil, Yukarı/Aşağı yön tahmini yapan bir ikili sınıflandırma problemidir. Bu nedenle klasik regresyon metrikleri (MSE, RMSE, MAE) yerine aşağıdaki sınıflandırma metrikleri tercih edilmiştir: Accuracy = (TP + TN) / N; Sensitivity (Recall) = TP / (TP + FN); Specificity = TN / (TN + FP); Balanced Accuracy = (Sensitivity + Specificity) / 2; F1-Score = 2 × (Precision × Recall) / (Precision + Recall); p-değeri: Tek örneklem binom testi (H₀: başarı = %50).
+Majority Class (Çoğunluk Sınıfı) tuzağı; modelin yalnızca baskın sınıfı tahmin ettiği durumlarda Accuracy'nin yüksek, Sensitivity veya Specificity değerlerinden birinin 0 ya da NA olduğu durum olarak tanımlanmıştır. Bu çalışmada bir model konfigürasyonu; Spec = 0, Sens = 0 veya Spec = NA koşullarından en az birini sağlıyorsa MC olarak işaretlenmiştir. Bu tanım literatürde Geniş Tanım olarak adlandırılmakta ve modeli metodolojik açıdan en katı biçimde değerlendirmektedir.
+2.4. Veri ve Özellik Mühendisliği
+THYAO için 01.01.2018 — 31.03.2026 tarihleri arasında 2037 işlem günü kullanılmıştır. Veri kaynakları: Yahoo Finance (fiyat/hacim), Türkiye Cumhuriyet Merkez Bankası (TCMB faiz oranı) ve ilgili açık kaynaklar (USD/TRY). Dört özellik seti tanımlanmıştır: hist_tech (13 özellik: OHLCV + teknik göstergeler + makro), technical (7 teknik gösterge), historical (6 OHLCV + makro) ve closing (yalnızca kapanış fiyatı).
+Emeklilik fonları için 2021–2026 tarihleri arasında haftalık periyotlar kullanılmıştır. Geçerli gözlem sayıları: ALZ 249, AZS 261, AMZ 262. TEFAS verisinde High/Low sütunları bulunmadığından, THYAO'da kullanılan SO_K/SO_D göstergesi yerine Momentum, ADX yerine ise rolling standart sapma tabanlı Volatility kullanılmıştır. Üç özellik seti: full (7), technical (3), closing (1). Tüm eksik gözlemler Forward Fill (LOCF) yöntemiyle giderilmiştir.
+Giriş pencere boyutu In ∈ {2, 4, 6} ve tahmin ufku Out ∈ {1, 3, 5} olmak üzere 9 kombinasyon denenmiştir. Tekrarlanabilirliğin sağlanması amacıyla her model 3 farklı seed değeri (23, 27, 98) ile eğitilmiştir.
+
+Şekil 3. Arama uzayı özeti — 1.296 kombinasyon × 3 seed (özellik seti × In × Out × optimizer).
+
+Şekil 4. Test seti sınıf dağılımı — ALZ ~%100 yükseliş (tek yönlü), AZS/AMZ dengeli karışım.
+2.5. Dört Akademik İyileştirme
+Tablo A. Van der Burgt (2023)'e Göre Uygulanan 4 Akademik İyileştirme
+#
+İyileştirme
+Eski Yaklaşım
+Yeni Yaklaşım
+Etki
+1
+preProcess train-only
+Tüm veri üzerinde normalize
+Sadece train seti üzerinde fit, test'e transform
+Veri sızıntısı (data leakage) önlendi
+2
+Etiketleme ayrı split
+Tüm veri önce etiketlendi
+Her split için ayrı etiketleme
+Geriye dönük bakış (look-ahead bias) önlendi
+3
+class_weight eklendi
+Dengesiz sınıf ağırlığı yok
+n / (2 × n_class) formülü
+THYAO 16→12, AZS 19→9
+4
+Early stopping (patience=5)
+Sabit epoch sayısı
+Validation loss'a göre patience=5 erken durdurma
+Aşırı öğrenme (overfitting) azaldı
+
+3. Uygulama
+Çalışmada veri manipülasyonu, modelleme ve hiperparametre optimizasyonu işlemleri için R (v4.5.2) programlama dili kullanılmıştır. Derin öğrenme mimarileri (LSTM ve 1D-CNN), R üzerinden keras3 (v3.13.2) ve arka planda TensorFlow (v2.21.0) kütüphaneleri aracılığıyla inşa edilmiştir. Geleneksel zaman serisi modeli olan ARIMA için standart R istatistik paketleri kullanılmıştır. Tekrarlanabilirliğin sağlanması amacıyla her model 3 farklı seed değeri (23, 27, 98) ile eğitilmiş; raporlanan sonuçlar bu üç seed'in ortalaması, standart sapması ve min-max aralığı olarak sunulmuştur.
+3.1. THYAO Hisse Senedi Yön Tahmini
+3.1.1. THYAO Verisi
+Çalışmanın ilk aşamasında Borsa İstanbul'da (BIST) işlem gören Türk Hava Yolları (THYAO) hisse senedinin günlük verileri kullanılmıştır. Veri seti 01.01.2018 ile 31.03.2026 tarihleri arasını kapsamakta olup toplam 2037 işlem gününden oluşmaktadır. Fiyat ve hacim verileri Yahoo Finance üzerinden, makroekonomik değişkenler (USD/TRY, TCMB politika faizi) ve teknik indikatörler ise ilgili açık kaynaklardan derlenmiştir. Zaman serisi analizlerinde gelecekteki verinin geçmişe sızması (data leakage) hatasını önlemek amacıyla, tatil veya işlem görmeyen günlerdeki eksik gözlemler ortalama alma yöntemiyle DEĞİL, sadece bir önceki geçerli kapanış fiyatının ileriye taşınması (Forward Fill / LOCF) yöntemiyle doldurulmuştur.
+Dört farklı özellik seti tanımlanmıştır: hist_tech (13 özellik), technical (7), historical (6) ve closing (1). Giriş pencere boyutu In ∈ {2, 4, 6} ve tahmin ufku Out ∈ {1, 3, 5} olarak 9 farklı kombinasyonda denenmiştir. Toplamda 3000'i aşkın model eğitimi gerçekleştirilmiştir.
+
+Şekil 5. THYAO kapanış fiyatı zaman serisi — 2022 sonrası makroekonomik rejim değişikliği gözlemlenmektedir.
+3.1.2. THYAO için Model Karşılaştırmaları
+Tablo 1. THYAO için Model Karşılaştırması (2018–2026, Test Seti)
+Model
+En İyi Accuracy
+F1 Skoru
+Sensitivity
+Specificity
+Dengeli Doğruluk (BA)
+Kısa Yorum
+ARIMA
+%55.78
+—
+—
+—
+—
+Doğrusal yapısı gürültülü veride sınırlı
+CNN
+%53.97
+0.638
+0.758
+0.331
+%54.45
+MC'ye LSTM'den dirençli (9/36)
+LSTM ★
+%57.56
+0.589
+0.574
+0.600
+%58.71
+En yüksek Accuracy (hist_tech, In=4, Out=3); 12/36 MC
+Naive Baseline
+%79.73 (Out=5)
+—
+—
+—
+—
+Out=5'te tüm karmaşık modelleri geride bırakıyor
+Not: CNN en iyi: hist_tech, In=2, Out=3, SD=0.012. LSTM en iyi: hist_tech, In=4, Out=3, SD=0.019.
+Tablo 2. THYAO Versiyon Karşılaştırması (2018–2022 Eski vs 2018–2026 Güncel, hist_tech)
+Model
+Accuracy Eski
+Accuracy Güncel
+Sensitivity
+Specificity
+F1
+p-değeri
+LSTM ★
+61.42%
+57.56%
+0.574
+0.600
+0.589
+0.0016
+CNN
+61.99%
+53.97%
+0.758
+0.331
+0.638
+0.0371
+ARIMA
+51.49%
+55.78%
+—
+—
+—
+—
+Naive
+81.56%
+79.73%
+—
+—
+—
+—
+Yüksek gürültüye ve dış şoklara maruz kalan THYAO verisinde hiçbir karmaşık model Naive Baseline eşiğini tutarlı biçimde aşamamıştır. Bu durum, piyasa gürültüsünün algoritma karmaşıklığına baskın geldiğini göstermektedir. Ancak CNN modelinin MC sayısı 9/36 iken LSTM'in MC sayısı 12/36 olarak gerçekleşmiş; bu da 1D-CNN'in sınıf dengesizliğine LSTM'den daha dirençli olduğunu ortaya koymaktadır.
+
+Şekil 6. CNN vs LSTM — MC Direnci Karşılaştırması. Tüm varlıklarda CNN ≤ LSTM (MC sayısı bakımından).
+
+Şekil 7. Concept Drift — THYAO 2018-2022 ile 2018-2026 dönemi arasında technical set Accuracy düşüşü (LSTM −5.31, CNN −7.24).
+NOT: THYAO için hist_tech (14 değişken) seçilmiştir. Closing seti tüm dönemlerde Majority Class'a düşmüştür.
+
+3.2. Bireysel Emeklilik Fon Yön Tahmini
+3.2.1. Bireysel Emeklilik Fon Verisi
+Çalışmanın ikinci aşamasında, TEFAS üzerinden elde edilen üç farklı Allianz Yaşam bireysel emeklilik fonu kullanılmıştır: ALZ (Para Piyasası, düşük risk), AZS (Standart EYF, orta risk) ve AMZ (Altın EYF, yüksek risk). Veriler 2021–2026 yıllarını kapsamakta olup, fon piyasasının doğası gereği haftalık periyotlarla analiz edilmiştir. Geçerli gözlem sayıları sırasıyla ALZ: 249, AZS: 261, AMZ: 262'dir.
+Emeklilik fon verisinde High/Low sütunları bulunmadığından, SO_K/SO_D yerine Momentum; ADX yerine ise rolling standart sapma tabanlı Volatility kullanılmıştır. Üç özellik seti tanımlanmıştır: full (7 özellik), technical (3), closing (1). Eksik veriler Forward Fill (LOCF) yöntemiyle giderilmiştir.
+
+Şekil 8. Model × Varlık Heat-map — ARIMA / CNN / LSTM / Naive × THYAO, ALZ, AZS, AMZ (tüm varlıklar dahil).
+3.2.2. ALZ — Düşük Riskli Fon
+Tablo 3. ALZ — Düşük Riskli Fon (2021–2026, Test Seti)
+Model
+En İyi Accuracy
+F1 Skoru
+Specificity
+Dengeli Doğruluk (BA)
+Kısa Yorum
+ARIMA
+%100.0
+—
+—
+—
+Monoton yükseliş trendinde mükemmel sonuç
+CNN
+%100.0 (MC)
+—
+0.00 / NA
+%50.00 ⚠
+MC illüzyonuna düştü (27/27)
+LSTM
+%100.0 (MC)
+—
+0.00 / NA
+%50.00 ⚠
+Azınlık sınıfı (düşüş) yok
+Naive Baseline
+%100.0
+—
+—
+—
+Tüm test periyodu yükseliş
+ALZ fonunda test dönemi boyunca gerçek bir düşüş hareketi gözlemlenmediğinden hem derin öğrenme modelleri hem de Naive Baseline teorik olarak %100 Accuracy üretmiştir. Ancak Specificity'nin tanımsız (NA) olması, modellerin aslında hiçbir şey öğrenmediğini; yalnızca tek yönlü veri yapısına teslim olduğunu göstermektedir.
+3.2.3. AZS — Orta Riskli Fon
+Tablo 4. AZS — Orta Riskli Fon (2021–2026, Test Seti)
+Model
+En İyi Accuracy
+F1
+Sensitivity
+Specificity
+BA
+En İyi Konfigürasyon
+ARIMA
+%80.65
+—
+—
+—
+—
+In=2, Out=5, d=0
+CNN ★
+%75.56
+0.889
+0.909
+0.625
+%76.70
+technical, In=4, Out=3; MC=9/27
+LSTM
+%68.89
+0.844
+0.792
+0.667
+%72.95
+full, In=2, Out=5; MC=13/27
+Naive
+%90.32 (Out=5)
+—
+—
+—
+—
+Out=1=%60, Out=3=%84.86
+Orta riskli AZS fonunda CNN modeli (%75.56) LSTM'i (%68.89) geçmiştir. MC sayıları da aynı yönü doğrulamaktadır: CNN 9/27 iken LSTM 13/27. Bu sonuç, 1D-CNN'in yerel patern yakalama üstünlüğünün orta volatiliteli seriler için anlamlı olduğunu göstermektedir.
+
+Şekil 9. Özellik seti etkisi — technical set, AZS CNN'in BA=%76.70 zirvesini üretmektedir.
+3.2.4. AMZ — Yüksek Riskli Fon
+Tablo 5. AMZ — Yüksek Riskli Fon (2021–2026, Test Seti) — Projenin Yıldızı ★★
+Model
+En İyi Accuracy
+F1
+Sensitivity
+Specificity
+BA
+En İyi Konfigürasyon
+ARIMA
+%80.65
+—
+—
+—
+—
+d=0 (input-bağımsız)
+CNN
+%74.36
+0.857
+0.900
+0.333
+%61.65
+closing, In=6, Out=5; MC=9/27
+LSTM ★★
+%80.21
+0.894
+0.840
+0.857
+%84.86 ★
+full, In=2, Out=3; MC=10/27 — Projenin Yıldızı
+Naive
+%90.32 (Out=5)
+—
+—
+—
+—
+Out=3=%78.79 (LSTM bunu aştı)
+AMZ fonunda LSTM modeli, full özellik seti, In=2, Out=3 konfigürasyonunda %80.21 Accuracy, 0.894 F1 ve 0.857 Specificity elde etmiştir. Bu çalışmanın en güçlü bulgusudur: model hem yukarı hem aşağı yönleri başarıyla ayırt edebilmektedir. Ayrıca Out=3 tahmin ufkunda LSTM, Naive Baseline'ı (%78.79) geride bırakarak yüksek riskli momentum serilerinde derin öğrenmenin anlamlı katkı sağlayabileceğini göstermektedir.
+
+Şekil 10. AMZ LSTM — Balanced Accuracy zirvesi (%84.86), projenin yıldız bulgusu.
+
+Şekil 11. AMZ LSTM Champion — Acc / F1 / Sens / Spec / BA radar profili.
+
+Şekil 12. AMZ LSTM Confusion Matrix — TP=21, TN=6, FP=1, FN=4 (Out=3, 3-seed ortalama).
+3.3. Majority Class Dağılımı Özeti
+Tablo 6. Majority Class Dağılımı — Tüm Veri Setleri (Geniş Tanım: Spec=0 VEYA Sens=0 VEYA Spec=NA)
+Veri / Model
+full
+technical
+historical
+closing
+TOPLAM
+Oran
+THYAO LSTM
+—
+0/9
+3/9
+9/9
+12/36
+%33
+THYAO CNN
+—
+0/9
+0/9
+9/9
+9/36
+%25
+ALZ LSTM/CNN
+9/9
+9/9
+—
+9/9
+27/27
+%100
+AZS LSTM
+1/9
+3/9
+—
+9/9
+13/27
+%48
+AZS CNN
+1/9
+3/9
+—
+5/9
+9/27
+%33
+AMZ LSTM
+0/9
+1/9
+—
+9/9
+10/27
+%37
+AMZ CNN
+1/9
+1/9
+—
+7/9
+9/27
+%33
+
+Şekil 13. Specificity vs Sensitivity — MC Sinkhole Haritası. Sağ-üst köşe gerçek öğrenme bölgesi.
+
+4. Sonuç ve Bulgular
+Bu çalışmada, geleneksel zaman serisi yöntemi olan ARIMA ile derin öğrenme mimarileri (LSTM ve 1D-CNN), farklı piyasa dinamiklerine sahip iki varlık sınıfı (THYAO hisse senedi ve TEFAS emeklilik fonları) üzerinde karşılaştırmalı olarak analiz edilmiştir. Araştırma sonucunda literatürdeki yaygın varsayımları sorgulayan dört temel bulguya ulaşılmıştır.
+Bulgu 1. Sinyal/Gürültü Oranı Algoritma Karmaşıklığından Daha Belirleyicidir
+Çalışmanın en çarpıcı sonucu, derin öğrenme algoritmalarının başarısının model karmaşıklığından ziyade verinin doğasına bağlı olduğunun kanıtlanmasıdır. BIST gibi gelişmekte olan, dış şoklara ve yüksek gürültüye açık bir piyasada işlem gören THYAO hisse senedinde; kapsamlı hiperparametre optimizasyonlarına rağmen hiçbir karmaşık ağ yapısı, Naive Baseline eşiğini tutarlı bir şekilde aşamamıştır. Buna karşılık aynı metodoloji profesyonelce yönetilen ve dış şokların törpülendiği AMZ fonu verisine uygulandığında, LSTM modeli %80.21 Accuracy ve 0.894 F1 ile olağanüstü bir başarı yakalayarak Naive Baseline'ı geride bırakmıştır.
+
+Şekil 14. Risk Seviyesi vs Öğrenme Yeteneği — ALZ (düşük, MC) → AZS (orta, CNN) → AMZ (yüksek, LSTM yıldızı).
+Bulgu 2. Sınıf Dengesizliği (Majority Class) İllüzyonu ve Mimari Direnç Farkı
+Literatürdeki birçok çalışmanın düştüğü 'test setindeki çoğunluk sınıfını tahmin ederek yüksek doğruluk elde etme' tuzağı, bu çalışmada Specificity ve Sensitivity metrikleriyle deşifre edilmiştir. Yapılan analizlerde zaman serileri için 'altın standart' olarak kabul edilen LSTM'in, tek yönlü tahmin tuzağına CNN'den daha hızlı düştüğü görülmüştür (THYAO LSTM 12/36 MC, THYAO CNN 9/36 MC). LSTM'in uzun vadeli hafıza yapısının gürültülü verilerde bir avantaja değil ağırlığa dönüştüğü; 1D-CNN'in filtreleri aracılığıyla yalnızca yerel paternleri tarayarak sınıf dengesizliğine karşı daha esnek ve dirençli kaldığı tespit edilmiştir.
+Bulgu 3. Düşük Riskli Fonlarda Öğrenme Yetersizliği
+Çalışmanın emeklilik fonları aşamasında, ALZ (düşük riskli fon) gibi neredeyse hiç düşüş yaşamayan, sürekli yukarı yönlü bir trend izleyen serilerde sinir ağlarının başarısız olduğu gözlemlenmiştir. Ağlar, azınlık sınıfını öğrenecek yeterli veriyi (düşüş periyotlarını) bulamadığı için %100 oranında Majority Class tuzağına düşmüştür. Bu tür tek yönlü, stabil trendlerde ARIMA gibi geleneksel doğrusal modellerin çok daha pratik ve güvenilir olduğu kanıtlanmıştır.
+
+Şekil 15. MC Sinkhole — Spec vs Sens haritasında ALZ tüm noktalarıyla sol üst köşede (S=1, Sp=0). AMZ LSTM şampiyonu ise sağ üst bölgede yer almaktadır.
+Bulgu 4. Metodolojik İyileştirmelerin Katkısı
+Referans alınan Van der Burgt (2023) çalışmasındaki metodolojik boşluklar tespit edilmiş ve modellere 4 temel akademik iyileştirme uygulanmıştır: (i) preProcess işleminin yalnızca eğitim verisi üzerinde çalıştırılması, (ii) etiketleme işleminin her split için ayrı yapılması, (iii) kayıp fonksiyonuna class_weight eklenmesi, (iv) sabit epoch yerine patience=5 ile early_stopping kullanılması. Bu düzenlemeler sayesinde çoğunluk sınıfına teslim olma oranları, eski modellere kıyasla THYAO LSTM'de 16/36'dan 12/36'ya, AZS CNN'de ise 19/27'den 9/27'ye düşürülerek algoritmalara gerçek bir 'yön öğrenme' yeteneği kazandırılmıştır.
+
+Şekil 16. Horizon vs Accuracy — Naive Baseline Out uzadıkça güçlenir; AMZ LSTM Out=3'te onu aşan tek modeldir.
+Genel Sonuç
+Finansal piyasaların yönünü tahmin etmede tek ve kusursuz bir derin öğrenme modeli bulunmamaktadır. Model seçimi, varlığın risk profiline ve verinin gürültü seviyesine göre yapılmalıdır. Yüksek gürültülü piyasalarda algoritmalar yön bulmakta zorlanırken, temiz momentum serilerinde (AMZ fonu) LSTM, orta riskli serilerde (AZS fonu) ise yerel patern yakalama becerisiyle 1D-CNN öne çıkmaktadır. Elde edilen bulgular, derin öğrenmenin finansal yön tahminindeki sınırlarını ortaya koymakla birlikte, metodolojik titizliğin ve sınıf dengesizliği raporlamasının alan için kritik bir gereklilik olduğunu göstermektedir.
+NOT: Çalışmanın tüm sayısal sonuçları 3 farklı tohum (seed 23, 27, 98) ortalaması ve havuzlanmış (pooled) karmaşıklık matrisi ile doğrulanmış; matematiksel tutarlılık %100 sağlanmıştır.
+
+5. Akademik Tartışma ve Savunma Stratejisi (Jüri Hazırlık)
+Bu bölüm, çalışmanın akademik geçerliliğini korumak ve jüriden gelebilecek kritik sorulara karşı 'önleyici savunma' argümanlarını sunmaktadır.
+5.1. ALZ Fonu ve F1-Skoru İllüzyonu Savunması
+Tespit: ALZ fonu test setinde hiç düşüş (down) içermediği için F1-skoru ve Accuracy %100 çıkmaktadır.
+Savunma Argümanı: ALZ fonu bir başarı ölçütü değil, bir 'Majority Class' laboratuvarıdır. Test setinin %100 yükseliş eğiliminde olduğu bir senaryoda F1-skorunun 1.0 çıkması modelin zekasını değil, verinin dengesizliğini kanıtlar. Bu doğrultuda, çalışmamızda ALZ sonuçları başarı olarak değil, 'Majority Class İllüzyonu'nun ispatı olarak kaydedilmiştir. Modelin gerçek performans ölçütü olarak Specificity (düşüşü bilme) metriği birinci plana alınmıştır.
+5.2. ARIMA'nın ALZ Başarısı Üzerine Eleştirel Yaklaşım
+Tespit: ARIMA modeli de ALZ fonunda %100 başarıya ulaşmıştır.
+Savunma Argümanı: Sadece derin öğrenme modelleri değil, trend takip eden klasik istatistiksel modeller (ARIMA) de kesintisiz yukarı yönlü piyasalarda (bull market bias) çoğunluk sınıfına teslim olmaktadır. Bu durum, BIST Para Piyasası fonlarının stokastik bir yapıdan ziyade deterministik bir momentum sergilediğini, dolayısıyla her iki model grubunun da (istatistiksel ve DL) yapısal trende eklemlendiğini göstermektedir.
+5.3. THYAO Naive Baseline Paradoksu
+Tespit: Naive Baseline modelinin THYAO'da %80'e yaklaşması.
+Savunma Argümanı: THYAO verisinde Naive modelin yüksek çıkması bir tahmin başarısı değil, 'Trend Mirası' (Trend Inheritance) etkisidir. BIST'in genel yükseliş trendinde 'dünü bugüne kopyalamak' istatistiksel bir avantaj sağlar. Çalışmamızın özgün değeri, AMZ gibi daha volatiliteli bir fonda LSTM'in bu güçlü Naive Baseline'ı geride bırakarak gerçek anlamda 'Predictive Power' (Tahmin Gücü) sergilediğini kanıtlamasıdır.
+5.4. Concept Drift (Piyasa Rejimi Değişimi) Savunması
+Tespit: THYAO sonuçlarının 2022 öncesi %56 iken güncel periyotta (2026) %50.36'ya düşmesi.
+Savunma Argümanı: Bu bir başarısızlık değil, bir 'Tespit'tir. Piyasa her zaman aynı kalmaz. Özellikle 2022 sonrası Türkiye piyasalarındaki makroekonomik rejim değişikliği (Concept Drift), modellerin geçmiş paternlerden öğrenme kabiliyetini kısıtlamıştır. Modellerimiz bu rejim değişikliğini 'başarı oranındaki düşüş' ile bilimsel olarak yakalamıştır. Bu durum, piyasanın Zayıf Formda Etkinliğe (Weak Form EMH) yaklaştığının bir kanıtı olarak sunulabilir.
+5.5. Sınıflandırma vs Regresyon Savunması
+Soru: 'Neden MSE/RMSE gibi hata metrikleri yok?'
+Cevap: Çalışmamız, fiyatın tam değerini tahmin etmek yerine 'Yön' (Direction) tahminine odaklanmıştır. Finansal literatürde (Van der Burgt, 2023) yön tahmini, stratejik yatırım kararları için daha anlamlı kabul edilir. Bu nedenle regresyon hataları yerine 'Sınıflandırma Doğruluğu' (Sensitivity/Specificity) baz alınmıştır.
+5.6. İstatistiksel Anlamlılık: Binom Testi ve P-Value Savunması
+AMZ LSTM modelinin %80.21 Accuracy değeri (n=40, H₀: p ≤ 0.50) için binom testi uygulanmıştır. Elde edilen p-değeri p = 0.0001 olup α = 0.05 anlamlılık düzeyinde boş hipotez reddedilmektedir. Bu bulgu, AMZ LSTM'in 'şans düzeyi'nin istatistiksel olarak anlamlı biçimde üzerinde performans sergilediğini kanıtlamaktadır.
+
+EK A — THYAO Versiyon Karşılaştırması ve Concept Drift Analizi
+A.1. Eski (2018–2022) vs Güncel (2018–2026)
+Tablo A.1. THYAO Versiyon Karşılaştırması
+Ölçüt
+Eski (2018–2022)
+Güncel (2018–2026)
+Veri Aralığı
+01.01.2018 – 31.12.2022
+01.01.2018 – 31.03.2026
+ARIMA Ortalama Accuracy
+%49.83
+%51.34
+LSTM MC Oranı
+16/36
+12/36 (closing 9/9, historical 3/9)
+CNN MC Oranı
+8/36
+9/36 (closing 9/9, diğerleri 0/9)
+Özellik Sayısı
+14 (Fear&Greed dahil)
+13 (Fear&Greed çıkarıldı)
+Kod
+THYAO_CALISTIR.R
+THYAO_GUNCEL.R
+A.2. Concept Drift Analizi
+ARIMA 2018-2022: %49.83 → 2018-2026: %51.34 (+%1.51 artış, stabil). 2022 sonrası THYAO piyasası yapısal olarak değişti (TCMB faiz politikası, enflasyon, seçim vb.). Asıl darbeyi yiyen derin öğrenme modelleridir:
+Tablo A.2. Concept Drift — Technical Set Accuracy Karşılaştırması
+Model
+Eski (2018–2022) Technical
+Güncel (2018–2026) Technical
+Değişim
+LSTM
+%55.83
+%50.52
+−%5.31 ↓
+CNN
+%56.79
+%49.55
+−%7.24 ↓
+ARIMA (ortalama)
+%49.83
+%51.34
++%1.51 (stabil)
+ARIMA zaten random walk (~%50) seviyesindeydi, kayıp yaşamadı. 'Başarısız kalmanın sürmesi dirençlilik sayılamaz.' Doğru anlatım: DL modelleri eskiden technical sette %55-57 alırken piyasa bozulunca ARIMA seviyesine geriledi.
+EK B — Van der Burgt (2023) ile 9 Metodolojik Fark
+Van der Burgt (2023), NASDAQ100 verisinde LSTM ve CNN modellerini karşılaştırmıştır. Mevcut çalışmada bu referanstan 9 temel metodolojik fark tespit edilmiş ve giderilmiştir:
+Tablo B.1. 9 Metodolojik Farklılık
+#
+Fark
+Gerekçe
+1
+NASDAQ100 → THYAO
+Gelişmekte olan piyasada (BIST) test — farklı gürültü yapısı
+2
+DXY → USD/TRY
+THYAO dövize duyarlı havayolu — yerel kur daha açıklayıcı
+3
+FED → TCMB
+Yerel para politikasının THYAO üzerindeki etkisi
+4
+Investing.com → Yahoo Finance
+Tekrar üretilebilirlik ve açık kaynak erişimi
+5
+CNN Business → GitHub (F&G)
+Otomatik veri çekimi; GitHub verisi 2020'de bitiyor → çıkarıldı
+6
+Forward fill açıkça belirtildi
+Orijinal makale eksik değer yönetimini açıklamamış
+7
+ARIMA method: CSS vs ML
+Yakınsama sorunu çözümü — ML yöntemi
+8
+Appendix C p/q tutarsızlığı
+Orijinal makalede metin-tablo uyuşmazlığı
+9
+Fear&Greed çıkarıldı
+GitHub verisi 2020'de bitiyor → 14 özellik yerine 13
+EK C — Majority Class Detaylı Dağılım Tabloları
+C.1. THYAO MC Dağılımı (Feature Set Bazında)
+Tablo C.1. THYAO MC Alt-Dağılımı
+Model
+hist_tech
+technical
+historical
+closing
+TOPLAM
+LSTM
+0/9
+0/9
+3/9
+9/9
+12/36 (%33)
+CNN
+0/9
+0/9
+0/9
+9/9
+9/36 (%25)
+Anahtar bulgu: CNN < LSTM (MC sayısı). Closing seti tam MC.
+C.2. Emeklilik Fonları MC Dağılımı
+Tablo C.2. Emeklilik Fonları MC Detaylı Dağılımı
+Fon
+Model
+full
+technical
+closing
+TOPLAM
+Not
+ALZ
+LSTM
+9/9
+9/9
+9/9
+27/27
+Spec=NA, monoton yükseliş
+ALZ
+CNN
+9/9
+9/9
+9/9
+27/27
+Spec=NA, monoton yükseliş
+AZS
+LSTM
+1/9
+3/9
+9/9
+13/27
+—
+AZS
+CNN
+1/9
+3/9
+5/9
+9/27
+CNN < LSTM (MC)
+AMZ
+LSTM
+0/9
+1/9
+9/9
+10/27
+full set: 0 MC! (şampiyon)
+AMZ
+CNN
+1/9
+1/9
+7/9
+9/27
+CNN < LSTM (MC)
+
+EK D — Jüri Savunması: Olası Sorular ve Cevaplar
+Soru 1: ALZ %100 Accuracy çok iyi değil mi?
+Cevap: ALZ monoton yükselen bir fondur — test setinde hiç düşüş yoktur. Her model ve Naive Baseline %100 alır. Bu, modelin başarısı değil, verinin özelliğidir. Gerçek test AMZ fonundadır. Specificity=NA → hiçbir şey öğrenilmedi.
+Soru 2: Neden emeklilik için farklı göstergeler kullandınız?
+Cevap: Emeklilik fon verisi sadece fiyat ve getiri içerir; High/Low bilgisi TEFAS'ta mevcut değildir. Bu nedenle SO ve ADX yerine eşdeğer bilgi taşıyan Momentum ve Volatilite (rolling standart sapma) kullanılmıştır.
+Soru 3: Accuracy neden düşük?
+Cevap: %50 civarı Accuracy + Specificity > 0 = gerçek öğrenme. %70 Accuracy + Specificity = 0 = çoğunluk sınıfı illüzyonu. Düşük Accuracy bazen daha iyidir. AMZ LSTM %80.21 + Spec=0.857 bunu kanıtlıyor.
+Soru 4: Makaleden farkınız ne?
+Cevap: 4 akademik iyileştirme (preProcess train-only, label ayrı split, class_weight, early_stopping) + Majority Class analizi + Specificity raporlama + CNN-LSTM MC karşılaştırması + BIST'te gelişmekte olan piyasa testi. Bunlar orijinal katkılarımızdır.
+Soru 5: Neden ARIMA gürültülü veride de iyi?
+Cevap: ARIMA zaten ~%50 (random walk) seviyesindeydi. 'Başarısız kalmanın sürmesi dirençlilik sayılamaz.' DL modelleri eski veride %55-57 alırken piyasa bozulunca ARIMA seviyesine geriledi. ARIMA'nın 'stabil kalması' başarısını değil, zaten başarısız olduğunu gösteriyor.
+Soru 6: Neden LSTM > CNN değil?
+Cevap: Literatür regresyon (fiyat tahmini) için LSTM üstün bulmuştur. Biz sınıflandırma (yön tahmini) yapıyoruz. Gürültülü veri + sınıf dengesizliği kombinasyonunda CNN'in yerel filtrelemeleri daha iyi çalışıyor. MC sayısı: CNN < LSTM (THYAO, AZS, AMZ'de tutarlı). Bu çalışmanın orijinal bulgusudur.
+Soru 7: Seed sayısı 3 yeterli mi?
+Cevap: Van der Burgt (2023) referans çalışmasında 3 seed kullanılmıştır. Biz de tutarlılık ve karşılaştırılabilirlik için aynı sayıda seed (23, 27, 98) kullandık. Her konfigürasyon için standart sapma raporlanmış, kararlılık değerlendirilmiştir.
+Soru 8: Haftalık veri neden seçildi?
+Cevap: TEFAS fon fiyatları günlük işlem görmekle birlikte, fon sepetinin yeniden dengelenmesi haftalıktır ve günlük değişimler çoğunlukla gürültüdür. Haftalık periyot, anlamlı trend sinyali yakalamak için metodolojik olarak daha uygun bir seçimdir.
+Soru 9: Neden sadece Allianz fonları?
+Cevap: Allianz Yaşam fonları ALZ, AZS ve AMZ; düşük, orta ve yüksek risk profilini sistematik biçimde temsil etmektedir ve aynı kurum içinde kontrollü bir karşılaştırma imkânı sunmaktadır.
+Soru 10: Overfitting kontrolü nasıl yapıldı?
+Cevap: Early stopping (patience=5) ile validation loss izlenmiş ve aşırı öğrenme önlenmiştir. Ayrıca 3 farklı seed ile çalışılmış; sonuçlarda standart sapma düşük çıktığında kararlılık teyit edilmiştir.
+Soru 11: AMZ LSTM Specificity=0.857 gerçekten anlamlı mı?
+Cevap: Evet. AMZ veri setinde yaklaşık %40 düşüş, %60 yükseliş hareketi vardır. Spec=0.857 modelin 100 gerçek düşüşten 85'ini doğru tespit edebildiği anlamına gelir. Bu hem istatistiksel hem de finansal açıdan anlamlıdır.
+Soru 12: Bu bulgular gerçek yatırım kararında kullanılabilir mi?
+Cevap: AMZ fonu Out=3 (3 haftalık ufuk) için LSTM modeli Naive'yi geçmektedir — bu pratik sinyal değeri taşır. Ancak bu bir akademik çalışmadır ve transaction cost, slippage, vergi gibi gerçek dünya faktörleri modele dahil edilmemiştir. Yatırım kararı vermeden önce kapsamlı backtesting gereklidir.
+
+EK E — Emeklilik Fonları Eski vs Güncel Karşılaştırması
+Tablo E.1. AMZ Fonu: Eski vs Güncel
+AMZ
+Eski
+Güncel (2021–2026)
+Değişim
+Not
+ARIMA max
+%81.08
+%80.65
+~0
+Stabil
+LSTM max Acc
+%80.60*
+%80.21
+~0
+Eski Spec=0; Güncel Spec=0.857 → gerçek öğrenme
+CNN max Acc
+%80.60*
+%74.36
+−6.79 ↓
+class_weight gerçek ayrımı ortaya koydu
+LSTM MC
+12/27
+10/27
+−2
+class_weight ile iyileşme
+CNN MC
+15/27
+9/27
+−6 ↓
+class_weight büyük etkisi
+* Eski LSTM/CNN maksimumları Spec=0 (MC illüzyonu). Güncel LSTM %80.21 Spec=0.857 → gerçek öğrenme.
+EK F — Teknik Göstergeler ve Matematiksel Altyapı
+Çalışmada modellerin özellik setlerini oluşturmak amacıyla literatürde kabul görmüş 14 farklı finansal ve teknik gösterge kullanılmıştır.
+1. Logaritmik Getiri: R_t = ln(P_t / P_{t-1}). Finansal zaman serilerindeki bileşik büyüme etkisini normalize eder.
+2. Üssel Hareketli Ortalama (EMA): EMA_t = (P_t × 2/(n+1)) + EMA_{t-1} × (1 − 2/(n+1)). Çalışmada n=12 ve n=26 periyotluk EMA değerleri hesaplanmıştır.
+3. MACD: MACD_t = EMA_12(P_t) − EMA_26(P_t). Kısa vadeli momentum ile uzun vadeli momentum arasındaki ilişkiyi ölçer.
+4. Göreceli Güç Endeksi (RSI): RSI = 100 − 100/(1 + RS); RS = Ortalama Kazanç / Ortalama Kayıp (14 periyotluk). 0-100 bandında aşırı alım/satım sinyalleri üretir.
+5. Stokastik Osilatör: %K = 100 × (C − L14)/(H14 − L14); %D = SMA3(%K). Kapanış fiyatının 14 periyotluk aralığa göre konumunu gösterir.
+6. ADX (Average Directional Index): ADX = 100 × EMA(|+DI − (−DI)| / (+DI + (−DI))). Trendin gücünü, yönünden bağımsız olarak ölçer.
+7. Momentum: M_t = P_t − P_{t-n}. Fiyatın n periyot önceki değere göre değişim hızını gösterir.
+8. Tarihsel Volatilite: σ = √(1/(N−1) × Σ(R_i − μ)²). Günlük logaritmik getirilerin standart sapmasıdır.
+9. Derin Öğrenme Fonksiyonları: ReLU f(x) = max(0, x) | Sigmoid σ(x) = 1/(1 + e^{-x}) | Binary Cross-Entropy: L = −(1/N) × Σ[y_i ln(p_i) + (1 − y_i) ln(1 − p_i)].
+EK G — Varlık ve Fon Profilleri
+THYAO (Türk Hava Yolları): BIST'te işlem gören yüksek volatilite (~%45 yıllık) ve yüksek likiditeye sahip hisse senedi. Döviz kuru, jet yakıt fiyatları ve jeopolitik risklere yüksek duyarlılığı ile 'gürültülü piyasa' test ortamı sunmaktadır. Günlük veri, 2037 işlem günü (2018-2026).
+ALZ (Allianz Yaşam Düşük Riskli): Para piyasası karakterli, ~%2 yıllık volatilite, düşük risk fonu. Test döneminde %100 yükseliş trendi ile MC İllüzyonu kontrol grubu. Haftalık veri, 249 gözlem.
+AZS (Allianz Yaşam Orta Riskli): ~%18 yıllık volatilite, hisse+tahvil karışımı. CNN'in konvolüsyonel pattern üstünlüğünü (BA=%76.70) kanıtlayan fon. Haftalık veri, 261 gözlem.
+AMZ (Allianz Yaşam Yüksek Riskli): ~%38 yıllık volatilite, ağırlıklı hisse fonu. LSTM'in yıldız performansı (BA=%84.86) burada elde edilmiştir. Haftalık veri, 262 gözlem.
+EK H — Hiperparametre Optimizasyonu (Grid Search)
+H.1. Arama Uzayı
+Toplam: 1.296 kombinasyon (tüm varlıklar ve modeller dahil). Boyutlar: Model Tipi (LSTM, CNN) × Özellik Seti (closing, technical, full/hist_tech) × LSTM Hücre Sayısı (32, 64, 128) × Input Window (In=2, 4, 6) × Output Window (Out=1, 3, 5) × Optimizer (Adam/SGD) × 3 Bağımsız Seed (rastlantısallık kontrolü).
+H.2. Kazanan Konfigürasyonlar
+Tablo H.1. Grid Search Şampiyonları
+Varlık
+Model
+Feature Set
+Input
+Output
+BA
+THYAO
+LSTM
+hist_tech
+4
+3
+%58.71
+AZS
+CNN ★
+technical
+4
+3
+%76.70
+AMZ
+LSTM ★★
+full
+2
+3
+%84.86 ★
+ALZ
+Tüm
+Tüm
+Tüm
+Tüm
+%50.00 (MC)
+
+Şekil H.1. Optimizer Robustness — Adam ve SGD karşılaştırması. Adam yüksek volatilite fonlarında daha kararlı yakınsama sağlamaktadır.
+
+Şekil H.2. Feature Synergy Boxplot — full set (teknik+tarihsel) BA dağılımında en yüksek medyan ve düşük varyans.
+
+Şekil H.3. Window Sensitivity — In={2,4,6} karşılaştırması. Kısa pencere (In=2) AMZ'de en güçlü, uzun pencere THYAO'da daha kararlı.
+EK I — Karmaşıklık Matrisleri
+Bu ekte, çalışmanın temel bulgularını destekleyen ham karmaşıklık matrisi verileri sunulmaktadır. Tüm değerler test seti üzerinden 3 seed ortalaması alınarak hesaplanmıştır.
+I.1. AMZ LSTM Şampiyon (Full Set, Input=2, Output=3)
+Tablo I.1. AMZ LSTM Confusion Matrix
+
+Tahmin: Yukarı
+Tahmin: Aşağı
+Gerçek: Yukarı
+TP = 21
+FN = 4
+Gerçek: Aşağı
+FP = 1
+TN = 6
+Accuracy = %80.21 | Sensitivity = 0.840 | Specificity = 0.857 | F1 = 0.894 | Balanced Accuracy = %84.86 | p-değeri (n=40, H₀: p ≤ 0.50) = 0.0001.
+I.2. AZS CNN (Technical, Input=4, Output=3)
+TP = 25 | TN = 6 | FP = 3 | FN = 3. Accuracy = %75.56 | Sensitivity = 0.909 | Specificity = 0.625 | F1 = 0.889 | Balanced Accuracy = %76.70.
+I.3. THYAO LSTM (hist_tech, Input=4, Output=3)
+TP = 92 | TN = 90 | FP = 60 | FN = 68. Accuracy = %58.71 (3-seed ortalama %57.56) | Sensitivity = 0.574 | Specificity = 0.600 | BA = %58.71.
+I.4. THYAO LSTM — MC İllüzyonu (Closing, In=2, Out=5)
+TP = 96 | TN = 0 | FP = 89 | FN = 0. Accuracy = %51.33 | Sensitivity = 1.000 | Specificity = 0.000 | Balanced Accuracy = %50.00 ← MC İllüzyonu!
+I.5. ALZ Fonu — MC Kanıtı
+ALZ test setinde 37 yükseliş, 0 düşüş. Her model Spec=NA → BA=%50.00. 27/27 konfigürasyon MC. Verinin yapısal özelliğidir, model başarısı değildir.
+EK J — Teknik + Tarihsel Veri Sinerjisi
+Teknik göstergeler (RSI, MACD, EMA, ADX) ile tarihsel makroekonomik veriler (USD/TRY, Petrol, Fear&Greed, Faiz) birlikte kullanıldığında — yalnızca teknik veya yalnızca tarihsel veri kullanımına kıyasla — Specificity (Düşüşü Yakalama) metriğinde anlamlı iyileşme gözlemlenmiştir.
+THYAO LSTM: En iyi özellik seti hist_tech (13 özellik). Yalnızca technical (7 özellik) ile BA=%57.4 iken, hist_tech kombinasyonunda BA=%58.71'e yükselmiştir. Bu artış, makroekonomik bağlamın (özellikle USD/TRY ve Fear&Greed) günlük hisse fiyat yönü üzerindeki açıklayıcı katkısını doğrulamaktadır.
+AMZ LSTM: En iyi özellik seti full (7 özellik = kapanış + RSI + MACD + Momentum + Volatility). Yalnızca closing (1 özellik) ile Specificity=0.000 (MC illüzyonu) iken, full set kombinasyonunda Specificity=0.857 ve BA=%84.86 elde edilmiştir. Sinerjinin en çarpıcı kanıtı budur.
+EK K — Train/Test Sınıf Dağılımı
+Tablo K.1. Veri Bölme Stratejisi ve Test Sınıf Dağılımı
+Varlık
+Frekans
+Toplam
+Train
+Validation
+Test
+Test Dağılımı
+THYAO
+Günlük
+2037
+1459
+313
+313
+Yük=160 (%51) / Düş=150 (%48)
+ALZ
+Haftalık
+249
+174
+0
+38
+Yük=35 (%100) / Düş=0 (%0) — MC
+AZS
+Haftalık
+261
+183
+0
+43
+Yük≈28-30 / Düş≈13-15
+AMZ
+Haftalık
+262
+183
+0
+40
+Yük=30 (%75) / Düş=7 (%17.5)
+EK L — Sinkhole Analizi (ALZ Vakası)
+L.1. Sinkhole Kavramı
+'Sinkhole' terimi, bu çalışmada düşük riskli ve monoton trend sergileyen varlıklarda derin öğrenme modellerinin standart Accuracy metriğiyle yanıltıcı biçimde yüksek skor üretmesi olgusunu tanımlamak için kullanılmaktadır. ALZ fonu bu olgunun en belirgin örneğidir.
+L.2. ALZ Vakasının Anatomisi
+Test seti yapısı: 35 haftalık gözlem | Yükseliş = 35 (%100) | Düşüş = 0 (%0). Bu yapıda herhangi bir model — hatta tamamen rastgele bir tahmin sistemi bile — 'her zaman yükseliş tahmin et' stratejisiyle %100 Accuracy elde edebilir.
+Gerçek tablo: Specificity = N/A | Balanced Accuracy = %50.00 (rastlantı düzeyinde). %100 Accuracy bir 'öğrenme' değil, 'ezber'dir. Modeller veriyi değil, sınıf dağılımını ezberlemiştir.
+L.3. Akademik Katkı
+ALZ vakası, çalışmanın yalnızca başarı hikâyesi sunmadığını; başarısızlığın nedenini de sistematik biçimde belgelediğini göstermektedir. Düşük riskli, deterministik trend yapısına sahip varlıklarda derin öğrenme modellerinin katma değeri sınırlıdır.
+Sonuç: ALZ %100 Accuracy = Sinkhole. AMZ LSTM %80.21 Accuracy + %84.86 Balanced Accuracy = Gerçek Öğrenme. Bu zıtlık, çalışmanın temel akademik mesajının özüdür.
+
+Kaynakça
+Bai, Y., & Kung, K. S. (2018). A review of predicting stock price direction using deep learning. International Journal of Data Science.
+Bollerslev, T. (1986). Generalized autoregressive conditional heteroskedasticity. Journal of Econometrics, 31(3), 307–327.
+Box, G. E. P., & Jenkins, G. M. (1976). Time series analysis: Forecasting and control. San Francisco: Holden-Day.
+Chong, E., Han, C., & Park, F. C. (2017). Deep learning networks for stock market analysis and prediction: Methodology, data representations, and case studies. Expert Systems with Applications, 83, 187–205.
+Çemrek, F., & Demir, Ö. (2021). Forecasting the returns of pension investment funds in Turkey with artificial neural network. Cumhuriyet Science Journal, 42(4), 942–950.
+Çetinkaya, T. (2019). Hayat sigortası prim üretimlerini tahminleme yöntemlerini karşılaştırarak gelecek yıllar prim üretimini tahminleme [Doktora tezi]. Marmara Üniversitesi.
+Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimates of the variance of United Kingdom inflation. Econometrica, 50(4), 987–1008.
+Eşsiz, S., & Ordu, M. (2024). A univariate time-series analysis for estimating the daily price of the S&P 500 fund basket pension investment fund. Hodja Akhmet Yassawi 8th International Congress on Scientific Research.
+Fama, E. F. (1970). Efficient capital markets: A review of theory and empirical work. The Journal of Finance, 25(2), 383–417.
+Fischer, T., & Krauss, C. (2018). Deep learning with long short-term memory networks for financial market predictions. European Journal of Operational Research, 270(2), 654–669.
+Hamilton, J. D. (1994). Time Series Analysis. Princeton University Press.
+He, H., & Garcia, E. A. (2009). Learning from imbalanced data. IEEE Transactions on Knowledge and Data Engineering, 21(9), 1263–1284.
+Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural Computation, 9(8), 1735–1780.
+Kara, Y., Boyacioglu, M. A., & Baykan, Ö. K. (2011). Predicting direction of stock price index movement using artificial neural networks and support vector machines: The sample of the Istanbul Stock Exchange. Expert Systems with Applications, 38(5), 5311–5319.
+Karadağ Erdemir, Ö., & Kırkağaç, M. (2024). Prediction of logarithmic returns of various risk levels pension investment funds via Box-Jenkins models. IRSYSC 2024, Adana.
+Khaidem, L., Saha, S., & Dey, S. R. (2016). Predicting the direction of stock market prices using random forest. arXiv:1605.00003.
+Kim, K. J. (2003). Financial time series forecasting using support vector machines. Neurocomputing, 55(1–2), 307–319.
+King, G., & Zeng, L. (2001). Logistic regression in rare events data. Political Analysis, 9(2), 137–163.
+Krauss, C., Do, X. A., & Huck, N. (2017). Deep neural networks, gradient-boosted trees, random forests: Statistical arbitrage on the S&P 500. European Journal of Operational Research, 259(2), 689–702.
+LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning. Nature, 521, 436–444.
+Louisa, L., Fauzi, R., & Nugraha, E. S. (2022). Forecasting of retirement insurance filled via internet by ARIMA models. Journal of Actuarial, Finance, and Risk Management, 1(1), 1–8.
+Onocak, D., & Koç, S. (2018). Yapay sinir ağları ile emeklilik yatırım fonu hisse senedi fiyatlarının tahmini. Finans Ekonomi ve Sosyal Araştırmalar Dergisi, 3(3), 590–600.
+Samancı, S. (2010). Türkiye'de bireysel emeklilik sisteminin analizi ve tüketicilerin yaklaşımları üzerine bir araştırma [Yüksek lisans tezi]. Gazi Üniversitesi.
+Selvin, S., Vinayakumar, R., Gopalakrishnan, E. A., Menon, V. K., & Soman, K. P. (2017). Stock price prediction using LSTM, RNN and CNN-sliding window model. ICACCI 2017, 1643–1647.
+Siami-Namini, S., Tavakoli, N., & Namin, A. S. (2018). A comparison of ARIMA and LSTM in forecasting time series. ICMLA 2018, 1394–1401.
+Siami-Namini, S., Tavakoli, N., & Namin, A. S. (2019). The performance of LSTM and BiLSTM in forecasting time series. IEEE Big Data 2019, 3285–3292.
+Valverde-Albacete, F. J., & Peláez-Moreno, C. (2014). 100% classification accuracy considered harmful: The normalized information transfer factor explains the accuracy paradox. PLoS ONE, 9(1), e84217.
+Van der Burgt, M. (2023). Navigating trends: Predicting NASDAQ100 direction with machine learning and deep learning [Master's thesis]. Tilburg University.

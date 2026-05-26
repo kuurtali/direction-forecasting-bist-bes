@@ -1,0 +1,24 @@
+﻿# APPENDIX B: VARLIK VE FON PROFILLERI
+
+## B.1 Varlik Ozet Tablosu
+
+| Varlik | Veri | Volatilite | Risk Sinifi | Donem | Aciklama |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| THYAO | Gunluk | %45 | Agresif | 2018-2026 | Referans hisse; piyasa derinligi en yuksek BIST hissesi |
+| ALZ | Haftalik | %2 | Muhafazakar (Risk: 1) | 2021-2026 | Para piyasasi; kontrol grubu / MC illuzyonu kaniti |
+| AZS | Haftalik | %18 | Dengeli (Risk: 3-4) | 2021-2026 | Karma portfoy; hibrit piyasa dinamigi |
+| AMZ | Haftalik | %38 | Yuksek (Risk: 6-7) | 2021-2026 | Yildiz varlik; DL modellerinin Naive'i gectigi tek varlik |
+
+## B.2 Profil Detaylari
+
+### THYAO - Referans Hisse Senedi
+Borsa Istanbul'un (BIST) en yuksek islem hacmine sahip lokomotif hisselerinden biridir. Van der Burgt (2023) calismasindaki NASDAQ100 endeksine karsilik, Turkiye yerel piyasasinin dinamiklerini yansitmak uzere referans varlik olarak secilmistir. Makroekonomik degiskenlere (USD/TRY, Brent Petrol) olan yuksek duyarliligi ve kuresel soklara hizli tepki vermesi, modellerin ani concept drift'leri ogrenme yeteneklerini olcmek icin zorlu bir test ortami sunmustur.
+
+### ALZ - Dusuk Riskli Kontrol Grubu
+TEFAS sisteminde yer alan, portfoyunun tamamina yakini ters repo, mevduat ve kisa vadeli borclanma araclarindan olusan dusuk riskli (Risk Degeri: 1) emeklilik fonudur. Surekli ve kesintisiz yukselis trendine sahip olmasi nedeniyle projede 'Cogunluk Sinifi (Majority Class) Illuzyonu'nu desifre etmek icin kontrol grubu olarak kullanilmistir. Bu fon ozelinde modellerin ulastigi %100 Accuracy orani, bir tahmin basarisindan ziyade duragan piyasalardaki ezberleme (overfitting/majority class bias) davranisinin ispati niteligindedir.
+
+### AZS - Orta Riskli Fon
+Hem sabit getirili menkul kiymetleri hem de hisse senetlerini dinamik bicimde harmanlayan, orta volatiliteye ve orta riske (Risk Degeri: 3-4) sahip bir fondur. Modellerin hibrit portfoy yapilarina ne kadar adapte olabildigini gozlemlemek amaciyla veri setine dahil edilmistir.
+
+### AMZ - Yuksek Riskli 'Yildiz Varlik'
+Portfoyunun asgari %80'ini BIST'te islem goren hisse senetlerine yatirmak zorunda olan, yuksek riskli (Risk Degeri: 6-7, yillik Volatilite: %38) emeklilik fonudur. Derin ogrenme modellerinin (LSTM ve CNN) geleneksel Naive Baseline modelini istatistiksel ve oransal olarak (Accuracy: %80.21, Specificity: %85.71) net bicimde geride biraktigi 'Yildiz Varlik' konumundadir.

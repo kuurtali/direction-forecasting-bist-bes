@@ -1,0 +1,34 @@
+﻿# APPENDIX G: OZELLIK SETI TANIMLARI VE PROXY GOSTERGELERI
+
+## G.1 THYAO (Gunluk) Ozellik Setleri
+NOT: Fear & Greed Index 2024 sonrasi kaynak kesildigi icin modelde devre disi birakilmistir; ham tanimda 14 olan FULL/hist_tech seti uygulanan modelde 13 ozellige inmistir, ham tanimda 7 olan historical seti ise 6 ozellige inmistir.
+
+| Set Adi | Icerdigi Ozellikler | Degisken Sayisi |
+| :--- | :--- | :--- |
+| closing | Close | 1 |
+| historical | Open, Close, Volume, USD/TRY, Oil, Fear&Greed, TCMB Rate | 7 (uygulanan: 6, F&G cikarildi) |
+| technical | RSI, MACD, EMA12, EMA26, SO_%K, SO_%D, ADX | 7 |
+| hist_tech (FULL) | historical + technical kumelerinin birlesimi (Close, Open, Volume, RSI, MACD, EMA12, EMA26, SO_%K, SO_%D, ADX, USD/TRY, Oil, Fear&Greed, TCMB Rate) | 14 (uygulanan: 13, F&G cikarildi) |
+
+## G.2 Emeklilik Fonlari (Haftalik) Proxy Yontemi
+TEFAS sistemi yalnizca kapanis fiyati saglar (High/Low/Volume yoktur). Bu nedenle Stochastic Oscillator (SO_%K/%D) yerine Momentum, ADX yerine Volatility ikamesi yapilmistir.
+
+| Set Adi | Icerdigi Ozellikler (Proxy) | Degisken Sayisi |
+| :--- | :--- | :--- |
+| closing | Haftalik kapanis fiyati (Close) | 1 |
+| technical | RSI, MACD, Momentum (proxy) | 3 |
+| full | Close, RSI, MACD, EMA12, EMA26, Momentum (proxy), Volatility (proxy) | 7 |
+
+## G.3 Proxy Donusumleri
+
+| Orijinal Gosterge | Proxy Gosterge | Mantik |
+| :--- | :--- | :--- |
+| RSI (14 gunluk) | RSI (Haftalik) | Momentum gucunu korumak icin ayni periyot |
+| ADX (Trend Gucu) | Fiyat Volatilitesi (Std Dev) | Fonlarda trend gucu yerine fiyat dagilimi |
+| Stochastic Oscillator | Haftalik getiri ivmesi | Fonun haftalik momentum tahmini |
+| Fear & Greed Index | LOCF (son bilinen deger ileri tasima) | 2024 sonrasi veri kesildigi icin LOCF uygulandi |
+
+## G.4 Veri Bosluklari ve Eksik Deger Yonetimi
+- Fear & Greed Index: 2024 sonrasi verisi kesildigi icin LOCF (Last Observation Carried Forward) yontemiyle son bilinen psikolojik deger ileri tasinmistir.
+- Emeklilik Fonlari: TEFAS'tan alinan haftalik veriler, tatil gunlerine denk gelen eksik gozlemler icin forward fill ile doldurulmustur.
+- MinMax normalizasyon: Tum ozellik setleri icin yalnizca egitim seti uzerinde fit, test setine transform uygulanmistir.

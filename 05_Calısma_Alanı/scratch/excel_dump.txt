@@ -1,0 +1,63 @@
+﻿============================================================
+FILE: Graphic 1 The Accuracy Illusion (LSTM THYAO Closing).xlsx
+============================================================
+Metrik | Değer (%) | 
+Accuracy(Doğruluk) | 52,03 | 
+Specificity(Özgürlük) | 0 | 
+============================================================
+FILE: Graphic 10 Confusion Matrix Summary.xlsx
+============================================================
+ | Predicted Increase | Predicted Decrease | 
+Actual Increase | 21 | 4 | 
+Actual Decrease | 1 | 6 | 
+============================================================
+FILE: Graphic 2 CNN Resilience Success (CNN vs LSTM).xlsx
+============================================================
+Model | Accuracy | Specificity | 
+LSTM | 46,96 | 92,25 | 
+1-D CNN | 69,16 | 23,91 | 
+============================================================
+FILE: Graphic 3 Prediction Stability vs Input Window.xlsx
+============================================================
+Input Window | Accuracy | 
+Input 2 | 47,44 | 
+Input 4 | 49,55 | 
+Input 6 | 50,23 | 
+============================================================
+FILE: Graphic 4 Prediction Horizon vs Accuracy.xlsx
+============================================================
+Horizon | Accuracy | 
+Week 1  | 49,89 | 
+Week 3 | 48,32 | 
+Week 5 | 50,23 | 
+============================================================
+FILE: Graphic 5 Impact of Feature Sets on Model Performance.xlsx
+============================================================
+Feature Set | Accuracy | Specificity | 
+Closing | 49,32 | 0 | 
+Historical | 53,04 | 44,37 | 
+Technical | 50,23 | 47,18 | 
+============================================================
+FILE: Graphic 6 Naive Baseline vs Deep Learning Performance.xlsx
+============================================================
+Horizon | Naive Success | CNN Success | 
+Outcome 3  | 73,93 | 50,33 | 
+Outcome 5 | 79,73 | 50,23 | 
+============================================================
+FILE: Graphic 7 Pension Funds Risk vs Model Learning Ability.xlsx
+============================================================
+Fund Type | MC Failure Count | Real Learning Count | 
+ALZ(Low) | 27 | 0 | 
+AZS(Med) | 13 | 14 | 
+AMZ(High) | 10 | 17 | 
+============================================================
+FILE: Graphic 8 Peak Performance - AMZ LSTM vs Naive Baseline.xlsx
+============================================================
+Metric | LSTM Model | Naive Baseline | 
+Accuracy | 80,21 | 78,79 | 
+============================================================
+FILE: Graphic 9 Optimizer Impact on Convergence Success.xlsx
+============================================================
+Optimizer |  Best Accuracy | 
+SGD | 67,86 | 
+Adam | 80,21 | 

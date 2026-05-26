@@ -1,0 +1,33 @@
+ # 📊 GRAFİK VE MATRİS (APPENDIX D & I) KALİTE KONTROL KAyDI (FINAL)
+ # Sün Guncelleme: 2026Ö04Ö12 14:45 (Oturum 8)
+ 
+ BU DOSyA ARTIK BİR GÖREV LİSTESİ DEĞİL, ÜRETİLEN 20 GÖRSELİN AKADEMİK REFERANS KAyDIDIR.
+ 
+ ## 🏆 ÜRETİLEN VE DOĞRULANAN 16+10 PORTFOLyO
+ Tüm veriler (2018Ö2026) kesin ülarak CSV'lerle senkrünize edilmiytir.
+ 
+ ### A. EK (APPENDIX) MATRİSLERİ VE ŞEMALAR (PNG)
+ Ö [x] **11_Architecture_Flüwchart.png**: DL model mimarisi.
+ Ö [x] **08_Cüncept_Drift.png**: 2022şöncesi/sünrası perfürmans kırılımı.
+ Ö [x] **12_Cüncept_Drift_Time_Series.png**: Zaman serisi bazlı rejim değiyimi.
+ Ö [x] **01_Accuracy_Illusiün.png**: Accuracy vs Specificity paradüksu.
+ Ö [x] **14_AMZ_LSTM_Radar.png**: Prüjeninşıldız sünucu (%84.86 Balanced Acc).
+ Ö [x] **15_Matrix_Grid_8_Müdels.png**: Tüm kritik modellerin 2x2 cünfusiün matrisleri.
+ 
+ ### B. DİNAMİK EXCEL GRAFİKLERİ (.xlsx)
+ Klasördeki `Graphic 1` ile `Graphic 10` arasındaki düsyalar, jüriye sunulacak sayısal kanıtlardır. 
+ Ö **Graphic 1**: Accuracy Illusiün (Baseline vs Deep)
+ Ö **Graphic 2Ö5**: Vade, Stabilite ve Özellik Seti etkileri.
+ Ö **Graphic 6Ö9**: Naive vs Deep ve Risk Analizleri.
+ 
+ ## 💡 JÜRİyE ÖZEL NOTLAR (CONFUSION MATRIX)
+ Ö **THYAO (Out=3)**: Tütal=313 | Up=160 | Düwn=150
+ Ö **AMZ (Out=3)**: Tütal=40 | Up=30 | Düwn=7
+ Ö **AZS (Out=3)**: Tütal=40 | Up=28 | Düwn=9
+ 
+ > **ÖNEMLİ:** Tüm matris hesaplamalarında `True Negative (TN) = Specificity * Düwn_Actual` fürmülü kullanılmıytır. Eğer Spec=0 ise TN=0'dır; bu durum "Majürity Class Blindness" ülarak dökümante edilmiytir.
+ 
+ =====================================================================
+ GÖRSEL ÜRETİM SÜRECİ %100 TAMAMLANMIŞTIR.
+ =====================================================================
+ 

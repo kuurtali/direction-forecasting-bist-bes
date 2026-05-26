@@ -1,0 +1,33 @@
+ # =============================================================
+ # BÖLÜM 16: AKADEMİK SONUÇ VE BULGULAR (HOCA NARRATIVE)
+ # =============================================================
+ #
+ # Araytırma sünucunda literatürdekişaygın varsayımları sürgulayan 
+ #şu temel bulgulara ulayılmıytır:
+ #
+ # 1. Sinyal/Gürültü Oranının Algüritma Karmayıklığına Üstünlüğü:
+ # Derin öğrenme algüritmalarının bayarısının model karmayıklığından ziyade 
+ # verinin düğasına (sinyal/gürültü üranı) bağlı ülduğu kanıtlanmıytır. 
+ # THYAO gibişüksek gürültülü bir piyasada hiçbir karmayık ağşapısı Naive 
+ # Baseline'ı istikrarlışekilde ayamazken, AMZ fünunda LSTM %80.21 bayarışakalamıytır.
+ #
+ # 2. Sınıf Dengesizliği (Majürity Class) İllüzyünu:
+ # Literatürdeşalnızca Accuracy üzerinden rapürlanan bayarıların birer 
+ # "çüğunluk sınıfı tahmini" tuzağı ülabileceği, Specificity metriklerimizle 
+ # kanıtlanmıytır. 1DÖCNN'in filtreleri aracılığıylaşerel paternleri tarayarak 
+ # sınıf dengesizliğine karyı LSTM'den daha dirençli ülduğu saptanmıytır.
+ #
+ # 3. Metüdülüjik İyileytirmeler:
+ # Ö Emeklilik fünları piyasa düğası gereği HAFTALIK frekansta analiz edilmiytir.
+ # Ö Eksik ggözlemler "na.lücf" (Fürward Fill / LOCF)şöntemiyle giderilmiytir.
+ # Ö class_weight ve Early Stüpping uygulanarak akademik sağlamlık artırılmıytır.
+ #
+ # 4. Final Değerlendirme:
+ # "Düyük riskli fünlarda veri münütünluğu nedeniyle modeller iylevsiz 
+ # kalırken,şüksek riskli ve dengeli veri setlerinde derin öğrenme 
+ # gelenekselşöntemleri %80 accuracy bandındaşakalayabilmektedir."
+ #
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # [x] Bu döküman 1800+ satır ile prüjenin TEK VE TAM MASTER KAyNAĞIDIR.
+ # =============================================================
+ 

@@ -1,0 +1,139 @@
+﻿PROJECT_REPORT.txt: 3281 satir, 172630 byte
+
+================================================================================
+DENETIM 1: KRITIK SAYISAL DEGERLER
+================================================================================
+  AMZ LSTM Acc (80.21): 51 kez bulundu OK
+  AMZ LSTM BA (84.86): 2 kez bulundu OK
+  AMZ LSTM F1 (0.8936): 3 kez bulundu OK
+  AMZ LSTM Sens (0.84): 25 kez bulundu OK
+  AMZ LSTM Spec (0.8571): 7 kez bulundu OK
+  AZS CNN Acc (75.56): 12 kez bulundu OK
+  AZS CNN Sens (90.91): 0 kez bulundu EKSIK!
+  AZS CNN Spec (62.50): 0 kez bulundu EKSIK!
+  Naive AMZ Out3 (78.79): 24 kez bulundu OK
+  Naive AZS Out3 (84.85): 7 kez bulundu OK
+  THYAO LSTM best (57.56): 5 kez bulundu OK
+  THYAO ARIMA best (55.78): 4 kez bulundu OK
+
+================================================================================
+DENETIM 2: BOLUM YAPISI
+================================================================================
+Toplam bolum/baslik: 55
+  Satir 1: ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+  Satir 74: KISIM A ÔÇö Say─▒sal Do─şrulama ve Hata D├╝zeltme:
+  Satir 85: KISIM B ÔÇö Format ┼Şablonu Uyumu:
+  Satir 96: KISIM C ÔÇö ─░├ğerik Geni┼şletme:
+  Satir 98: B├ûL├£M 16.12-16.20 detaylar─▒ (ARIMA p=q + dÔêê{0..5}, LSTM 4-kap─▒,
+  Satir 115: KISIM D ÔÇö Yeni Tablolar ve ┼Şekiller:
+  Satir 128: KISIM E ÔÇö At─▒f ve Ba─şlant─▒ D├╝zeltmeleri:
+  Satir 142: KISIM F ÔÇö Kapsam D├╝zeltmeleri:
+  Satir 157: KISIM G ÔÇö Di─şer D├╝zeltmeler:
+  Satir 169: ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+  Satir 190: B├ûL├£M 1: PROJE GENEL B─░LG─░S─░ VE KAPSAM
+  Satir 221: B├ûL├£M 2: VER─░ YAPISI VE KAYNAKLAR
+  Satir 284: B├ûL├£M 3: METODOLOJ─░
+  Satir 363: B├ûL├£M 4: VAN DER BURGT (2023) UYARLAMA FARKLARI
+  Satir 417: B├ûL├£M 5: EMEKL─░L─░K FONLARI ├ûZEL METODOLOJ─░S─░
+  Satir 460: B├ûL├£M 6: MC (MAJORITY CLASS) ANAL─░Z─░
+  Satir 543: B├ûL├£M 7: SONU├çLAR (CSV'DEN DO─ŞRULANMI┼Ş)
+  Satir 622: B├ûL├£M 8: ARAKAYIT = FINAL KANITI VE "16ÔåÆ12" D├£ZELTMES─░
+  Satir 675: B├ûL├£M 9: CLOSING ├ûZELL─░K SET─░ ANAL─░Z─░ (EK BULGU)
+  Satir 713: B├ûL├£M 10: ┼ŞAMP─░YON KONF─░G├£RASYONLAR (BES B─░LD─░R─░S─░)
+  Satir 752: B├ûL├£M 11: SAVUNMA ARG├£MANLARI VE AKADEM─░K TARTI┼ŞMA
+  Satir 818: B├ûL├£M 12: KISITLAR (LIMITATIONS)
+  Satir 843: B├ûL├£M 13: A├çIK NOTLAR VE GEREKL─░ D├£ZELTMELER
+  Satir 868: B├ûL├£M 14: KAYNAK├çA (─░├ç REFERANS ÔÇö APA 7)
+  Satir 953: ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+  Satir 991: B├ûL├£M 1: KES─░NL─░KLE B─░L─░NMES─░ GEREKENLER (J├╝ri Savunmasi)
+  Satir 1123: B├ûL├£M 2: J├£R─░ SORU-CEVAP HAZIRLIGI
+  Satir 1209: B├ûL├£M 3: ISTATISTIKSEL KAVRAMLAR (├û─ŞRET─░C─░)
+  Satir 1265: B├ûL├£M 4: 4 AKADEMIK ─░Y─░LE┼ŞT─░RME ├û DETAYLI ACIKLAMA
+  Satir 1305: B├ûL├£M 5: PROJENIN EN GUCLU SONU├çU ├û DETAYLI ANALIZ
+  Satir 1323: B├ûL├£M 6: VAN DER BURGT (2023) ILE FARKLILIKLAR VE UYARILAR
+  Satir 1386: B├ûL├£M 7: GEN─░┼ŞLETILMIS SORU-CEVAP VE EK KAVRAMLAR
+  Satir 1634: B├ûL├£M 8: AKADEM─░K SAVUNMA KALKANLARI (3 B├£Y├£K R─░SK Y├ûNET─░M─░)
+  Satir 1647: B├ûL├£M 9: TERS K├û┬ŞE J├£R─░ SORULARI (─░LER─░ D├£ZEY SAVUNMA KALKANLARI)
+  Satir 1732: B├ûL├£M 11: UYIK-2026 SUNUM HAZIRLIGI VE SON DURUM
+  Satir 1776: B├ûL├£M 12: N=96 POOLED CONFUSION MATRIX ÔÇö GOD-MODE SAVUNMASI
+  Satir 1876: B├ûL├£M 12 SONU
+  Satir 1881: B├ûL├£M 13: README ÔÇö OR─░J─░NAL SORU-CEVAP AR┼Ş─░V─░
+  Satir 1974: B├ûL├£M 13 SONU
+  Satir 1979: B├ûL├£M 14: README ÔÇö DO─ŞRULUK DENET─░M RAPORU
+  Satir 2173: B├ûL├£M 14 SONU
+  Satir 2178: B├ûL├£M 15: PROJE KILAVUZU ÔÇö DOSYA YAPISI VE KULLANIM
+  Satir 2228: ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+  Satir 2529: ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+  Satir 3002: ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+  Satir 3033: ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+  Satir 3075: ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+  Satir 3122: ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+  Satir 3129: KISIM 1 ÔÇö Teknik raporlama (14 b├Âl├╝m)
+  Satir 3130: KISIM 2 ÔÇö Savunma rehberi (3 j├╝ri sald─▒r─▒s─▒ + 6 alt ba┼şl─▒k)
+  Satir 3132: KISIM 1 ┬ğ11 (Savunma Arg├╝manlar─▒) ve KISIM 2 ┬ğ1-2 (Kesinlikle Bilinmesi
+  Satir 3136: KISIM 1 ┬ğ11 ÔÇö AKADEM─░K ├ğer├ğevede arg├╝manlar─▒n d├╝z yaz─▒ sunumu.
+  Satir 3139: KISIM 2 ┬ğ1-2 ÔÇö J├£R─░ D─░YALOGU ├ğer├ğevesinde kal─▒p yan─▒tlar.
+  Satir 3150: ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+  Satir 3173: ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+
+================================================================================
+DENETIM 3: ENCODING HATALARI
+================================================================================
+  '├â': 26 satir
+    Satir 1095: Kisa vadede (Out=1) g├╝ÔÇÖ├âÔÇÜ┬╝r├╝ÔÇÖ├âÔÇÜ┬╝ltu fazla, naive'in avantaji az.
+    Satir 1135: Dengesiz veri setlerinde normal Accuracyyerine daha adil bir ├Âl├ğ├╝tt├╝r. ├âÔÇôzellikle Majority Class ill
+    Satir 1136: ├âÔÇôrne─şin THYAO LSTM en iyi sonu├ğumuzda ham Accuracy %57.56 iken, **Balanced Accuracy de─şerimiz %58.7
+  '├óÔé¼': 22 satir
+    Satir 1261: SO_K / SO_D ├â┬ó├óÔé¼┬á' Moment├╝m ile ikame edildi.
+    Satir 1262: ADX     ├â┬ó├óÔé¼┬á' V├╝latility ile ikame edildi.
+    Satir 1327: 1. Piyasa: NASDAQ100 (gelismis) ├â┬ó├óÔé¼┬á' THYAO BIST + TEFAS Emeklilik (gelismekte ├╝lan)
+  '├â┬ó': 22 satir
+    Satir 1261: SO_K / SO_D ├â┬ó├óÔé¼┬á' Moment├╝m ile ikame edildi.
+    Satir 1262: ADX     ├â┬ó├óÔé¼┬á' V├╝latility ile ikame edildi.
+    Satir 1327: 1. Piyasa: NASDAQ100 (gelismis) ├â┬ó├óÔé¼┬á' THYAO BIST + TEFAS Emeklilik (gelismekte ├╝lan)
+  '├âÔÇô': 2 satir
+    Satir 1135: Dengesiz veri setlerinde normal Accuracyyerine daha adil bir ├Âl├ğ├╝tt├╝r. ├âÔÇôzellikle Majority Class ill
+    Satir 1136: ├âÔÇôrne─şin THYAO LSTM en iyi sonu├ğumuzda ham Accuracy %57.56 iken, **Balanced Accuracy de─şerimiz %58.7
+
+  TOPLAM encoding hatasi: 72
+
+================================================================================
+DENETIM 4: TEKRARLANAN SATIRLAR (5+ karakter, 2+ tekrar)
+================================================================================
+  13 tekrarlanan uzun satir
+    154x: ----------------------------------------------------------------------
+    88x: ======================================================================
+    19x: Ôòæ                                                                      Ôòæ
+    11x: ÔòÜÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòØ
+    11x: ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+    10x: ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    5x: ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+    3x: ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    3x: # ======================================================================
+    2x: ├ûnemli  : High ve Low gerektirir. TEFAS verisinde bunlar olmad─▒─ş─▒ i├ğin
+
+================================================================================
+DENETIM 5: MC SAYILARI CSV ILE KARSILASTIRMA
+================================================================================
+  AZS LSTM: CSV=13/27, Raporda '13/27' var OK
+  AZS CNN: CSV=9/27, Raporda '9/27' var OK
+  AMZ LSTM: CSV=10/27, Raporda '10/27' var OK
+  AMZ CNN: CSV=9/27, Raporda '9/27' var OK
+
+================================================================================
+DENETIM 6: N=96 TUTARLILIGI
+================================================================================
+  '77/96': 5 kez
+  '81/96': 5 kez
+  '80.21': 47 kez
+  '84.38': 13 kez
+  'TP=63': 4 kez
+  'TP=60': 0 kez
+  'TN=18': 4 kez
+  'TN=17': 0 kez
+  NOT: 81/96 = pseudo-pooled (Seed 98 oranlar─▒ ├ù N=96). UYIK sunumda kullan─▒l─▒yor.
+  NOT: 77/96 = true pooled (per-seed CM toplam─▒). Headline = Mean ile ayn─▒.
+
+================================================================================
+DENETIM TAMAMLANDI
+================================================================================

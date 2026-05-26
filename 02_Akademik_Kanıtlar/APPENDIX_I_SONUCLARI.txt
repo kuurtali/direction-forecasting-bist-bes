@@ -1,0 +1,29 @@
+﻿# APPENDIX I: TEST/TRAIN SINIF DAGILIMI (UP/DOWN) SONUC RAPORU
+
+## I.1 Sinif Dagilimi Ozeti
+
+| Varlik | Satir Sayilari | Sinif Dagilimi (Up/Down) |
+| :--- | :--- | :--- |
+| THYAO | Train=1459, Val=313, Test=313 (Toplam=2085) | Out=1: Test 155 Up / 157 Down (%49.7) |
+| THYAO | | Out=3: Test 160 Up / 150 Down (%51.6) |
+| THYAO | | Out=5: Test 163 Up / 145 Down (%52.9) |
+| ALZ | Train=174, Val=37, Test=38 (Toplam=249) | Out=1: Test 37 Up / 0 Down (%100.0) - TAM MC |
+| ALZ | | Out=3: Test 35 Up / 0 Down (%100.0) - TAM MC |
+| ALZ | | Out=5: Test 33 Up / 0 Down (%100.0) - TAM MC |
+| AZS | Train=182, Val=39, Test=40 (Toplam=261) | Out=1: Test 27 Up / 12 Down (%69.2) |
+| AZS | | Out=3: Test 28 Up / 9 Down (%75.7) |
+| AZS | | Out=5: Test 29 Up / 6 Down (%82.9) |
+| AMZ | Train=183, Val=39, Test=40 (Toplam=262) | Out=1: Test 28 Up / 11 Down (%71.8) |
+| AMZ | | Out=3: Test 30 Up / 7 Down (%81.1) |
+| AMZ | | Out=5: Test 29 Up / 6 Down (%82.9) |
+
+## I.2 AMZ Fonu Detayli Analizi (Yildiz Varlik)
+AMZ Out=3 icin test setinde 30 Up / 7 Down dagilimi mevcuttur. Bu asimetrik yapi (Minority class: Down=%18.9), Majority Class Illuzyonu riskini dogrular; class_weight uygulamasi ile model gercek ogrenmeyi gosterebilmistir.
+
+## I.3 ALZ Fonu Kontrol Grubu Analizi
+Out=1, 3, 5 icin test setinde 0 dusus gozlemi mevcuttur. Bu durum, ALZ'yi matematiksel olarak ikili siniflandirma problemi disina tasimaktadir. Tum modeller %100 Accuracy elde etmis, ancak bu 'Majority Class Illuzyonu'nun nihai kanitidir.
+
+## I.4 THYAO Sinif Dengesi
+THYAO Out=1 icin test setinde 155 Up / 157 Down ile neredeyse mukemmel sinif dengesi (%49.7/%50.3) gozlemlenmektedir. Bu yapi, modellerin gercek ogrenme kapasitesini test etmek icin ideal kosullar sunmaktadir.
+
+NOT: Tum sinif dagilimi sayilari APPENDIX_I_SONUCLARI.txt ve CSV_TUM_SONUCLAR.html ile %100 ortusmektedir.

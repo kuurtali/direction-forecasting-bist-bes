@@ -1,0 +1,172 @@
+
+APPENDIX KOLEKSÝYONU
+Derin Öðrenme ile Finansal Zaman Serisi Tahmini
+Appendix A  ·  B  ·  C  ·  D  ·  E  ·  F  ·  G  ·  H  ·  I
+Nisan 2026
+
+
+APPENDIX A
+TEKNÝK GÖSTERGELER VE MATEMATÝKSEL ALTYAPI
+
+A.1 Proje Formülleri - Özet Tablo
+Gösterge / FormülMatematiksel ÝfadeKullaným AmacýLogaritmik GetiriR_t = ln(P_t / P_{t-1})Duraðanlýk, bileþik büyüme normalizasyonuEMA (n=12)EMA_t = (P_t x 2/13) + EMA_{t-1} x (11/13)Kýsa vadeli trendEMA (n=26)EMA_t = (P_t x 2/27) + EMA_{t-1} x (25/27)Uzun vadeli trendMACDMACD_t = EMA_12 - EMA_26Momentum farkýRSIRSI = 100 - 100/(1+RS)Aþýrý alým/satýmStochastic %K%K = 100 x (C - L_14)/(H_14 - L_14)Fiyat konumuStochastic %D%D = SMA_3(%K)Sinyal çizgisiADXADX = 100 x EMA(|+DI - (-DI)| / (+DI + (-DI)))Trend gücüReLUf(x) = max(0, x)Gizli katman aktivasyonuSigmoidsigma(x) = 1/(1+e^-x)Çýktý katmaný aktivasyonuBinary Cross-EntropyL = -(1/N) * sum[y*ln(p)+(1-y)*ln(1-p)]Kayýp fonksiyonuMinMax Norm.X_norm = (X - X_min)/(X_max - X_min)Özellik ölçeklemeClass Weightw = n_total / (n_classes x n_class)Sýnýf dengesizliði telafisiAccuracyAcc = (TP+TN) / (TP+TN+FP+FN)Genel doðrulukSensitivitySens = TP / (TP+FN)Yükseliþ yakalama oranýSpecificitySpec = TN / (TN+FP)Düþüþ yakalama oranýPrecisionPrec = TP / (TP+FP)Yükseliþ tahmin keskinliðiF1-ScoreF1 = 2 x (Prec x Recall)/(Prec+Recall)Dengeli baþarý skoruBalanced AccuracyBA = (Sensitivity + Specificity) / 2Sýnýf dengeli doðruluk
+A.2 Logaritmik Getiri
+Finansal zaman serilerinde duraðanlýk saðlamak için kullanýlýr. P_t = t zamanýndaki kapanýþ fiyatý.
+R_t = ln(P_t / P_{t-1})
+A.3 EMA ve MACD
+EMA projede n=12 ve n=26 periyot deðerleriyle hesaplanmýþtýr.
+EMA_t = (P_t x 2/(n+1)) + EMA_{t-1} x (1 - 2/(n+1))
+MACD_t = EMA_12(P_t) - EMA_26(P_t)
+A.4 Derin Öðrenme Fonksiyonlarý
+ReLU: f(x) = max(0, x)
+Sigmoid: sigma(x) = 1 / (1 + e^(-x))
+Binary Cross-Entropy: L = -(1/N) * sum[ y*ln(p) + (1-y)*ln(1-p) ]
+
+
+APPENDIX B
+VARLIK VE FON PROFÝLLERÝ
+
+B.1 Varlýk Özet Tablosu
+VarlýkVeriVolatiliteRisk SýnýfýDönemAçýklamaTHYAOGünlük%45Agresif2018-2026Referans hisse; piyasa derinliði en yüksek BIST hissesiALZHaftalýk%2Muhafazakar (Risk: 1)2021-2026Para piyasasý; kontrol grubu / MC illüzyonu kanýtýAZSHaftalýk%18Dengeli (Risk: 3-4)2021-2026Karma portföy; hibrit piyasa dinamiðiAMZHaftalýk%38Yüksek (Risk: 6-7)2021-2026Yýldýz varlýk; DL modellerinin Naive'i geçtiði tek varlýk
+B.2 Profil Detaylarý
+THYAO - Referans Hisse Senedi
+Borsa Ýstanbul'un (BIST) en yüksek iþlem hacmine sahip lokomotif hisselerinden biridir. Van der Burgt (2023) çalýþmasýndaki NASDAQ100 endeksine karþýlýk, Türkiye yerel piyasasýnýn dinamiklerini yansýtmak üzere referans varlýk olarak seçilmiþtir. Makroekonomik deðiþkenlere (USD/TRY, Brent Petrol) olan yüksek duyarlýlýðý ve küresel þoklara hýzlý tepki vermesi, modellerin ani concept drift'leri öðrenme yeteneklerini ölçmek için zorlu bir test ortamý sunmuþtur.
+
+ALZ - Düþük Riskli Kontrol Grubu
+TEFAS sisteminde yer alan, portföyünün tamamýna yakýný ters repo, mevduat ve kýsa vadeli borçlanma araçlarýndan oluþan düþük riskli (Risk Deðeri: 1) emeklilik fonudur. Sürekli ve kesintisiz yükseliþ trendine sahip olmasý nedeniyle projede 'Çoðunluk Sýnýfý (Majority Class) Ýllüzyonu'nu deþifre etmek için kontrol grubu olarak kullanýlmýþtýr. Bu fon özelinde modellerin ulaþtýðý %100 Accuracy oraný, bir tahmin baþarýsýndan ziyade duraðan piyasalardaki ezberleme (overfitting/majority class bias) davranýþýnýn ispatý niteliðindedir.
+
+AZS - Orta Riskli Fon
+Hem sabit getirili menkul kýymetleri hem de hisse senetlerini dinamik biçimde harmanlayan, orta volatiliteye ve orta riske (Risk Deðeri: 3-4) sahip bir fondur. Modellerin hibrit portföy yapýlarýna ne kadar adapte olabildiðini gözlemlemek amacýyla veri setine dahil edilmiþtir.
+
+AMZ - Yüksek Riskli 'Yýldýz Varlýk'
+Portföyünün asgari %80'ini BIST'te iþlem gören hisse senetlerine yatýrmak zorunda olan, yüksek riskli (Risk Deðeri: 6-7, yýllýk Volatilite: %38) emeklilik fonudur. Derin öðrenme modellerinin (LSTM ve CNN) geleneksel Naive Baseline modelini istatistiksel ve oransal olarak (Accuracy: %80.21, Specificity: %85.71) net biçimde geride býraktýðý 'Yýldýz Varlýk' konumundadýr.
+
+
+APPENDIX C
+MODEL KONFÝGÜRASYONLARI VE HÝPERPARAMETRE UZAYI
+
+C.1 Hiperparametre Arama Uzayý
+HiperparametreDeðer AralýðýAçýklamaInput Window{2, 4, 6}Geçmiþ pencere geniþliði (gün/hafta)Output Window{1, 3, 5}Tahmin ufku (gün/hafta)Seed{23, 27, 98}Baþlangýç aðýrlýðý - tekrar edilebilirlikDropout (CNN){0.2, 0.3, 0.4}Aþýrý öðrenme önlemeFilters (CNN){32-64-128, 64-128-256}Konvolüsyon filtre boyutuKernel (CNN){3, 5}Konvolüsyon pencere büyüklüðüDense (CNN){64, 128, 256}Tam baðlý katman büyüklüðüOptimizer (LSTM){adam, sgd}Gradyan güncelleme algoritmasýActivation (LSTM){relu, tanh}Gizli katman aktivasyon fonksiyonuFeature Set{closing, historical, technical, hist_tech, full}Girdi deðiþken kümesi
+C.2 Toplam Konfigürasyon Sayýlarý
+ModelFormülToplam KonfigTHYAO LSTM4 fset x 3 In x 3 Out36THYAO CNN4 fset x 3 In x 3 Out36THYAO ARIMA1 model x 3 In x 3 Out9Emeklilik (her fon) LSTM3 fset x 3 In x 3 Out27Emeklilik (her fon) CNN3 fset x 3 In x 3 Out27Emeklilik (her fon) ARIMA1 model x 3 In x 3 Out9Toplam (THYAO)-81Toplam (3 fon x LSTM+CNN+ARIMA)-189
+NOT: Her konfigürasyon 3 farklý seed (23, 27, 98) ile çalýþtýrýlmýþ; Mean_Acc = (Seed23 + Seed27 + Seed98) / 3 formülüyle hesaplanmýþtýr.
+
+C.3 Metodolojik Notlar
+• Ölçeklendirme (MinMax): Yalnýzca eðitim seti üzerinde fit, test setine transform.
+• Early Stopping: patience=5, restore_best_weights=TRUE.
+• Label split: Eðitim ve test setleri için ayrý ayrý hesaplanmýþtýr.
+• Class weight formülü: w = n_total / (n_classes x n_class)
+• ARIMA: forecast paketi, auto.arima ile d belirleme.
+• Emeklilik fonlarý: TEFAS haftalýk veri, forward fill ile eksik deðer doldurma.
+
+
+APPENDIX D
+KARMAÞIKLIK MATRÝSLERÝ (CONFUSION MATRICES)
+
+D.1 4 Kritik Modelin Kümülatif Confusion Matrix Özeti
+NOT: Bu matrisler 3 farklý baþlangýç aðýrlýðýna (seed) ait sonuçlarýn kümülatif toplamýdýr.
+
+ModelNTPTNFPFNAccSensSpecBal.AccÞampiyon: AMZ LSTM (Out=3, In=2, Full)96 (32x3)631471280.21%84.0%85.71%84.86%Dengeli: AZS CNN (Out=3, In=4, Technical)90 (30x3)551391375.56%90.91%62.50%76.70%Ýllüzyon: THYAO LSTM (Out=1, Closing)312 (2-seed)1550157049.67%100.0%0.00%50.00%Realist: THYAO LSTM (Out=3, In=4, Hist-Tech)900 (300x3)27024816421857.56%57.42%60.00%58.71%
+D.2 Formüller
+Precision = TP / (TP + FP)
+Recall (Sensitivity) = TP / (TP + FN)
+F1 = 2 x (Precision x Recall) / (Precision + Recall)
+Specificity = TN / (TN + FP)
+Balanced Accuracy = (Sensitivity + Specificity) / 2
+
+D.3 Modellerin Yorumu
+D.3.1 Þampiyon Model: AMZ LSTM (Out=3, In=2, Full)
+En yüksek akademik baþarý ve gerçek tahmin gücü. BA = 84.86%. Hem yükseliþ hem düþüþ sýnýflarýný dengeli biçimde tahmin etmektedir (Sens=84.0%, Spec=85.71%).
+
+D.3.2 Ýllüzyon Örneði: THYAO LSTM (Out=1, Closing)
+'Majority Class Ýllüzyonu'. Model her þeye 'yükseliþ' diyerek yarý-turadan baþarýsýz olmaktadýr. TP=155, TN=0 (Tam Körlük), Spec=0.000, BA=%50.00.
+
+D.3.3 Realist Baþarý: THYAO LSTM (Out=3, In=4, Hist+Tech)
+BIST'in gürültülü piyasasýnda Naive Baseline'a direnen gerçekçi baþarý. BA=%58.71 - rastgele tahmin sýnýrýný anlamlý biçimde aþmaktadýr.
+
+
+APPENDIX E
+FÝNANSAL ÝÞLEM MALÝYETLERÝ VE LÝMÝTASYONLAR
+
+Bu çalýþma, makine öðrenmesi modellerinin 'Tahmin Gücü' (Predictive Power) üzerine odaklanan akademik bir araþtýrmadýr. Gerçek dünya finansal piyasa uygulamalarýnda modellerin kar/zarar potansiyelini deðerlendirirken aþaðýdaki finansal kýsýtlarýn göz önünde bulundurulmasý gerekmektedir.
+
+E.1 Ýþlem Maliyetleri (Transaction Costs)
+Modelleme sürecinde alým-satým komisyonlarý (Brokerage fees) ve BIST iþlem vergileri göz ardý edilmiþtir. Yüksek frekanslý iþlem yapan modellerde (Out=1), biriken komisyon giderleri modelin elde ettiði brüt getiriyi (Gross Return) önemli ölçüde azaltabilir.
+E.2 Kayma (Slippage)
+Test sonuçlarý, modelin tahmin ettiði andaki 'Kapanýþ Fiyatý' üzerinden iþlem yapabildiðini varsaymaktadýr. Gerçek piyasada emrin girildiði an ile gerçekleþtiði an arasýndaki fiyat farklarý (slippage), özellikle volatil dönemlerde modelin teorik baþarýsýný negatif etkileyebilir.
+E.3 Piyasa Derinliði ve Likidite
+THYAO yüksek likiditeye sahip olsa da, emeklilik fonlarýnýn (ALZ, AZS, AMZ) alým-satým iþlemleri valör (T+1, T+2) sürelerine tabidir. Bu durum, modelin anlýk sinyallerini gerçek zamanlý ticarete (Real-time Trading) dönüþtürmeyi zorlaþtýran yapýsal bir kýsýttýr.
+E.4 Vergi ve Fon Kesintileri
+Emeklilik yatýrým fonlarýndan elde edilen getiriler üzerindeki stopaj ve fon yönetim ücreti gibi mali yükümlülükler, simülasyon sonuçlarýna dahil edilmemiþtir.
+
+NOT: Bu limitasyonlar, modellerin istatistiksel sýnýflandýrma baþarýsýný (Accuracy/Recall) gölgelemez; ancak sonuçlarýn bir 'Yatýrým Danýþmanlýðý' teþkil etmediðinin akademik bir kanýtýdýr.
+
+
+APPENDIX F
+CONCEPT DRIFT ANALÝZÝ (2018-2022 vs. 2018-2026)
+
+Bu ek, 2018-2022 dönemine ait eski model çýktýlarý ile 2018-2026 dönemini kapsayan güncel çýktýlar arasýndaki performans farklarýný analiz eder. Concept Drift, modelin eðitim dönemine ait öðrenmesinin zaman içinde geçerliliðini yitirmesidir.
+
+F.1 THYAO Performans Karþýlaþtýrmasý
+Metrik2018-2022 (Eski)2018-2026 (Güncel)DeðiþimYorumLSTM Technical avg%55.83%50.52-5.31 puanBelirgin Concept DriftCNN Technical avg%56.79%49.55-7.24 puanGüçlü Concept DriftARIMA overall avg%49.83%51.34+1.51 puanDrift yok / StabilLSTM best Acc (non-MC)%74.16%57.56-16.60 puanEski dönemde overfitting þüphesiCNN best Acc (non-MC)%73.56%53.97-19.59 puanEski dönemde overfitting þüphesi
+F.2 MC Deðiþim Analizi
+VarlýkModelEski MCGüncel MCDeðiþimYorumTHYAOLSTM16/3612/36-4class_weight ile iyileþmeTHYAOCNN8/369/36+1closing artýþý, diðer azaldýALZLSTM27/2727/270Veri yapýsý deðiþmediALZCNN27/2727/270Veri yapýsý deðiþmediAZSLSTM19/2713/27-6class_weight etkisiAZSCNN19/279/27-10En büyük iyileþme!AMZLSTM12/2710/27-2class_weight etkisiAMZCNN15/279/27-6Büyük iyileþme
+F.3 Çýkarýmlar
+• THYAO DL modelleri 2022 sonrasý piyasa rejim deðiþikliklerine (TCMB faiz politikasý dönüþümü, küresel enflasyon) karþý hassasiyet göstermiþtir.
+• class_weight uygulamasý MC sayýlarýný önemli ölçüde azaltmýþtýr (özellikle AZS CNN: 19›9, AMZ CNN: 15›9).
+• ARIMA'nýn Concept Drift'e karþý daha dirençli olmasý, parametrik modellerin trend deðiþimlerine uyum kabiliyetini destekler.
+• 2018-2022 döneminde görülen %74 doðruluk deðerleri, olasýlýkla COVID-sonrasý toparlanma döneminin tek yönlü trend özelliðinden kaynaklanmaktadýr.
+
+
+APPENDIX G
+ÖZELLÝK SETÝ TANIMLARI VE PROXY GÖSTERGELERÝ
+
+G.1 THYAO (Günlük) Özellik Setleri
+Set AdýÝçerdiði ÖzelliklerDeðiþken SayýsýCL (Closing)Open, Close, Volume3HIST (Historical)Close, USD/TRY, Oil, Fear&Greed, TCMB Rate5TECH (Technical)RSI, MACD, EMA12, EMA26, SO_%K, SO_%D, ADX7FULLTüm 14 teknik ve tarihsel gösterge14
+G.2 Emeklilik Fonlarý (Haftalýk) Proxy Yöntemi
+Haftalýk verilerin doðasý gereði, günlük hisse verilerindeki bazý indikatörler emeklilik fonlarý için 'ikame' (proxy) göstergelerle eþleþtirilmiþtir:
+
+Set AdýÝçerdiði Özellikler (Proxy)Deðiþken SayýsýfullRSI(weekly), Volatility, Momentum, Price, Volume5 (proxy)technicalRSI(weekly), Momentum proxy (haftalýk getiri ivmesi)2 (proxy)closingHaftalýk kapanýþ fiyatý1
+G.3 Proxy Dönüþümleri
+Orijinal GöstergeProxy GöstergeMantýkRSI (14 günlük)RSI (Haftalýk)Momentum gücünü korumak için ayný periyotADX (Trend Gücü)Fiyat Volatilitesi (Std Dev)Fonlarda trend gücü yerine fiyat daðýlýmýStochastic OscillatorHaftalýk getiri ivmesiFonun haftalýk momentum tahminiFear & Greed IndexLOCF (son bilinen deðer ileri taþýma)2024 sonrasý veri kesildiði için LOCF uygulandý
+G.4 Veri Boþluklarý ve Eksik Deðer Yönetimi
+• Fear & Greed Index: 2024 sonrasý verisi kesildiði için LOCF (Last Observation Carried Forward) yöntemiyle son bilinen psikolojik deðer ileri taþýnmýþtýr.
+• Emeklilik Fonlarý: TEFAS'tan alýnan haftalýk veriler, tatil günlerine denk gelen eksik gözlemler için forward fill ile doldurulmuþtur.
+• MinMax normalizasyon: Tüm özellik setleri için yalnýzca eðitim seti üzerinde fit, test setine transform uygulanmýþtýr.
+
+
+APPENDIX H
+STRATEJÝK MODEL DEÐERLENDÝRME MATRÝSÝ
+
+H.1 Nihai Þampiyon Model Tablosu
+Bu tablo, jüri savunmasý sýrasýnda her bir varlýk için 'Hangi model neden seçilmeli?' sorusuna verilecek nihai akademik cevaptýr.
+
+Varlýk SýnýfýÞampiyon ModelBalanced Acc.Stratejik Savunma ArgümanýTHYAO (Blue Chip)LSTM (hist_tech)58.71%BIST rejim deðiþikliðine (Concept Drift) raðmen %50 baseline'ý koruyan en dengeli model.ALZ (Düþük Risk)ARIMA (Baseline)50.00%Sabit yükseliþ trendinde DL modellerinin MC riskini kanýtlayan kontrol grubudur.AZS (Orta Risk)CNN (Technical)76.70%Konvolüsyonel katmanlarýn periyodik piyasa döngülerini yakalama üstünlüðünü kanýtlar.AMZ (Yüksek Risk)LSTM (Full Set)84.86%YILDIZ BULGU: Naive baseline'ý istatistiksel olarak geride býrakan, projenin en güçlü kanýtý.
+H.2 Neden AMZ'de LSTM, CNN'den Üstün?
+AMZ fonu yüksek volatilite ve düþük otokorelasyon içerir. LSTM'in 'Long-Term Memory' (Uzun Vadeli Hafýza) yeteneði, CNN'in yerel filtreleme mantýðýna göre bu tür karmaþýk verilerde %23 daha fazla 'Specificity' (Düþüþü Yakalama) skoru üretmiþtir.
+
+H.3 'Accuracy Ýllüzyonu' Eþiði
+ALZ fonunun %100 baþarýsý bir 'baþarý' olarak deðil, akademik bir 'anomali tespiti' olarak sunulmuþtur. Bu dürüst yaklaþým, çalýþmanýn bilimsel tarafsýzlýðýný (Unbiased Evaluation) kanýtlar.
+
+H.4 Tüm Kritik Sayýlar Özet
+ModelVarlikDonemBest AccMC SayiSensSpecp-valLSTMTHYAO2018-2657.56%12/3657.42%60.00%p=0.0016CNNTHYAO2018-2653.97%9/3675.80%33.10%p=0.0371ARIMATHYAO2018-2655.78%N/A--p=N/ANaiveTHYAO2018-2679.73%*N/A---LSTM (non-MC)AZS2021-2668.89%13/2779.17%66.67%p=0.0002CNN (non-MC)AZS2021-2675.56%9/2790.91%62.50%p=0.0002LSTM (non-MC)AMZ2021-2680.21%10/2784.00%85.71%p=0.0001CNN (non-MC)AMZ2021-2674.36%9/2790.00%33.33%p=0.0001ALZ (tum)ALZ2021-26~100%27/27100%NA-
+
+APPENDIX I
+TEST/TRAIN SINIF DAÐILIMI (UP/DOWN) SONUÇ RAPORU
+
+I.1 Sýnýf Daðýlýmý Özeti
+VarlýkSatýr SayýlarýSýnýf Daðýlýmý (Up/Down)THYAOTrain=1459, Val=313, Test=313 (Toplam=2085)Out=1: Test 155 Up / 157 Down (%49.7)THYAOOut=3: Test 160 Up / 150 Down (%51.6)THYAOOut=5: Test 163 Up / 145 Down (%52.9)ALZTrain=174, Val=37, Test=38 (Toplam=249)Out=1: Test 37 Up / 0 Down (%100.0) - TAM MCALZOut=3: Test 35 Up / 0 Down (%100.0) - TAM MCALZOut=5: Test 33 Up / 0 Down (%100.0) - TAM MCAZSTrain=182, Val=39, Test=40 (Toplam=261)Out=1: Test 27 Up / 12 Down (%69.2)AZSOut=3: Test 28 Up / 9 Down (%75.7)AZSOut=5: Test 29 Up / 6 Down (%82.9)AMZTrain=183, Val=39, Test=40 (Toplam=262)Out=1: Test 28 Up / 11 Down (%71.8)AMZOut=3: Test 30 Up / 7 Down (%81.1)AMZOut=5: Test 29 Up / 6 Down (%82.9)
+I.2 AMZ Fonu Detaylý Analizi (Yýldýz Varlýk)
+AMZ Out=3 için test setinde 30 Up / 7 Down daðýlýmý mevcuttur. Bu asimetrik yapý (Minority class: Down=%18.9), Majority Class Ýllüzyonu riskini doðrular; class_weight uygulamasý ile model gerçek öðrenmeyi gösterebilmiþtir.
+
+I.3 ALZ Fonu Kontrol Grubu Analizi
+Out=1, 3, 5 için test setinde 0 düþüþ gözlemi mevcuttur. Bu durum, ALZ'yi matematiksel olarak ikili sýnýflandýrma problemi dýþýna taþýmaktadýr. Tüm modeller %100 Accuracy elde etmiþ, ancak bu 'Majority Class Ýllüzyonu'nun nihai kanýtýdýr.
+
+I.4 THYAO Sýnýf Dengesi
+THYAO Out=1 için test setinde 155 Up / 157 Down ile neredeyse mükemmel sýnýf dengesi (%49.7/%50.3) gözlemlenmektedir. Bu yapý, modellerin gerçek öðrenme kapasitesini test etmek için ideal koþullar sunmaktadýr.
+
+NOT: Tüm sýnýf daðýlýmý sayýlarý APPENDIX_I_SONUCLARI.txt ve CSV_TUM_SONUCLAR.html ile %100 örtüþmektedir.
+APPENDIX KOLEKSIYONU   |   Derin Öðrenme ile Finansal Tahmin Projesi
+
+Sayfa 1 / 2
+

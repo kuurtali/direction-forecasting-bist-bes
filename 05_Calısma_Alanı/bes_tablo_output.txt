@@ -1,0 +1,184 @@
+﻿================================================================================
+BES_Pension_Fund_Report.docx ÔÇö TABLO TARAMASI
+================================================================================
+Toplam tablo sayisi: 25
+Toplam paragraf sayisi: 419
+
+--- TABLO 1 (7 satir x 3 sutun) ---
+  Baslik: Metric | Formula | Purpose
+
+--- TABLO 2 (4 satir x 4 sutun) ---
+  Baslik: Fund Code | Fund Name | Risk Level | Available Obs.
+  >>> AMZ/SEED/POOLED ICERIGI TESPIT EDILDI - DETAYLI DUMP:
+    Satir 0: Fund Code | Fund Name | Risk Level | Available Obs.
+    Satir 1: ALZ | Start-up Pension Investme | Low | 249
+    Satir 2: AZS | Standard Pension Investme | Medium | 261
+    Satir 3: AMZ | Gold Pension Investment F | High | 262
+
+--- TABLO 3 (4 satir x 3 sutun) ---
+  Baslik: Feature Set | Variables Included | No. of Features
+
+--- TABLO 4 (9 satir x 2 sutun) ---
+  Baslik: Hyperparameter | Grid
+
+--- TABLO 5 (7 satir x 2 sutun) ---
+  Baslik: Hyperparameter | Grid
+
+--- TABLO 6 (4 satir x 8 sutun) ---
+  Baslik: Fund | Min | Q1 | Median | Mean | Q3 | Max | Std.Dev.
+  >>> AMZ/SEED/POOLED ICERIGI TESPIT EDILDI - DETAYLI DUMP:
+    Satir 0: Fund | Min | Q1 | Median | Mean | Q3 | Max | Std.Dev.
+    Satir 1: ALZ (Low) | -0.002 | 0.001 | 0.001 | 0.001 | 0.002 | 0.005 | 0.0005
+    Satir 2: AZS (Medium) | -0.019 | -0.002 | 0.002 | 0.002 | 0.007 | 0.028 | 0.0065
+    Satir 3: AMZ (High) | -0.055 | -0.009 | 0.004 | 0.003 | 0.015 | 0.062 | 0.0194
+
+--- TABLO 7 (4 satir x 5 sutun) ---
+  Baslik: Fund | Out=1 (Up%) | Out=3 (Up%) | Out=5 (Up%) | Interpretation
+  >>> AMZ/SEED/POOLED ICERIGI TESPIT EDILDI - DETAYLI DUMP:
+    Satir 0: Fund | Out=1 (Up%) | Out=3 (Up%) | Out=5 (Up%) | Interpretation
+    Satir 1: ALZ (Low) | 100% | 100% | 100% | Perfect MC: no decline in
+    Satir 2: AZS (Medium) | ~65% | ~77% | ~87% | Strong upward bias ÔÇö MC r
+    Satir 3: AMZ (High) | ~57% | ~58% | ~60% | Near-balanced ÔÇö genuine l
+
+--- TABLO 8 (5 satir x 7 sutun) ---
+  Baslik: Model | Accuracy | Bal. Acc. | Sensitivity | Specificity | F1-Score | p-value
+
+--- TABLO 9 (5 satir x 7 sutun) ---
+  Baslik: Model / Feature Set | Accuracy | Bal. Acc. | Sensitivity | Specificity | F1-Score | p-value
+
+--- TABLO 10 (5 satir x 4 sutun) ---
+  Baslik: Feature Set | LSTM MC Count | CNN MC Count | Note
+
+--- TABLO 11 (5 satir x 7 sutun) ---
+  Baslik: Model / Feature Set | Accuracy | Bal. Acc. | Sensitivity | Specificity | F1-Score | p-value
+
+--- TABLO 12 (5 satir x 4 sutun) ---
+  Baslik: Feature Set | LSTM MC Count | CNN MC Count | Note
+
+--- TABLO 13 (10 satir x 6 sutun) ---
+  Baslik: Fund | Input | Output | Accuracy | Best d | Interpretation
+  >>> AMZ/SEED/POOLED ICERIGI TESPIT EDILDI - DETAYLI DUMP:
+    Satir 0: Fund | Input | Output | Accuracy | Best d | Interpretation
+    Satir 1: ALZ | 2 | 1 | 100.00% | 0 | Best d=0 ÔÇö fund monotonic
+    Satir 2: ALZ | 4 | 3 | 100.00% | 0 | All 9 ALZ configs produce
+    Satir 3: ALZ | 6 | 5 | 96.97% | 0 | Only non-100% config; d=0
+    Satir 4: AZS | 2 | 5 | 80.65% | 1 | Best AZS: Out=5 benefits 
+    Satir 5: AZS | 4 | 3 | 57.58% | 1 | Worst AZS: mid-horizon di
+    Satir 6: AZS | 6 | 1 | 74.29% | 1 | Input=6 captures more con
+    Satir 7: AMZ | 2 | 1 | 71.43% | 0 | AMZ Out=1 ÔÇö short horizon
+    Satir 8: AMZ | 4 | 3 | 78.79% | 0 | Mid-horizon ÔÇö ARIMA captu
+    Satir 9: AMZ | 6 | 5 | 80.65% | 0 | Best AMZ ÔÇö all Input leng
+
+--- TABLO 14 (4 satir x 7 sutun) ---
+  Baslik: Fund | Risk | Champion Model | Acc. | Bal.Acc. | Spec. | Beats Naive?
+  >>> AMZ/SEED/POOLED ICERIGI TESPIT EDILDI - DETAYLI DUMP:
+    Satir 0: Fund | Risk | Champion Model | Acc. | Bal.Acc. | Spec. | Beats Naive?
+    Satir 1: ALZ | Low | ARIMA (control group ÔÇö MC | 100%* | 50%* | NA | N/A
+    Satir 2: AZS | Medium | CNN Ôİà [technical, In=4, O | 75.56% | 76.70% | 62.50% | No (Naive 90.32%)
+    Satir 3: AMZ | High | LSTM ÔİàÔİà [full, In=2, Out= | 80.21% | 84.86% | 85.71% | Yes ÔİàÔİà (p<0.0001)
+
+--- TABLO 15 (4 satir x 5 sutun) ---
+  Baslik: Model | Accuracy | Sensitivity | Specificity | Interpretation
+
+--- TABLO 16 (1 satir x 2 sutun) ---
+  Baslik:  | 
+
+--- TABLO 17 (1 satir x 2 sutun) ---
+  Baslik:  | 
+
+--- TABLO 18 (1 satir x 2 sutun) ---
+  Baslik:  | 
+
+--- TABLO 19 (9 satir x 8 sutun) ---
+  Baslik: Model | Feat. Set | In | Out | Acc. | B.Acc. | Sens. | Spec.
+
+--- TABLO 20 (9 satir x 8 sutun) ---
+  Baslik: Model | Feat. Set | In | Out | Acc. | B.Acc. | Sens. | Spec.
+
+--- TABLO 21 (4 satir x 4 sutun) ---
+  Baslik: Fund / Risk Level | Naive Acc. Out=1 | Naive Acc. Out=3 | Naive Acc. Out=5
+  >>> AMZ/SEED/POOLED ICERIGI TESPIT EDILDI - DETAYLI DUMP:
+    Satir 0: Fund / Risk Level | Naive Acc. Out=1 | Naive Acc. Out=3 | Naive Acc. Out=5
+    Satir 1: ALZ (Low) | 100.00% | 100.00% | 100.00% ÔÇö MC illusion dom
+    Satir 2: AZS (Medium) | 60.00% | 84.85% | 90.32% ÔÇö Out=5 Naive far 
+    Satir 3: AMZ (High) | 60.00% | 78.79% | 83.87% ÔÇö LSTM Out=3 (80.2
+
+--- TABLO 22 (7 satir x 6 sutun) ---
+  Baslik: Fund | Model | full MC | tech MC | closing MC | Total & Interpretation
+  >>> AMZ/SEED/POOLED ICERIGI TESPIT EDILDI - DETAYLI DUMP:
+    Satir 0: Fund | Model | full MC | tech MC | closing MC | Total & Interpretation
+    Satir 1: ALZ | LSTM | 9/9 | 9/9 | 9/9 | 27/27 ÔÇö Data structure, n
+    Satir 2: ALZ | CNN | 9/9 | 9/9 | 9/9 | 27/27 ÔÇö No architecture r
+    Satir 3: AZS | LSTM | 1/9 | 3/9 | 9/9 | 13/27 ÔÇö closing entirely 
+    Satir 4: AZS | CNN | 1/9 | 3/9 | 5/9 | 9/27 ÔÇö CNN resists closin
+    Satir 5: AMZ | LSTM | 0/9 | 1/9 | 9/9 | 10/27 ÔÇö full set: perfect
+    Satir 6: AMZ | CNN | 1/9 | 1/9 | 7/9 | 9/27 ÔÇö closing mostly col
+
+--- TABLO 23 (6 satir x 5 sutun) ---
+  Baslik: Seed | Accuracy | Sensitivity | Specificity | Confusion Matrix
+  >>> AMZ/SEED/POOLED ICERIGI TESPIT EDILDI - DETAYLI DUMP:
+    Satir 0: Seed | Accuracy | Sensitivity | Specificity | Confusion Matrix
+    Satir 1: 23 | 84.38% | 84.21% | 85.71% | TP=27, TN=6, FP=1, FN=4
+    Satir 2: 27 | 71.88% | 84.21% | 71.43% | TP=23, TN=5, FP=2, FN=6
+    Satir 3: 98 | 84.38% | 84.21% | 85.71% | TP=27, TN=6, FP=1, FN=4
+    Satir 4: Mean (3-seed) | 80.21% | 84.21% | 80.95% | ÔÇö
+    Satir 5: Pooled (N=96) | 80.21% (77/96) | 84.00% (63/75) | 85.71% (18/21) | TP=63, TN=18, FP=3, FN=12
+
+--- TABLO 24 (10 satir x 4 sutun) ---
+  Baslik: # | Aspect | Van der Burgt (2023) | Present Study ÔÇö Justification
+  >>> AMZ/SEED/POOLED ICERIGI TESPIT EDILDI - DETAYLI DUMP:
+    Satir 0: # | Aspect | Van der Burgt (2023) | Present Study ÔÇö Justifica
+    Satir 1: 1 | Data frequency | Daily (NASDAQ 100) | Weekly (TEFAS pension fun
+    Satir 2: 2 | Feature set availability | hist_tech (14 vars incl.  | full (7 vars). Macroecono
+    Satir 3: 3 | Stochastic Oscillator / A | Computed from High, Low,  | Replaced by Momentum and 
+    Satir 4: 4 | MinMax scaling scope | Applied to full dataset ( | Applied to train only; tr
+    Satir 5: 5 | Label generation scope | Labels generated across f | Labels generated within e
+    Satir 6: 6 | Class weighting | Not applied | Inverse-frequency class w
+    Satir 7: 7 | Early stopping | Not applied | patience=5, restore_best_
+    Satir 8: 8 | Sample size | ~882 training obs. | ~183 training obs. Smalle
+    Satir 9: 9 | Target asset | NASDAQ 100 index | Three Turkish pension inv
+
+--- TABLO 25 (8 satir x 2 sutun) ---
+  Baslik: R version | 4.5.2
+
+
+================================================================================
+PARAGRAF TARAMASI ÔÇö 'Table B2', 'Table B3', 'Tablo' REFERANSLARI
+================================================================================
+  P103: Table 1. Evaluation metrics used in this study. Balanced Accuracy is the primary criterion because it penalises Majority Class collapse.
+  P108: Weekly closing price data for three individual pension investment funds were obtained from the Turkish Electronic Fund Trading Platform (TEFAS; tefas.
+  P110: Table 2. Pension investment funds analysed in this study. Source: TEFAS (tefas.gov.tr).
+  P114: Three feature sets were constructed for the pension fund analysis (Table 3). The hist_tech set used in the THYAO analysis is not applicable here due t
+  P116: Table 3. Feature sets for pension fund analysis. The full set is the functional proxy for the hist_tech set used in the THYAO analysis.
+  P122: Hyperparameter grids for LSTM and 1D-CNN are presented in Tables 4 and 5. Each configuration is trained with three random seeds (23, 27, 98) and perfo
+  P124: Table 4. LSTM hyperparameter search grid.
+  P126: Table 5. 1D-CNN hyperparameter search grid.
+  P130: Table 6 summarises the descriptive statistics of the weekly logarithmic returns for each fund over the full analysis period (2021ÔÇô2026). Logarithmic r
+  P132: Table 6. Descriptive statistics of weekly logarithmic returns (2021ÔÇô2026). AMZ exhibits the largest standard deviation, confirming its classification 
+  P138: Table 7 presents the class distribution (proportion of up-weeks) for each fund and output horizon. This table is critical for interpreting model resul
+  P140: Table 7. Class distribution (proportion of up-weeks) in the test set by fund and output horizon. ALZ shows 100% up-weeks regardless of horizon. AZS be
+  P148: Table 6. ALZ Fund ÔÇö model comparison (2021ÔÇô2026). Red rows = Majority Class (MC) collapse. Yellow rows = reference models. Balanced Accuracy is not de
+  P152: The AZS Standard Pension Investment Fund exhibits moderate class imbalance in the test set (approximately 65% up-weeks), providing a more demanding cl
+  P154: Table 7. AZS Fund ÔÇö best non-MC model per algorithm (2021ÔÇô2026). Ôİà = selected champion. Green = champion; yellow = reference models. The Naive Baselin
+  P156: Table 8. AZS Fund ÔÇö Majority Class contamination counts by feature set. CNN consistently shows lower MC rates than LSTM.
+  P166: Table 9. AMZ Fund ÔÇö best non-MC model per algorithm (2021ÔÇô2026). ÔİàÔİà = study champion. Green = champion; yellow = reference models (Naive reported at O
+  P168: Table 10. AMZ Fund ÔÇö Majority Class contamination counts by feature set. With the full feature set, LSTM achieves 0/9 MC configurations ÔÇö a unique res
+  P180: Table 11 presents the complete ARIMA results for all three funds and nine inputÔÇôoutput combinations. ARIMA provides a linear baseline against which de
+  P182: Table 11. ARIMA cross-fund results: selected inputÔÇôoutput combinations. ALZ configs are effectively trivial (100% Acc reflects MC structure). AZS and 
+  P186: Table 12 summarises the champion model selected for each fund and provides a comparison of key metrics across risk levels.
+  P188: Table 11. Cross-fund summary. *ALZ figures reflect MC illusion ÔÇö not genuine model performance. ÔİàÔİà AMZ LSTM is the sole configuration statistically ex
+  P219: Table 12 summarises the projection results. Results are consistent with the main study: the LSTM closing configuration collapses to the MC illusion (S
+  P221: Table 12. Projection results: AMZ fund, closing feature set, Out=1. Figures are approximate, consistent with the main study's closing-set findings. LS
+  P307: Appendix B. Complete Numerical Results Tables
+  P308: Tables B1ÔÇôB3 present the full set of best non-MC results (averaged over 3 seeds) for each fund, feature set and input/output combination. Majority Cla
+  P313: Table B1. AZS Fund ÔÇö selected non-MC configurations (3-seed averages). Green row = champion. Feat. Set = Feature Set; In = input window (weeks); Out =
+  P318: Table B2. AMZ Fund ÔÇö selected non-MC configurations (3-seed averages). Green row = champion. The CNN closing configuration (row 6) is included despite
+  P321: Table B4 presents the Naive Baseline Accuracy for each fund and output horizon. These figures serve as the minimum performance threshold that any dire
+  P323: Table B4. Naive Baseline Accuracy by fund and output horizon. For AMZ, LSTM (80.21% at Out=3) statistically surpasses the Naive at the same horizon (7
+  P328: Table B5 provides a consolidated view of MC contamination rates across all funds, model types and feature sets. This table enables a direct comparison
+  P330: Table B5. Majority Class contamination counts across all funds and feature sets. Red = high contamination; green = low contamination. CNN consistently
+  P332: Table B3 presents the seed-level performance breakdown for the AMZ study champion (LSTM, full, In=2, Out=3) and the corresponding pooled confusion mat
+  P334: Table B3. Seed-level and pooled results for the AMZ LSTM champion. Pooled N=96 (=32 test obs. ├ù 3 seeds). Pooled Accuracy = 77/96 = 80.21%, consistent
+  P339: Table C1. Methodological adaptation differences between Van der Burgt (2023) and the present study, with academic justifications.
+  P412: All pension fund data were sourced directly from TEFAS (tefas.gov.tr/TarihselVeriler.aspx), the official Turkish Electronic Fund Trading Platform oper
+  P416: Table E1. Software environment specification for full reproducibility.

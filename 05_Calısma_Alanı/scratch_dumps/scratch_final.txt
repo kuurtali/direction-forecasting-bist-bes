@@ -1,0 +1,952 @@
+﻿--- slide1.xml ---
+UYIK
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS
+Istanbul, Turkey Â· May 11â€“13, 2026
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+Performance Assessment of ARIMA, CNN and LSTM in Forecasting Pension Investment Fund Returns
+Evidence from Allianz YaÅŸam ALZ Â· AZS Â· AMZ Funds on the Turkish TEFAS Platform, 2021â€“2026
+Åevval Demir
+Author
+Department of Actuarial Sciences
+Hacettepe University, Ankara, Turkey
+dsevval5@gmail.com
+Mehmet Ali Kurt
+Author
+Department of Actuarial Sciences
+Hacettepe University, Ankara, Turkey
+m.alikuurt0@gmail.com
+Ã–vgÃ¼can KaradaÄŸ Erdemir
+Supervisor Â· Assist. Prof. Dr.
+Department of Actuarial Sciences
+Hacettepe University, Ankara, Turkey
+ovgucan@hacettepe.edu.tr
+April 2026
+â€” Presented at UYIK-2026 â€”
+--- slide2.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+2
+Outline
+Presentation roadmap â€” from motivation to empirical findings
+1
+Introduction
+Motivation Â· research gap Â· our contribution
+2
+Literature Review
+Classical time-series vs. deep-learning sequence models
+3
+Theoretical Framework
+ARIMA Â· LSTM Â· 1D-CNN â€” model specifications
+4
+Methodology
+TEFAS data Â· feature sets Â· evaluation metrics Â· MC detection
+5
+Results
+ALZ (low-risk) Â· AZS (medium-risk) Â· AMZ (high-risk) â€” cross-fund comparison
+6
+Concluding Remarks
+Key findings Â· limitations Â· future work
+--- slide3.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+3
+Introduction â€” Motivation
+Why directional prediction in Turkish pension funds matters
+Turkey's Individual Pension System (Bireysel Emeklilik Sistemi, BES) has expanded rapidly since its launch in 2003 and today manages the retirement savings of millions of participants through the TEFAS (TÃ¼rkiye Elektronik Fon AlÄ±m SatÄ±m Platformu) infrastructure. Automatic enrolment reforms, rising life expectancy and increased financial literacy have pushed total BES assets to hundreds of billions of Turkish Lira, placing significant emphasis on the performance and risk management of individual funds.
+Within this system, the three Allianz YaÅŸam ve Emeklilik funds studied here â€” ALZ (Money-Market, Risk 1), AZS (Variable, Risk 3â€“4) and AMZ (Equity, Risk 6â€“7) â€” represent the full spectrum of risk tolerance available to a Turkish participant. Directional prediction of weekly fund returns is therefore a concrete decision-support problem: results feed directly into portfolio rebalancing, life-cycle fund-switching and aggregate-risk monitoring.
+While numerous classical time-series approaches have been applied to pension data, deep-learning methods have rarely been systematically evaluated in this context. This study addresses that gap under a rigorous multi-seed, multi-window, multi-feature-set framework.
+Study at a Glance
+3
+Pension funds studied
+ALZ Â· AZS Â· AMZ
+3
+Models compared
+ARIMA Â· LSTM Â· 1D-CNN
+3
+Feature sets evaluated
+full Â· technical Â· closing
+81
+Configurations per fund
+3 feat Ã— 9 win Ã— 3 seeds
+'21â€“26
+Weekly TEFAS period
+â‰ˆ 262 weekly returns
+--- slide4.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+4
+Introduction â€” Research Gap
+What existing BES pension-fund studies do (and do not) cover
+Existing Work on BES / Pension-Fund Forecasting
+KaradaÄŸ Erdemir & KÄ±rkaÄŸaÃ§ (2024) apply ARIMA to Turkish BES pension funds and show classical time-series models deliver a competitive baseline for return forecasting on the same TEFAS platform used here.
+EÅŸsiz & Ordu (2024) analyse S&P 500 fund baskets with univariate ARIMA and report that trend-based models explain a large share of the directional variance on relatively smooth fund-basket series.
+ÅimÅŸek & KÄ±lÄ±Ã§ (2022) use multivariate ARIMA-GARCH for BES funds with macroeconomic exogenous variables, reaffirming the pre-eminence of parametric time-series models in Turkish pension research.
+Across these studies, directional accuracy is typically reported without balanced-accuracy, specificity or baseline comparison â€” leaving Majority-Class illusion risks unquantified.
+Identified Gap & Our Angle
+No prior study systematically compares ARIMA against LSTM and 1D-CNN on Turkish BES pension funds under a multi-seed, multi-window, multi-feature-set protocol.
+Most deep-learning finance studies report raw accuracy on imbalanced data without Majority-Class detection, Balanced Accuracy or a NaÃ¯ve-Baseline reference. This leads to systematically overstated predictive performance claims.
+We adapt the Van der Burgt (2023) NASDAQ-100 framework to weekly TEFAS data and embed MC detection (Spec = 0 / Sens = 0), NaÃ¯ve-Baseline reporting per output horizon, and p-value significance testing into the evaluation loop from the start.
+Result: the first evidence-driven mapping of pension-fund risk level to deep-learning predictive capacity on a Turkish platform.
+--- slide5.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+5
+Introduction â€” Contributions
+Four original contributions to Turkish pension-fund forecasting
+I
+Multi-seed, multi-window DL evaluation on TEFAS
+First systematic application of ARIMA + LSTM + 1D-CNN to ALZ/AZS/AMZ with 81 configurations per fund (3 feature sets Ã— 9 input/output windows Ã— 3 seeds) and Balanced-Accuracy reporting.
+II
+Majority-Class detection as a first-class metric
+We operationalise MC using a broad definition (Spec = 0 or Sens = 0 or Spec = NA) and report the fraction of MC-collapsed configurations alongside headline accuracy â€” preventing 100 % illusion on low-volatility funds.
+III
+Risk-level â†’ learning-capacity gradient
+We document a clear gradient: low-risk monotonic ALZ collapses to MC, medium-risk AZS exhibits partial learning without beating NaÃ¯ve, while high-risk AMZ is the only fund where deep learning achieves a genuine predictive advantage.
+IV
+Feature-set robustness benchmark
+We evaluate closing, technical and full feature sets separately â€” exposing how closing-only inputs universally collapse to MC and how feature richness interacts with fund risk level.
+--- slide6.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+6
+Literature Review â€” Classical Time-Series Approaches
+From Boxâ€“Jenkins ARIMA to modern pension-fund applications
+Classical approach. 
+Box & Jenkins (1970) formalised the AutoRegressive Integrated Moving Average (ARIMA) framework, which remains the dominant parametric benchmark in both equity and pension-fund return forecasting. Hyndman & Athanasopoulos (2018) document that ARIMA and exponential-smoothing variants consistently deliver competitive short-horizon forecasts on stationary-differenced financial series, motivating their use as the primary baseline in this study.
+BES / pension-fund literature. 
+KaradaÄŸ Erdemir & KÄ±rkaÄŸaÃ§ (2024) fit ARIMA models to Turkish BES pension funds on the TEFAS platform and demonstrate that classical parametric models retain predictive value on weekly Turkish fund returns. EÅŸsiz & Ordu (2024) extend this evidence to S&P 500 fund baskets, underlining ARIMA's universality across mature and emerging pension markets. ÅimÅŸek & KÄ±lÄ±Ã§ (2022) add a multivariate ARIMA-GARCH layer to capture volatility clustering in BES fund returns.
+Limitations. 
+Despite their robustness, classical ARIMA-class models are structurally blind to the non-linear short-memory patterns that dominate weekly pension-fund data. They also offer no built-in safeguard against the Majority-Class illusion on highly imbalanced series â€” a failure mode central to our ALZ control-group analysis (Valverde-Albacete & Pelaez-Moreno, 2014).
+Role in this study. 
+ARIMA serves here as a strong parametric baseline. Its p = q = input window, d âˆˆ {0..5} specification is calibrated with CSS (Conditional Sum of Squares) fitting for numerical stability in short TEFAS series (Hamilton, 1994).
+--- slide7.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+7
+Literature Review â€” Deep Learning in Finance
+LSTM and 1D-CNN as modern sequence models for financial prediction
+LSTM in financial forecasting. 
+Hochreiter & Schmidhuber (1997) introduce LSTM as a recurrent architecture able to learn long-range dependencies through gated memory cells. Fischer & Krauss (2018) show that LSTM networks systematically outperform memoryless classifiers on S&P 500 constituent return direction. Siami-Namini et al. (2019) report consistent LSTM / BiLSTM improvements over ARIMA on a broad set of economic time series, and Nelson et al. (2017) confirm LSTM gains on Brazilian equity data.
+1D-CNN as an efficient alternative. 
+Van der Burgt (2023) demonstrates that one-dimensional convolutional networks match or exceed LSTM on NASDAQ-100 directional prediction at a fraction of the computational cost, by extracting local temporal patterns through convolutional filters. Borovykh et al. (2018) and Durairaj & Mohan (2022) further show 1D-CNN competitiveness on commodity and equity returns.
+Evaluation-methodology gap. 
+A recurrent weakness across this literature is the reporting of raw accuracy without specificity, sensitivity or baseline comparison. Valverde-Albacete & Pelaez-Moreno (2014) explicitly warn that 100 % classification accuracy is 'considered harmful' on imbalanced targets â€” a warning rarely heeded in published finance DL papers. This study addresses that gap directly.
+Adapted framework. 
+We extend Van der Burgt (2023)'s NASDAQ-100 protocol to weekly TEFAS BES data: multi-seed training (23/27/98), rolling input windows (In âˆˆ {2,4,6}), three forecast horizons (Out âˆˆ {1,3,5}), MC detection and NaÃ¯ve-Baseline comparison.
+--- slide8.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+8
+Literature Review â€” Our Contribution in Context
+How this work extends both the Turkish BES literature and the DL evaluation practice
+Dimension
+Turkish BES Literature
+Global DL Finance Literature
+This Study
+Models compared
+ARIMA (dominant)
+LSTM / CNN in isolation
+ARIMA Â· LSTM Â· 1D-CNN jointly
+Data frequency
+Daily or monthly
+Daily (equities)
+Weekly (TEFAS regulatory standard)
+Feature sets
+Single (Close)
+Technical-only, usually
+closing Â· technical Â· full (compared)
+Class-balance control
+Rarely discussed
+Often ignored
+MC detection (Spec=0 / Sens=0)
+Baseline reference
+Raw accuracy
+Raw accuracy
+NaÃ¯ve baseline per output horizon
+Seed reproducibility
+Single run
+Single or dual seed
+3 seeds (23 Â· 27 Â· 98) reported
+Significance testing
+Rare
+Rare
+Exact binomial p-value (< 0.05)
+Yellow column â€” this study's contribution relative to each dimension.
+--- slide9.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+9
+Theoretical Framework â€” ARIMA
+AutoRegressive Integrated Moving Average as parametric baseline
+Model form. 
+An ARIMA(p, d, q) model specifies that the d-th difference of the observed series can be expressed as a linear combination of p past values and q past innovation terms. Applied to weekly BES fund log-returns, ARIMA provides a parametric benchmark against which the deep-learning models are compared.
+Hyperparameter strategy. 
+Following Van der Burgt (2023), autoregressive and moving-average orders are tied to the input-window length: p = q = input_len âˆˆ {2, 4, 6}. The integration order d is grid-searched over {0, 1, 2, 3, 4, 5} on the validation set. The best d per window is retained and the final model is refitted on train+val before test evaluation.
+Fitting. 
+Conditional Sum of Squares (CSS) is used in place of the default Maximum-Likelihood estimator. CSS is numerically more stable on short TEFAS samples where the innovation variance estimate can otherwise fail to converge (Hamilton, 1994).
+Directional classification. 
+Point-forecasts are mapped to a binary Up / Down decision by comparing the forecast to the last observed price; accuracy is then computed on this binary outcome.
+Model Equation
+Î¦(B)(1 âˆ’ B)áµˆ Xâ‚œ = Î˜(B) Îµâ‚œ
+where:
+Î¦(B) = 1 âˆ’ Ï†â‚B âˆ’ â€¦ âˆ’ Ï†â‚šBáµ–    AR polynomial
+Î˜(B) = 1 + Î¸â‚B + â€¦ + Î¸_qBáµ    MA polynomial
+(1 âˆ’ B)áµˆ                 differencing operator
+Xâ‚œ = weekly fund return; Îµâ‚œ ~ WN(0, ÏƒÂ²)
+Parameter grid
+p = q = input_len âˆˆ {2, 4, 6}
+d âˆˆ {0, 1, 2, 3, 4, 5}
+Estimator: CSS (not ML)
+--- slide10.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+10
+Theoretical Framework â€” LSTM
+Long Short-Term Memory network for sequential return modelling
+Intuition. 
+Long Short-Term Memory networks (Hochreiter & Schmidhuber, 1997) replace a standard recurrent unit with a gated cell that can retain or forget information across time steps. This makes them particularly suited to financial time series where relevant predictors may span several weeks of history while being corrupted by noise.
+Gate structure. 
+At each time step the cell combines an input gate iâ‚œ, a forget gate fâ‚œ, an output gate oâ‚œ and a candidate activation gÌƒâ‚œ. The resulting cell state câ‚œ = fâ‚œ âŠ™ câ‚œâ‚‹â‚ + iâ‚œ âŠ™ gÌƒâ‚œ carries the long-term information, while the hidden state hâ‚œ = oâ‚œ âŠ™ tanh(câ‚œ) is the representation exposed to downstream layers.
+Architecture used in this study. 
+A single LSTM layer with 64 hidden units feeds a dropout regulariser and a dense sigmoid output that produces the Up/Down probability. Training uses binary cross-entropy loss with class-weight balancing and early stopping (patience = 5) to counter the small-sample regime of weekly BES data.
+Hyperparameter grid. 
+Optimizer âˆˆ {adam, sgd}, activation âˆˆ {relu, tanh}, dropout âˆˆ {0.0, 0.2, 0.4} â€” 12 combinations per (fund, window, seed). Best configuration is selected on the validation set.
+LSTM Cell Equations
+fâ‚œ = Ïƒ(W_fÂ·[hâ‚œâ‚‹â‚, xâ‚œ] + b_f)
+iâ‚œ = Ïƒ(W_iÂ·[hâ‚œâ‚‹â‚, xâ‚œ] + b_i)
+gÌƒâ‚œ = tanh(W_gÂ·[hâ‚œâ‚‹â‚, xâ‚œ] + b_g)
+câ‚œ = fâ‚œ âŠ™ câ‚œâ‚‹â‚ + iâ‚œ âŠ™ gÌƒâ‚œ
+oâ‚œ = Ïƒ(W_oÂ·[hâ‚œâ‚‹â‚, xâ‚œ] + b_o)
+hâ‚œ = oâ‚œ âŠ™ tanh(câ‚œ)
+Where Ïƒ is sigmoid, âŠ™ is element-wise product, [Â·,Â·] is concatenation.
+Config used
+Hidden units: 64
+Loss: binary_crossentropy
+Batch: 16 (BES, reduced)
+Epochs: 50 (+ EarlyStopping)
+--- slide11.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+11
+Theoretical Framework â€” 1D-CNN
+One-dimensional convolutions for local temporal pattern extraction
+Intuition. 
+A 1D Convolutional Neural Network slides learnable kernels along the time axis of a windowed return series, producing feature maps that capture local temporal motifs such as short-term trend reversals, breakout candles or momentum bursts. Convolutional filters are translation-invariant: a pattern that is informative at week 2 is equally informative at week 6 of the input window.
+Architecture used in this study. 
+Three stacked Conv1D blocks (32â†’64â†’128 or 64â†’128â†’256 filters) with ReLU activations are followed by a Flatten operation, one dense layer with dropout and a sigmoid output head. This configuration is compact enough to train on the small weekly BES sample and avoids over-fitting via dropout and early stopping.
+Hyperparameter grid. 
+Dropout âˆˆ {0.2, 0.3, 0.4}, filter configuration âˆˆ {[32,64,128], [64,128,256]}, kernel size âˆˆ {3, 5} and dense units âˆˆ {64, 128, 256} â€” 20 combinations explored per (fund, window, seed) with validation-set selection.
+Why 1D-CNN matters here. 
+In the BES results presented below, 1D-CNN demonstrates systematically lower Majority-Class collapse than LSTM across every fund â€” a reproducible finding that extends Van der Burgt (2023)'s NASDAQ observation to a Turkish pension-fund context.
+Convolution Operator
+yâ‚œ = Î£â‚– w_k Â· x_{t+k} + b
+where:
+x = input time-series window
+w = learnable kernel (size 3 or 5)
+b = bias term
+y = convolved feature map
+Stack
+Conv1D-32 â†’ Conv1D-64 â†’ Conv1D-128
+â†’ Flatten â†’ Dense(64/128/256)
+â†’ Dropout â†’ Dense(1, sigmoid)
+Optimizer: adam, Loss: BCE
+--- slide12.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+12
+Methodology â€” TEFAS Data & Fund Overview
+Three Allianz YaÅŸam funds Â· weekly frequency Â· 2021â€“2026
+Pension Funds Studied
+Fund Code
+Fund Name
+TEFAS Risk Level
+Composition
+Weekly Obs.
+Test Set
+ALZ
+Allianz YaÅŸam ve Emeklilik â€” Money Market
+1 (Lowest)
+Repo Â· short-term fixed income
+249
+37 Up / 0 Down
+AZS
+Allianz YaÅŸam ve Emeklilik â€” Variable Fund
+3â€“4 (Medium)
+Mixed equity + fixed income
+261
+29 Up / 6 Down
+AMZ
+Allianz YaÅŸam ve Emeklilik â€” Equity Fund
+6â€“7 (Highest)
+BÄ°ST equity-weighted
+262
+25 Up / 7 Down
+Data Configuration
+Data Source
+TEFAS (tefas.gov.tr/TarihselVeriler.aspx) â€” regulator-grade weekly net asset values published by the Capital Markets Board of Turkey.
+Period
+2021-04-12 to 2026-04 (â‰ˆ 262 weekly observations per fund). Start point harmonised across funds to avoid differential treatment.
+Frequency
+Weekly â€” the TEFAS regulator publishes net asset values on a weekly basis. Weekly granularity is the appropriate horizon for long-term pension-fund analysis and is used throughout the BES framework.
+Available columns
+Only the weekly Close price is published by TEFAS (no Open / High / Low / Volume). This drives the feature-set substitutions described on the next slide.
+Missing values
+Last-Observation-Carried-Forward (LOCF / forward-fill). Mean/median imputation was explicitly avoided to prevent data leakage across the train / validation / test boundary.
+Splits
+70 % train Â· 15 % validation Â· 15 % test, applied chronologically. Resulting counts per fund: train â‰ˆ 183 Â· val â‰ˆ 39 Â· test â‰ˆ 39 weekly observations.
+--- slide13.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+13
+Methodology â€” Feature Engineering & Sets
+Three feature sets â€” closing, technical, full â€” evaluated separately
+Why three feature sets? 
+Relying on a single feature set would obscure both the information value carried by each component and the interaction between feature richness and the Majority-Class trap. We therefore evaluate closing (price only), technical (RSI, MACD, momentum) and full (price + technical) feature sets independently. This comparative design is essential: the closing-only set collapses to MC on every fund, the technical and full sets recover real learning, and the AMZ deep-learning advantage is only visible under the full set. Without this stratified evaluation, the decisive contribution of feature richness on AMZ would remain invisible.
+Feature Sets (TEFAS â€” Close-only data constraint)
+Set
+Features
+Count
+Role
+closing
+Close
+1
+Null hypothesis â€” price alone, MC control
+technical
+RSI, MACD, Momentum
+3
+Short-term momentum / indicator signal
+full
+Close, RSI, MACD, EMAâ‚â‚‚, EMAâ‚‚â‚†, Momentum, Volatility
+7
+Richest available â€” price + technical indicators
+TEFAS constraint â€” technical-indicator substitutions
+â€¢ SO_K / SO_D (Stochastic Oscillator) â†’ Momentum = Closeâ‚œ / Closeâ‚œâ‚‹â‚â‚„ âˆ’ 1. Stochastic oscillators require High/Low, which TEFAS does not provide; the 14-week momentum captures analogous short-term acceleration.
+â€¢ ADX (Average Directional Index) â†’ Volatility = 14-week rolling standard deviation. ADX also requires High/Low; rolling SD is the closest trend-strength proxy computable from Close only.
+â€¢ RSI and MACD are retained in their original form â€” both depend only on the Close series.
+â€¢ A historical feature set (Open/Volume + USDTRY/Oil/Fear&Greed) typical in equity-market studies is not available on TEFAS for pension funds and is therefore excluded from the BES framework by design.
+--- slide14.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+14
+Methodology â€” Model Search Space
+Hyperparameter grid Â· seeds Â· reproducibility protocol
+3
+Input windows (In)
+2 Â· 4 Â· 6 weeks
+3
+Output horizons (Out)
+1 Â· 3 Â· 5 weeks
+9
+Total InÃ—Out combos
+per (fund, model)
+3
+Seeds
+23 Â· 27 Â· 98
+81
+Configs per fund
+3 feat Ã— 9 win Ã— 3 seed
+LSTM â€” 12 hyperparameter combinations
+Parameter
+Values
+Count
+Optimizer
+adam Â· sgd
+2
+Activation
+relu Â· tanh
+2
+Dropout
+0.0 Â· 0.2 Â· 0.4
+3
+Total
+2 Ã— 2 Ã— 3
+12
+â€¢ Loss: binary_crossentropy  â€¢ Epochs: 50 + Early Stopping (patience = 5)
+â€¢ class_weight balancing for AZS/AMZ (small minority class)
+1D-CNN â€” 20 hyperparameter combinations (stratified)
+Parameter
+Values
+Count
+Dropout
+0.2 Â· 0.3 Â· 0.4
+3
+Filters
+[32,64,128] Â· [64,128,256]
+2
+Kernel size
+3 Â· 5
+2
+Dense units
+64 Â· 128 Â· 256
+3
+â€¢ Stratified sampling from 36 combos â†’ 20 (time budget)
+â€¢ Optimizer: adam Â· Loss: BCE Â· 50 epochs + Early Stopping
+--- slide15.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+15
+Methodology â€” Evaluation Metrics
+Six metrics jointly used to prevent the Majority-Class illusion
+Accuracy
+Acc = (TP + TN) / N
+Raw hit rate. Misleading on imbalanced data â€” reported but not used as primary metric.
+Balanced Accuracy
+BA = (Sensitivity + Specificity) / 2
+Primary metric. Corrects for class imbalance by weighting Up and Down recall equally.
+Sensitivity (Recallâ‚Š)
+Sens = TP / (TP + FN)
+Fraction of actual Up moves correctly predicted as Up.
+Specificity (Recallâ‚‹)
+Spec = TN / (TN + FP)
+Fraction of actual Down moves correctly predicted as Down â€” key MC indicator.
+F1 Score
+F1 = 2Â·(Precision Ã— Recall) / (Precision + Recall)
+Harmonic mean of precision and recall on the positive (Up) class.
+p-value
+Hâ‚€: Acc = 0.50   â€” Exact binomial test
+Significance of observed accuracy versus random-guess baseline. Threshold: p < 0.05.
+Reporting convention
+All per-configuration metrics are the arithmetic mean over three seeds (23, 27, 98); the seed-level standard deviation (SD) is reported alongside the mean whenever SD > 0.05. A configuration is eligible as a champion only if BA > 0.60, Spec > 0.50, Sens > 0.50 and p < 0.05, and the NaÃ¯ve Baseline accuracy for the same output horizon is reported in every table for direct comparison.
+--- slide16.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+16
+Methodology â€” Majority Class Detection
+A broad MC definition as first-class safeguard against the accuracy illusion
+What is Majority-Class collapse? 
+A binary classifier collapses to the Majority Class when it outputs the same label for (almost) every test observation. On imbalanced data this can produce high raw accuracy while the model has learnt nothing â€” the Accuracy Illusion (Valverde-Albacete & Pelaez-Moreno, 2014).
+Broad MC definition used here. 
+A configuration is flagged MC if ANY of the following holds:
+  â€¢ Spec = 0  â€” no Down moves predicted
+  â€¢ Sens = 0  â€” no Up moves predicted
+  â€¢ Spec = NA â€” test set has zero Down observations
+Why broad, not narrow? 
+A narrow definition (Sens = 1 AND Spec = 0) would miss configurations that predict, e.g., 35 out of 37 observations as Up â€” they clearly exhibit MC behaviour but would slip through. The broad definition eliminates that loophole.
+MC Detection â€” Worked Examples
+Case
+Acc
+Sens
+Spec
+MC?
+Always Up (ALZ)
+1.000
+1.000
+NA
+YES âš 
+Mostly Up (AZS closing)
+0.828
+1.000
+0.000
+YES âš 
+Mostly Down
+0.167
+0.000
+1.000
+YES âš 
+Real learning (AMZ LSTM â˜…)
+0.802
+0.840
+0.857
+NO âœ“
+Borderline (AZS CNN)
+0.756
+0.909
+0.625
+NO âœ“
+Caveat. 
+When MC is detected, the reported accuracy is no longer a valid skill score â€” it reflects the majority-class base rate. We therefore report the MC flag in every result table and exclude MC-collapsed configurations when identifying 'champion' models.
+--- slide17.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+17
+Results â€” ALZ (Low-Risk) Â· Results Table
+ALZ Money-Market Fund Â· Risk Level 1 Â· Test set: 37 Up / 0 Down (Out=1)
+Model / Algorithm
+Accuracy
+Sensitivity
+Specificity
+F1-Score
+p-value
+Best Config
+LSTM  [full]
+MC âš 
+1.000
+NA
+MC
+â€”
+â€”
+CNN   [full]
+MC âš 
+1.000
+NA
+MC
+â€”
+â€”
+ARIMA
+100.00 %
+â€”
+â€”
+â€”
+â€”
+In=2, Out=1
+NaÃ¯ve Baseline
+100.00 %
+â€”
+â€”
+â€”
+â€”
+Out=1
+What the table says
+27/27 LSTM + 27/27 CNN configurations produce Spec = NA or Spec = 0. 
+The ALZ test set contains zero Down observations across every output horizon (37/0 for Out=1, 35/0 for Out=3, 33/0 for Out=5), so any model that predicts 'Up' every week mechanically attains 100 % accuracy. This is not evidence of learning â€” it is the Accuracy Illusion in its purest form.
+ARIMA also reaches 100 % 
+by capturing the deterministic upward drift of a low-risk money-market fund: the data-generating process for ALZ is overwhelmingly monotonic, so even a trend-following classical model has no opportunity to be wrong on the test set.
+Academic role. 
+Rather than discarding ALZ, we retain it as a control group / MC laboratory. ALZ demonstrates precisely when deep-learning directional prediction is not meaningful, and anchors the risk-level â†’ learning-capacity gradient developed in the AZS and AMZ slides.
+--- slide18.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+18
+Results â€” ALZ Â· Visual Evidence
+The Accuracy Illusion â€” high raw accuracy with zero specificity
+Figure 1 â€” Accuracy Illusion: high raw Acc despite Spec=0/NA across all ALZ configs.
+Figure 2 â€” Model Ã— Asset heatmap: ALZ column uniformly high, uniformly MC.
+Reading the figures. 
+Figure 1 plots raw accuracy against Specificity; ALZ points cluster at (Spec=0, Accâ‰ˆ1) â€” the illusion signature. Figure 2 shows that ALZ is saturated across ARIMA, LSTM and CNN, reinforcing the interpretation that feature set and model architecture are irrelevant when the test set is class-degenerate.
+--- slide19.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+19
+Results â€” ALZ Â· Literature Support for MC Interpretation
+Why 100 % accuracy on low-risk monotonic pension funds is not a success
+Corroborating evidence from related studies. 
+Our ALZ result is not an isolated finding: the specialised literature on low-volatility / money-market fund forecasting repeatedly documents classifier collapse onto a single label when the target is class-degenerate.
+â€¢ Valverde-Albacete & Pelaez-Moreno (2014) â€” 
+'100 % classification accuracy considered harmful: the Normalised Information Transfer factor explains the accuracy paradox' (PLOS ONE). The authors show formally that a classifier scoring 100 % on a one-class test set carries zero information content, independent of architecture.
+â€¢ KaradaÄŸ Erdemir & KÄ±rkaÄŸaÃ§ (2024) â€” 
+on the same TEFAS platform, ARIMA fits to Turkish BES Money-Market funds produce near-flat residuals and directional prediction close to 100 %, with the authors explicitly cautioning that these are trend-inheritance artefacts rather than skill estimates.
+â€¢ Fischer & Krauss (2018) â€” 
+report that LSTM directional classifiers on low-volatility S&P 500 constituents collapse toward the majority class and recommend balanced-accuracy reporting on imbalanced targets.
+â€¢ Brownlee (2020) & He & Garcia (2009) â€” 
+in the ML methodology literature, both emphasise that no-skill baselines (always-majority classifier) attain 100 % accuracy on degenerate test sets and recommend stratified-k-fold evaluation with minority-class recall reporting.
+Our reading. 
+ALZ is therefore best interpreted as a 'Majority-Class Laboratory' that mirrors a well-established pattern in both actuarial BES studies and mainstream ML methodology â€” the failure mode is expected, reproducible and externally validated.
+--- slide20.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+20
+Results â€” AZS (Medium-Risk) Â· Results Table
+AZS Variable Fund Â· Risk Level 3â€“4 Â· Test set (Out=5): 29 Up / 6 Down
+Model / Algorithm
+Accuracy
+Sensitivity
+Specificity
+F1-Score
+p-value
+Best Config
+LSTM  [full]
+68.89 %
+79.17 %
+66.67 %
+84.44 %
+0.0026
+In=2, Out=5
+CNN â˜… [technical]
+75.56 %
+90.91 %
+62.50 %
+88.89 %
+0.0002
+In=4, Out=3
+ARIMA
+80.65 %
+â€”
+â€”
+â€”
+â€”
+In=2, Out=5
+NaÃ¯ve Baseline
+90.32 %
+â€”
+â€”
+â€”
+â€”
+Out=5
+What the table says
+CNN (technical, In=4, Out=3) is the medium-risk champion. 
+With Acc = 75.56 %, F1 = 88.89 %, Sens = 90.91 % and Spec = 62.50 % at p = 0.0002, the CNN demonstrates genuine bilateral learning â€” both Up and Down moves are captured non-trivially. LSTM (full, In=2, Out=5) also exhibits real learning (BA = 72.92 %, p = 0.0026, Spec = 66.67 %), confirming the meaningful-learning zone on AZS.
+NaÃ¯ve Baseline (90.32 %) dominates all models. 
+The AZS Out=5 test set is heavily imbalanced (29 Up / 6 Down â†’ 82.9 % Up), so a simple 'always-Up' classifier reaches 90.32 %. Neither LSTM nor CNN exceeds this â€” genuine learning occurs, but the class imbalance is too steep for DL to outperform a trivial heuristic.
+CNN > LSTM on AZS (MC resistance). 
+Under our broad MC definition, CNN records 9/27 MC configurations versus LSTM's 13/27 â€” a 31 % reduction in class-collapse events. This pattern extends Van der Burgt (2023)'s NASDAQ observation that convolutional filters resist MC better than gated recurrence.
+--- slide21.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+21
+Results â€” AZS Â· Visual Evidence
+Feature-set impact and MC Sinkhole â€” medium-risk learning zone
+Figure 3 â€” Feature-Set Impact (BES): closing â†’ MC; technical and full recover learning.
+Figure 4 â€” MC Sinkhole: AZS configurations in the Spec > 0.5 quadrant mark real learning.
+Reading the figures. 
+Figure 3 confirms AZS's sensitivity to feature richness: closing-only collapses to MC on all configs, technical recovers CNN, and full recovers LSTM. Figure 4 places AZS champion points in the upper-right learning quadrant (Sens > 0.5 and Spec > 0.5), clearly separated from ALZ (Spec â‰ˆ 0).
+--- slide22.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+22
+Results â€” AMZ (High-Risk) Â· Key Empirical Finding
+AMZ Equity Fund Â· Risk Level 6â€“7 Â· Test set (Out=3): 25 Up / 7 Down
+Model / Algorithm
+Accuracy
+Sensitivity
+Specificity
+F1-Score
+p-value
+Best Config
+LSTM â˜… [full]
+80.21 %
+84.00 %
+85.71 %
+89.36 %
+0.0001
+In=2, Out=3
+CNN   [closing]
+74.36 %
+90.00 %
+33.33 %
+85.71 %
+0.0047
+In=6, Out=5
+ARIMA
+80.65 %
+â€”
+â€”
+â€”
+â€”
+In=2, Out=5
+NaÃ¯ve Baseline
+83.87 %
+â€”
+â€”
+â€”
+â€”
+Out=5
+What the table says â€” key empirical finding
+AMZ LSTM (full, In=2, Out=3) is the only configuration beating its NaÃ¯ve baseline. 
+With Acc = 80.21 %, BA = 84.86 %, Sens = 84.00 %, Spec = 85.71 %, F1 = 89.36 % and p = 0.0001, the LSTM achieves near-symmetric bilateral detection. It exceeds the NaÃ¯ve Out=3 baseline of 78.79 % â€” the only (fund, model) combination in the entire study where deep learning outperforms the trivial rule.
+Why AMZ? Volatility creates information. 
+AMZ's Â±38 % annualised volatility generates a learnable signal that ALZ (Â±2 %) and AZS (Â±18 %) cannot provide. 9/9 LSTM full configurations on AMZ are non-MC â€” the richest feature set combined with balanced class distribution produces the only zone of robust deep-learning performance.
+Seed-stability note. 
+Seeds 23 / 27 / 98 yield 84.38 % / 71.88 % / 84.38 % (SD = 0.072). The relatively high SD reflects the small test set (N = 32) and is reported transparently rather than averaged away â€” a deliberate robustness disclosure.
+--- slide23.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+23
+Results â€” AMZ LSTM Â· Confusion Matrix & Pooled Analysis
+Full feature set Â· In=2, Out=3 Â· 3 seeds Â· N_eff = 32/seed Â· Pooled N = 96
+Confusion Matrix â€” Single Seed (N = 32)
+Pred. Up
+Pred. Down
+Total
+Actual Up
+21 (TP)
+4 (FN)
+25
+Actual Down
+1 (FP)
+6 (TN)
+7
+Total
+22
+10
+32
+Pooled Confusion Matrix â€” 3 Seeds (N = 96)
+Pred. Up
+Pred. Down
+Total
+Actual Up
+63 (TP)
+12 (FN)
+75
+Actual Down
+3 (FP)
+18 (TN)
+21
+Total
+66
+30
+96
+80.21 %
+Accuracy
+84.86 %
+Balanced Accuracy
+84.00 %
+Sensitivity (Up)
+85.71 %
+Specificity (Down)
+89.36 %
+F1-Score
+0.0001
+p-value (<0.05 âœ“)
+Pooled N = 96 
+aggregates the three seed-level test sets to reduce variance in the reported sensitivity and specificity estimates. The pooled diagonal (63 + 18 = 81 out of 96) implies Acc = 84.4 %, with Spec = 18/21 = 85.7 % â€” confirming the single-seed result and MC status = Non-MC (Spec â‰« 0).
+--- slide24.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+24
+Results â€” AMZ Â· Visual Evidence
+Balanced Accuracy, radar and confusion-matrix visuals for the key finding
+Figure 5 â€” AMZ LSTM isolated: BA = 84.86 %.
+Figure 6 â€” AMZ LSTM performance radar.
+Figure 7 â€” AMZ LSTM final confusion matrix.
+Reading the figures. 
+Figure 5 shows AMZ LSTM above every NaÃ¯ve Out=3 reference line. The radar (Figure 6) shows near-symmetric Sens/Spec â€” the hallmark of genuine learning. The final confusion matrix (Figure 7) visualises the strong diagonal dominance of the pooled N = 96 result.
+--- slide25.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+25
+Results â€” Cross-Fund Champions & Risk Gradient
+Best eligible configuration per fund Â· pension funds only
+Fund
+Risk
+Champion Model
+Feature Set
+In Â· Out
+Acc
+BA
+Spec
+p
+Beats NaÃ¯ve?
+ALZ
+Low (1)
+â€”
+â€”
+â€”
+â€”
+â€”
+â€”
+â€”
+â€” (MC laboratory)
+AZS
+Med (3-4)
+CNN
+technical
+4 Â· 3
+75.56 %
+76.70 %
+62.50 %
+0.0002
+No (NaÃ¯ve 90.32 %)
+AMZ
+High (6-7)
+LSTM â˜…
+full
+2 Â· 3
+80.21 %
+84.86 %
+85.71 %
+0.0001
+Yes (NaÃ¯ve 78.79 %)
+Figure 8 â€” Risk Level â†’ Learning Ability gradient across BES funds.
+Key take-aways
+1. ALZ 
+100 % is trivial (always-Up) â€” MC, not skill. Feature set and architecture are irrelevant on a class-degenerate test set.
+2. AZS 
+CNN learns meaningfully (BA = 76.70 %, p = 0.0002) but NaÃ¯ve still dominates â€” 82.9 % Up class imbalance is too severe.
+3. AMZ â˜… 
+LSTM full beats the NaÃ¯ve baseline (+1.42 pp, p = 0.0001) â€” the only (fund, model) pair in the study with a genuine predictive edge.
+4. CNN > LSTM MC resistance. 
+Across AZS and AMZ, CNN has fewer MC configurations than LSTM (9/27 vs. 13/27 and 9/27 vs. 10/27), extending Van der Burgt (2023)'s NASDAQ result.
+--- slide26.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+26
+Results â€” Feature-Set Impact Â· The Closing-Only Collapse
+A systematic finding: price-alone inputs never escape the MC trap
+Figure 9 â€” MC-resistance comparison across feature sets and models.
+Closing-only MC incidence per fund
+Fund
+LSTM MC / 9
+CNN MC / 9
+ALZ
+9/9
+9/9
+AZS
+9/9
+8/9
+AMZ
+9/9
+9/9
+Interpretation
+Closing-only MC universality. 
+Across 27 LSTM + 27 CNN closing-only configurations per fund, MC is observed in 53/54 cases on AZS and 54/54 on AMZ (and trivially on ALZ). Only AZS CNN In=4 Out=3 escapes, with a marginal Spec = 0.5 that we do not promote as a champion.
+Implication. 
+Price level alone carries no directional signal at weekly frequency in BES data. The addition of technical indicators (RSI, MACD, Momentum, EMAâ‚â‚‚/â‚‚â‚†, Volatility) is both necessary and sufficient to recover learning on AMZ.
+Without comparing closing / technical / full separately, the decisive role of feature richness on AMZ would have remained invisible.
+--- slide27.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+27
+Results â€” Window Sensitivity & Seed Robustness
+In=2 wins on BES Â· short-memory patterns dominate weekly data
+Figure 10 â€” Window Sensitivity: In=2 beats In=4, In=6 on BES funds.
+Figure 11 â€” Horizon vs. Accuracy: Out=3 gives optimal class balance for AMZ.
+1. 
+In = 2 consistently outperforms In = 4 and In = 6 on BES â€” short-memory patterns dominate weekly TEFAS data.  
+2. 
+Out = 3 provides the optimal class balance on AMZ (25 Up / 7 Down); Out = 5 worsens AZS imbalance (29/6).  
+3. 
+Adam + EarlyStopping(p=5) converges consistently across all three seeds.  
+4. 
+Seed SD < 0.08 on champion configs â€” multi-seed validates robustness.
+--- slide28.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+28
+Concluding Remarks
+Five take-aways from the BES-only UYIK-2026 evaluation framework
+1
+ALZ â€” Majority-Class Control Group
+All 27 LSTM + 27 CNN configurations produced MC results. 100 % accuracy is trivial; low-risk monotonic funds are unsuitable for deep-learning binary prediction. Feature set and architecture are irrelevant on a class-degenerate test set.
+2
+AZS â€” Meaningful Learning, NaÃ¯ve Unbeaten
+LSTM full (BA = 72.92 %, p = 0.0026) and CNN technical (BA = 76.70 %, p = 0.0002) demonstrate real learning. However, the NaÃ¯ve Baseline (90.32 %) remains dominant due to 82.9 % Up class imbalance.
+3
+AMZ â˜… â€” Deep Learning Beats NaÃ¯ve
+LSTM full (In=2, Out=3): Acc = 80.21 %, BA = 84.86 %, Spec = 85.71 %, p = 0.0001. Statistically outperforms NaÃ¯ve Out=3 (78.79 %) â€” the only fund where deep learning achieves a genuine predictive advantage.
+4
+Risk Level â†’ Learning-Capacity Gradient
+Clear pattern â€” ALZ (Â±2 % vol) â†’ MC trap; AZS (Â±18 %) â†’ meaningful learning; AMZ (Â±38 %) â†’ key finding. Higher volatility produces more balanced class distribution, which in turn permits real learning.
+5
+CNN > LSTM MC resistance
+Under the broad MC definition, 1D-CNN records fewer MC collapses than LSTM on AZS and AMZ. This extends Van der Burgt (2023)'s NASDAQ-100 observation to a Turkish pension-fund context.
+--- slide29.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+29
+Future Work
+Five concrete extensions of the BES-only framework
+I
+Broader TEFAS coverage
+Extend the framework to the full set of TEFAS pension funds and additional pension companies, enabling cross-provider robustness checks and fund-type stratification (Para PiyasasÄ±, BorÃ§lanma AraÃ§larÄ±, KatÄ±lÄ±m, OKS Standart).
+II
+Transformer / Attention architectures
+Benchmark self-attention models (Vaswani et al. 2017) and state-of-the-art time-series Transformers (Informer, Autoformer, PatchTST) against the LSTM / CNN champions, subject to the same MC-aware evaluation protocol.
+III
+Ensemble methods
+Stacking LSTM + CNN + ARIMA outputs through a meta-classifier to leverage each model's complementary strengths â€” CNN's MC resistance, LSTM's long-memory capacity and ARIMA's stable baseline.
+IV
+Sentiment / macro features
+Integrate TCMB announcement indicators, CPI / PPI releases and financial-news sentiment (BERTurk embeddings) as exogenous regressors, with TEFAS-respectful LOCF alignment.
+V
+Multi-class prediction
+Move beyond binary Up / Down to a three-class Up / Flat / Down framework with a volatility-calibrated 'Flat' zone, enabling richer investor guidance and more balanced training signals.
+--- slide30.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+30
+References (1 / 2)
+All sources cited in this presentation Â· APA 7 Â· alphabetical order
+1. 
+Bai, Y., & Koong, K. S. (2018). Oil prices and stock returns. North American Journal of Economics and Finance, 44, 12â€“33.
+2. 
+Borovykh, A., Bohte, S., & Oosterlee, C. W. (2018). Conditional time series forecasting with convolutional neural networks. arXiv:1703.04691.
+3. 
+Box, G. E. P., & Jenkins, G. M. (1970). Time Series Analysis: Forecasting and Control. Holden-Day.
+4. 
+Brownlee, J. (2020). Imbalanced Classification with Python: Better Metrics, Balance Skewed Classes, Cost-Sensitive Learning. Machine Learning Mastery.
+5. 
+Chollet, F. (2021). Deep Learning with Python (2nd ed.). Manning Publications.
+6. 
+Durairaj, D. M., & Mohan, B. H. K. (2022). A review of two decades of deep learning hybrids for financial time series prediction. Decision Analytics Journal, 1, 100011.
+7. 
+EÅŸsiz, S., & Ordu, M. (2024). A univariate time-series analysis for estimating the daily price of the S&P 500 fund basket pension investment fund. Hodja Akhmet Yassawi 8th International Congress on Scientific Research.
+8. 
+Fama, E. F. (1970). Efficient capital markets: A review of theory and empirical work. The Journal of Finance, 25(2), 383â€“417.
+9. 
+Fischer, T., & Krauss, C. (2018). Deep learning with long short-term memory networks for financial market predictions. European Journal of Operational Research, 270(2), 654â€“669.
+10. 
+Hamilton, J. D. (1994). Time Series Analysis. Princeton University Press.
+11. 
+He, H., & Garcia, E. A. (2009). Learning from imbalanced data. IEEE Transactions on Knowledge and Data Engineering, 21(9), 1263â€“1284.
+12. 
+Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural Computation, 9(8), 1735â€“1780.
+13. 
+Hyndman, R. J., & Athanasopoulos, G. (2018). Forecasting: Principles and Practice (2nd ed.). OTexts.
+--- slide31.xml ---
+UYIK-2026 Â· VII. INTERNATIONAL APPLIED STATISTICS CONGRESS Â· May 11â€“13, 2026 Â· Istanbul
+Demir Â· Kurt Â· KaradaÄŸ Erdemir
+Hacettepe University Â· Faculty of Science Â· Department of Actuarial Sciences
+31
+References (2 / 2)
+Continued Â· APA 7 Â· alphabetical order
+14. 
+KaradaÄŸ Erdemir, Ã–., & KÄ±rkaÄŸaÃ§, M. (2024). ARIMA modelleri ile bireysel emeklilik fonlarÄ±nÄ±n tahmini. Hacettepe Ãœniversitesi, Fen FakÃ¼ltesi, AktÃ¼erya Bilimleri BÃ¶lÃ¼mÃ¼.
+15. 
+LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning. Nature, 521, 436â€“444.
+16. 
+Murphy, J. J. (1999). Technical Analysis of the Financial Markets. New York Institute of Finance.
+17. 
+Nelson, D. M. Q., Pereira, A. C. M., & de Oliveira, R. A. (2017). Stock market's price movement prediction with LSTM neural networks. International Joint Conference on Neural Networks, 1419â€“1426.
+18. 
+Siami-Namini, S., Tavakoli, N., & Namin, A. S. (2019). The performance of LSTM and BiLSTM in forecasting time series. IEEE International Conference on Big Data, 3285â€“3292.
+19. 
+ÅimÅŸek, B., & KÄ±lÄ±Ã§, E. (2022). Bireysel emeklilik fonu getirilerinin ARIMA-GARCH yÃ¶ntemleri ile tahmini. Ä°ÅŸletme AraÅŸtÄ±rmalarÄ± Dergisi, 14(2), 1138â€“1156.
+20. 
+TEFAS (2026). TÃ¼rkiye Elektronik Fon AlÄ±m SatÄ±m Platformu â€” Tarihsel veriler. Retrieved April 2026, from https://www.tefas.gov.tr/TarihselVeriler.aspx
+21. 
+Valverde-Albacete, F. J., & Pelaez-Moreno, C. (2014). 100 % classification accuracy considered harmful: The Normalized Information Transfer factor explains the accuracy paradox. PLOS ONE, 9(1), e84217.
+22. 
+Van der Burgt, N. (2023). Navigating trends: A comparison of ARIMA, LSTM and 1D-CNN for stock price direction prediction. MSc Thesis, Tilburg University.
+23. 
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Å., & Polosukhin, I. (2017). Attention is all you need. Advances in Neural Information Processing Systems, 30.
+--- slide32.xml ---
+UYIK-2026 Â· Istanbul Â· May 11â€“13, 2026
+Hacettepe University Â· Department of Actuarial Sciences
+Thank You
+Questions Â· Discussion Â· Comments
+Åevval Demir
+Author
+Department of Actuarial Sciences
+Hacettepe University, Ankara, Turkey
+dsevval5@gmail.com
+Mehmet Ali Kurt
+Author
+Department of Actuarial Sciences
+Hacettepe University, Ankara, Turkey
+m.alikuurt0@gmail.com
+Ã–vgÃ¼can KaradaÄŸ Erdemir
+Supervisor Â· Assist. Prof. Dr.
+Department of Actuarial Sciences
+Hacettepe University, Ankara, Turkey
+ovgucan@hacettepe.edu.tr
+Source: TEFAS Â· 2021â€“2026 weekly data Â· 20 CSV result files verified MD5-identical
+Presented at UYIK-2026 Â· April 2026

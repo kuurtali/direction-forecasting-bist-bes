@@ -1,0 +1,42 @@
+MAKALE YAPILACAKLAR (7 Mayıs 2026 — Final)
+================================================================
+
+ÖNCEKİ ENDİŞELER — KONTROL EDİLDİ, SORUN YOK:
+  ✅ ORCID: 3 yazarın hepsi mevcut (P3)
+  ✅ İngilizce başlık: Abstract üstünde mevcut (P9)
+  ✅ Sınırlılık cümlesi: §6 sonuna eklendi
+  ✅ Abstract italik yapıldı
+  ✅ Keywords alfabetik sıralandı (TR + EN)
+  ✅ Dil tonu yumuşatıldı (8 ifade)
+  ✅ Şekil 9 → 22 düzeltildi
+  ✅ 23 caption = 23 görsel, hepsi TR
+  ✅ Referans formatı örnek ile uyumlu
+
+KALAN İŞLER:
+----------------------------------------------------------------
+
+1. [YÜKSEK] GÖRSEL YOĞUNLUK: 43 element (23 şekil + 20 çizelge)
+   Örnek makalede: 10 element (7 şekil + 3 çizelge)
+   Hakem "katalog gibi" diyebilir.
+   → Şimdilik dokunma, ama hakem isterse EK'e taşımaya
+   hazır ol. Potansiyel çıkarılacaklar: Ş3, Ş7, Ş12, Ş15, Ş17
+
+2. [ORTA] BAŞLIKTA "majority class" İngilizce terimi
+   Şablon Türkçe yayın olduğu için tartışmalı.
+   → "çoğunluk sınıfı illüzyonu" zaten metinde kullanılıyor,
+   başlığa da yansıtılabilir. Ama akademik terim olarak
+   İngilizce bırakılması savunulabilir.
+
+3. [KOZMETİK] BES dönem kesinleştirme
+   Çizelge 1: "2021-2026" → "Nis 2021 – Nis 2026 (~262 hafta)"
+
+4. [OPSİYONEL] GitHub repo
+
+ÖRNEK MAKALE İLE KARŞILAŞTIRMA ÖZETİ:
+  Kriter         | Örnek | Senin | Fark
+  Sayfa          |    12 |   ~32 | 2.5x
+  Kelime         | 4.981 | 8.081 | 1.6x
+  Görsel         |    10 |    43 | 4.3x
+  Referans       |    29 |    39 | uygun
+  Bölüm          |     4 |     6 | daha detaylı
+================================================================

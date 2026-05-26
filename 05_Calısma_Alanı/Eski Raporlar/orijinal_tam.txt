@@ -1,0 +1,3321 @@
+ Navigating Trends: A Comparative Study of LSTM,
+ARIMA, and CNN Models with Technical, Historical,
+    and Combined Indicators in Stock Prediction
+                        J.J. van der Burgt
+
+
+           THESIS SUBMITTED IN PARTIAL FULFILLMENT
+            OF THE REQUIREMENTS FOR THE DEGREE OF
+         MASTER OF SCIENCE IN DATA SCIENCE & SOCIETY
+      AT THE SCHOOL OF HUMANITIES AND DIGITAL SCIENCES
+                     OF TILBURG UNIVERSITY
+STUDENT NUMBER
+2038343
+COMMITTEE
+dr. Juan Sebastian Olier
+Fred Atilla
+
+
+LOCATION
+Tilburg University
+School of Humanities and Digital Sciences
+Department of Cognitive Science & Artificial Intelligence
+Tilburg, The Netherlands
+
+
+DATE
+January 15th, 2023
+
+
+WORD COUNT
+8364
+
+
+
+
+                                                            2
+Navigating Trends: A Comparative Study of LSTM, ARIMA, and
+    CNN Models with Technical, Historical, and Combined
+                 Indicators in Stock Prediction
+                                             J.J. van der Burgt
+
+
+
+                                                     Abstract
+
+This thesis tackles the challenge of accurately forecasting short-term price trends in financial markets. Grounded
+    in prior research, the central research question revolves around improving the performance of forecasting
+models, specifically ARIMA, LSTM, and 1D-CNN, by considering a comprehensive set of indicators, including
+  historical and technical factors, while using different input and output lengths and evaluating performance on
+  different sectors. This approach distinguishes itself by incorporating both historical and technical indicators, a
+novel feature absent in prior studies. Additionally, the unique use of varying input and output lengths and sector-
+   specific evaluations sets this method apart, introducing unprecedented dimensions to short-term price trend
+  forecasting. This thesis utilizes a dataset sourced directly from financial websites, allowing for the download
+and reuse of data. The primary findings highlight the consistent outperformance of the LSTM model, leveraging
+ only technical indicators, compared to ARIMA and 1D-CNN models. Notably, the study reveals that increasing
+   the output length enhances accuracy for all models, potentially allowing for a more comprehensive grasp of
+       technical patterns. The best-performing model is identified as LSTM with technical indicators and an
+ demonstrating its ability to generalize across different sectors within the NASDAQ100. This research provides
+  nuanced insights into the intricate balance between model simplicity and feature relevance, offering practical
+guidance for robust financial trend forecasting. The research significantly advances financial market forecasting
+        by demonstrating the efficacy of LSTM models with technical indicators. This innovation has broad
+implications, offering valuable insights for traders, investors, and financial analysts, enhancing decision-making
+                           processes and potentially improving overall market efficiency.
+
+                         Keywords: Stock trend prediction, LSTM, ARIMA, CNN
+
+
+
+
+                                                                                                                  3
+Table of Contents
+Data Source/Code/Ethics/Technology Statement ................................................................................... 5
+1.      Introduction: Problem Statement & Research Goal ........................................................................ 6
+2.      Related Work................................................................................................................................... 7
+     2.1 LSTM and short-term stock predictions ....................................................................................... 7
+     2.2 ARIMA and short-term stock predictions ..................................................................................... 8
+     2.3 1D-CNN and short-term stock predictions ................................................................................... 9
+     2.4 Factors for predicting short-term stock trends .............................................................................. 9
+        2.4.1 Historical indicators ............................................................................................................... 9
+        2.4.2 Technical indicators ............................................................................................................... 9
+3.      Methodology & Experimental setup ............................................................................................. 10
+     3.1 Experimental setup...................................................................................................................... 10
+     3.2 LSTM .......................................................................................................................................... 13
+     3.3 ARIMA ....................................................................................................................................... 14
+     3.4 1D-CNN ...................................................................................................................................... 15
+     3.5 Evaluation and implementation .................................................................................................. 16
+4.      Results ........................................................................................................................................... 17
+     4.1 LSTM .......................................................................................................................................... 17
+     4.2 ARIMA ....................................................................................................................................... 21
+     4.3 CNN ............................................................................................................................................ 24
+     4.4 Sectors within NASDAQ ............................................................................................................ 29
+     4.5 Trading simulation ...................................................................................................................... 29
+     4.6 Comparison of models ................................................................................................................ 30
+5.      Discussion ..................................................................................................................................... 31
+6.      Limitations and Future Research .................................................................................................. 32
+7.      Conclusion .................................................................................................................................... 32
+References ............................................................................................................................................. 34
+Appendix ............................................................................................................................................... 37
+     Appendix A Technical indicator formulas......................................................................................... 37
+     Appendix B NASDAQ sectors ......................................................................................................... 37
+     Appendix C hyperparameters per model .......................................................................................... 38
+     Appendix D Confusion Matrices ...................................................................................................... 42
+     Appendix E Results per indicator group and output/input length ..................................................... 50
+     Appendix F Simulation trades........................................................................................................... 54
+
+
+
+
+                                                                                                                                                            4
+Data Source/Code/Ethics/Technology Statement
+The data for the thesis is sourced from various websites, and the owner of the data is the respective
+websites from which it was gathered. No data is collected from human participants or animals. The
+data is freely available for download from these websites, implying implicit consent for its use. The
+acquisition channel is the internet, specifically through downloading CSV files. All images and
+figures in the thesis are created by the author, and there is no usage of images that require external
+consent.
+The thesis does not involve acquiring new data from human or animal participants. The data used in
+the thesis consists of factual information, such as numbers and financial data, and is representative in
+nature. There are no known biases in the dataset. As the study does not involve human or animal
+participants, there is no specific de-identification regime associated with the data.
+The thesis does not incorporate code from another source; all code is developed by the author. A
+comprehensive list including version numbers of all libraries and frameworks used in the study is
+provided (Chapter 3.5).
+The tools used for checking spelling and grammar include Microsoft Word combined with
+Grammarly. No other tools or services were employed for paraphrasing or typesetting the given text.
+
+
+
+
+                                                                                                           5
+    1. Introduction: Problem Statement & Research Goal
+
+This research project aims to compare the performance of Autoregressive Integrated Moving Average
+(ARIMA), Long Short-Term Memory (LSTM), and 1-Dimensional Convolutional Neural Network
+(1D-CNN ) models in short-term stock trend prediction, integrating historical and technical indicators.
+Unlike many existing models that focus solely on historical or technical indicators, this study
+combines both categories. LSTM, recognized as the state-of-the-art, is evaluated alongside ARIMA
+and CNN. The research uses the NASDAQ100 as a case study and explores the impact of different
+input and output time horizons on short-term stock trend predictions. Additionally, the study analyzes
+model performance across various sectors within the NASDAQ100, providing a comprehensive
+evaluation. Through addressing these challenges, the research reevaluates the applicability and
+performance of ARIMA and CNN, even in the context of LSTM's dominance. The evaluation will
+focus on accuracy, as measures like recall, precision, and F1-score are deemed less relevant for stock
+trend prediction, where the primary concern is profitability.
+In the past decade, the use of machine learning for stock price prediction has risen significantly,
+challenging the efficient market hypothesis, and emphasizing a data-driven approach. This thesis
+focuses on the domain of stock trend prediction, a field of significance in the financial world. While
+the dominant model for short-term stock prediction is LSTM, incorporating technical indicators
+(Namin & Namin, 2018; Balaji et al., 2018, Li & Lao, 2017; Yao et al., 2018; Nelson et al., 2017;
+Borovka & Tsiamas, 2019; Chen & Ge, 2019, Kobiela et al., 2022; Dong, 2022). This study brings a
+unique perspective by incorporating historical and technical indicators, diverse input and output
+timeframes, and assessing predictive accuracy across various sectors within the NASDAQ100—an
+aspect often overlooked in existing literature.this research introduces a novel dimension by integrating
+historical and technical indicators, input and output time horizons, and testing predictive accuracy for
+different sectors within the NASDAQ100 as these are all overlooked by the literature. ARIMA,
+known for historical stock data, may outperform LSTM in this extended context (Kobiela et al.,
+2022). Beyond ARIMA and LSTM, the study explores 1D-CNN in stock trend prediction in the
+extended context (Di Persio & Honchar, 2016; Gunduz et al., 2017). This comprehensive comparison
+expands the understanding of machine learning models in the dynamic field of stock price prediction.
+Given this argumentation we arrive at the following problem statement: This study addresses the
+challenge of identifying the most effective forecasting model (ARIMA, LSTM, or 1D-CNN) for
+short-term stock trend prediction. It explores the impact of diverse input features, including historical
+and technical indicators, and examines how model performance varies across different input and
+output lengths in various prediction sectors.
+
+Societally, this study addresses the issue of mitigating the high loss rates experienced by day traders
+(Barber et al., 2014). Applying data models to trading offers a data-driven solution that removes
+emotional decision-making, particularly beneficial for retail investors. Moreover, the comparison of
+these models equips day traders with the knowledge to make more informed decisions based on
+underlying patterns in financial markets, empowering them to improve their trading strategies.
+Scientifically, this study addresses gaps in existing literature by integrating overlooked technical and
+historical indicators. Their inclusion is justified by their potential to provide deeper insights into
+market dynamics, offering a holistic view of factors influencing stock trends. With a more holistic
+approach the models are expected to excel previous studies with relatively simple models. Exploring
+different input and output time horizons is expected to enhance predictive accuracy, capturing diverse
+market behaviors. This approach aims to advance understanding by demonstrating the relevance of
+these features in predictive modeling. The research uniquely analyzes optimal configurations across
+NASDAQ100 sectors, filling a gap in current literature and providing valuable insights into the
+generalizability and effectiveness of proposed configurations.
+
+                                                                                                            6
+Based on the preceding information, the primary research question is as follows:
+How does the accuracy differ of LSTM, ARIMA, and 1D-CNN models in forecasting short-term trends
+(uptrend/downtrend) in the NASDAQ100, considering the inclusion of historical, fundamental, and
+technical indicators in different time horizons and sectors?
+To provide comprehensive support for this inquiry, the following sub-research questions are posed:
+
+    •   How does the accuracy of ARIMA, LSTM and 1D-CNN models differ when diverse indicator
+        types, encompassing historical and technical indicators, are integrated into the analysis?
+    •   How does the variation in input time horizons, spanning from 2 days to 6 days, impact the
+        predictive accuracy when contrasting ARIMA, LSTM, and 1D-CNN models?
+    •   How is the accuracy of ARIMA, LSTM, and 1D-CNN models affected by adjustments in
+        output time horizons, ranging from 1 day to 5 days?
+    •   How does dividing forecasted stock price trends into specific sectors influence the predictive
+        precision of the optimal model?
+The thesis finds that in forecasting short-term price trends across financial markets, LSTM
+outperforms ARIMA and 1D-CNN models. Its versatility in capturing closing prices, historical trends,
+and technical indicators establishes LSTM's superiority. The optimal configuration involves an input
+length of 2 and an output length of 5 days using solely technical indicators, making LSTM the most
+reliable choice for financial trend forecasting. The optimal configuration generalizes to different
+sectors within the NASDAQ100.
+
+    2. Related Work
+
+2.1 LSTM and short-term stock predictions
+
+Long Short-Term Memory (LSTM) models, has shown promise in predicting nonlinear stock price
+movements. Namin and Namin (2018) found LSTM outperforming ARIMA with an average RMSE
+reduction of 87.445% (511.481 to 64.213). The robustness of LSTM was evident as the number of
+training epochs had no discernible impact on its performance. Balaji et al. (2018) corroborated
+LSTM's superiority over alternatives like GRU in BANKEX data predictions, with LSTM achieving
+an accuracy ranging from 61.38% to 59.05% for 1-step and 4-step predictions. Li & Liao (2017)
+demonstrated LSTM's precision (47.3% accuracy) in daily stock price predictions. Nelson et al.
+(2017) achieved 53%-55% accuracy for 15-minute interval predictions on Sao Paolo Stock Exchange
+stocks. Yao et al. (2018) found LSTM profitable for short-term trading strategies. Borovka and
+Tsiamas (2019) proposed an ensemble method with LSTM, enhancing accuracy in intraday stock
+forecasting. Chen and Ge (2019) highlighted the effectiveness of Attention LSTM (AttLSTM) over
+traditional LSTM in predicting Hong Kong stock movements, emphasizing the continuous refinement
+of deep learning techniques in financial forecasting. In research conducted by Nabipour et al. (2020),
+an average accuracy of 84.90% was achieved when predicting stock market trends using an LSTM
+model solely based on technical indicators. The study involved categorizing stocks into different
+groups. Another study by Nelson et al. (2017) focused on predicting the market trends of individual
+stocks using a similar LSTM model with only technical indicators, yielding an average accuracy of
+54.26%. In Kobiela et al.'s (2022) study comparing ARIMA and LSTM models on logarithmized
+NASDAQ data, ARIMA outperformed LSTM in medium-short-term predictions, with a 3.4 times
+higher accuracy (MAPE of 1.64 vs. 5.52) in a 30-day window. However, LSTM slightly outperformed
+ARIMA in a 1-day window (MAPE 1.46 vs. 1.64). Kobiela et al. (2022) suggests exploring additional
+features to determine if LSTM can surpass ARIMA. Dong (2022) corroborates these findings in a
+study on Google's stock prices, where LSTM outperformed ARIMA in accuracy (RMSE 46.8 vs.
+
+                                                                                                     7
+84.4) for short-term predictions. Future research aims to incorporate related stocks' closing prices for
+improved accuracy. These studies highlight the ongoing exploration of feature integration and model
+enhancements in the context of LSTM for stock trend prediction.
+The highlighted studies emphasize LSTM models' effectiveness in addressing stock price time series
+nonlinearity, particularly showcasing their superiority over traditional methods like ARIMA and GRU
+(Namin and Namin, 2018; Balaji et al., 2018; Borovka and Tsiamas, 2019; Chen and Ge, 2019;
+Kobiela et al., 2022; Dong, 2022). However, these studies often lack a holistic view by neglecting
+historical and technical indicators and time horizons. This thesis addresses this limitation,
+incorporating multiple time horizons and historical indicators for improved accuracy. Unlike the
+literature, this thesis analyzes distinct NASDAQ100 sectors, enhancing predictive performance
+evaluation and aiming for more robust financial forecasting. While LSTM is renowned for short-term
+stock prediction, its applicability across diverse markets and susceptibility to external factors require
+further exploration. Notably, ANN models excel in long-term prediction, but their unsuitability for
+time series analysis and historical pattern assimilation led to their exclusion in this thesis. The
+omission of GRU and AttLSTM aligns with LSTM's acknowledgment as the contemporary
+benchmark (Sheth & Shah, 2023; Banerjee & Garg, 2022). In conclusion, while LSTM remains the
+state-of-the-art for short-term stock trend predictions, future research must explore their limitations,
+generalizability, and adaptability in diverse financial scenarios for a more comprehensive evaluation.
+Acknowledging these aspects will contribute to a more nuanced and well-rounded evaluation of
+LSTM models in the field of short-term stock price predictions.
+
+
+2.2 ARIMA and short-term stock predictions
+
+This thesis integrates ARIMA as a proposed model for short-term stock prediction, referencing
+extensive academic literature. Adewumi et al. (2014) demonstrated ARIMA's potential in forecasting
+stock exchanges, although specific accuracy metrics were not provided. Caginalp and Constantine
+(1995) observed ARIMA's outperformance in the financial domain. Yang et al. (2017) achieved a
+2.4% error (RMSE 77.143) in predicting the Shanghai Composite Index. Kim and Sayama (2017)
+explored ARIMA and indicator combinations, reducing the S&P500 prediction error with relative
+strength (RMSE 5.018, MSE 20.27). Khashei and Hajirahmi (2019) dissected ARIMA into linear and
+non-linear components, with their hybrid ARIMA-ANN model slightly outperforming standalone
+ARIMA (RMSE 471.09 for ANN and 488.89 for ARIMA). They also noted the potential of
+combining ANN and ARIMA as a hybrid model for improved accuracy. Furthermore, in a research
+conducted by Uma Devi et al. (2013), an accuracy of 83.74% was achieved in predicting the price of
+the NIFTY-50 using only the closing price as input.
+The highlighted studies, including Adewumi et al. (2014), Caginalp and Constantine (1995), Yang et
+al. (2017), Kim and Sayama (2017), and Khashei and Hajirahmi (2019), provide valuable insights into
+ARIMA models for short-term stock predictions. However, these studies often lack a comprehensive
+integration of technical and historical indicators, limiting the understanding of stock market dynamics.
+The absence of market sentiment analysis, recognized as influential (Gómez-Martínez et al., 2023;
+Johnson, 2023), and exploration of varied time horizons are notable gaps. Additionally, these studies
+predominantly focus on individual stocks or broad indices, overlooking the consideration of specific
+sectors in their evaluations. While Khashei and Hajirahmi (2019) consider ANN alongside ARIMA,
+comprehensive sentiment analysis remains overlooked. This research aims to address these limitations
+by systematically integrating technical indicators, considering market sentiment, and exploring varied
+time horizons to enhance ARIMA models' predictive power in short-term stock forecasting.
+
+
+
+
+                                                                                                           8
+2.3 1D-CNN and short-term stock predictions
+
+CNN, often overlooked in stock prediction, emerged as a dark horse, outperforming MLP and RNN
+models according to Di Persio and Honchar (2016). With an accuracy of 53.6% and MSE of 0.2491,
+CNN slightly surpassed multilayer perceptron (MLP) (52.1%) and recurrent neural network (RNN)
+(52.2%). Di Persio and Honchar emphasized feature preprocessing and achieved 56.9% accuracy
+using a blended ensemble of CNN, RNN, and W-CNN models. Gunduz et al. (2017) predicted hourly
+movements of 100 stocks on the Borsa Istanbul. Feature selection didn't significantly enhance
+logistics regression performance (MA F-Measure rate of 0.545). CNNs, focusing on feature
+correlations, outperformed logistic regression in both cases, with CNN-Corr achieving a higher F-
+Measure rate of 0.563. CNN is a viable option for short-term stock trend prediction.
+The discussed studies illuminate the potential of CNN in stock prediction, yet this emerging field
+faces notable limitations. Primarily employed in image analysis and natural language processing,
+CNN's applications in stock prediction are relatively unexplored. Di Persio and Honchar's 2016 study
+shows CNN outperforming MLP and RNN models, but questions linger regarding the generalizability
+of findings across diverse feature inputs, input and output time horizons. The study underscores the
+importance of feature preprocessing, yet specific contributing features to CNN's outperformance lack
+exploration. While CNN holds promise, further research is needed to explore specific driving features,
+assess generalizability, and compare input features comprehensively for a nuanced evaluation of its
+role and limitations in stock price prediction (Di Persio & Honchar, 2016). It's worth noting that the
+consideration of different input/output lengths and diverse sectors has not been adequately addressed
+in research on short-term stock prediction using CNN.
+
+2.4 Factors for predicting short-term stock trends
+
+2.4.1 Historical indicators
+
+These historical indicators, which encompass global economic factors, central bank decisions,
+commodity prices, and market sentiment, hold the potential to significantly contribute to the
+understanding and prediction of stock trend movements in this thesis. Historical stock prices, analyzed
+through technical analysis techniques, provide insights into future price movements by identifying
+recurring patterns such as moving averages, support and resistance levels, and chart patterns
+(Rutledge, 1986). The USD Index, representing major world currencies, reflects changes in global
+economic sentiment and impacts stock prices, including those in the NASDAQ100 (Bai & Koong,
+2018). Federal Reserve interest rate decisions, with widespread consequences on borrowing costs,
+consumer spending, and investor preferences, also influence stock prices (Thorbecke, 2012).
+Furthermore, oil prices, having a ripple effect across sectors, are essential to monitor for informed
+investment decisions (Kang et al., 2015). Additionally, the CNN Fear and Greed Index, which gauges
+investor sentiment, indirectly influences stock prices (Gómez-Martínez et al., 2023; Johnson, 2023).
+Integrating these diverse historical indicators enhances the analytical framework, providing a more
+comprehensive understanding of the multifaceted factors influencing stock trends.
+
+2.4.2 Technical indicators
+
+This thesis incorporates essential technical indicators—Relative Strength Index (RSI), Moving
+Averages Convergence/Divergence (MACD), Average Directional Movement Index (ADX), Slow
+Stochastic Oscillator (STO %K and %D), and Exponential Moving Averages (EMA 21 & 26)—for a
+comprehensive exploration of short-term stock trend prediction. Renowned for distilling market
+information into quantifiable metrics, these indicators enhance the model's ability to discern nuanced
+patterns within stock price movements. RSI provides insights into recent price changes' magnitude,
+
+                                                                                                         9
+while MACD signals potential shifts in market trends. ADX indicates trend strength, and STO offers
+valuable information about closing prices in relation to their price range. Exponential Moving
+Averages (EMA 21 and 26) weigh recent price data more heavily, enhancing sensitivity to short-term
+fluctuations. This collection of technical indicators enriches the model's predictive capabilities,
+capturing diverse facets of market dynamics for a more robust short-term stock trend prediction
+framework.
+The importance of technical indicators in short-term stock trend prediction is highlighted by their
+widespread application and proven efficacy in existing literature. Parida et al. (2023) used MACD and
+RSI for forecasting stock trends, and Piravechsakul et al. (2021) integrated STO %K and %D,
+MACD, and RSI, affirming their value in enhancing predictive models. Kaur et al. (2022) expanded
+by incorporating EMA, MACD, STO %K and %D, and RSI, further establishing the significance of
+these indicators in short-term trend analysis. Vincent et al. (2023) extended the usage to MACD, STO
+%K and %D, and RSI, corroborating their effectiveness. Liu (2021) focused on EMA and MACD,
+emphasizing their continued relevance. Notably, ADX lacks substantial representation in empirical
+studies, making its inclusion in this thesis as an additional technical indicator promising for
+contributing novel insights to the field of short-term stock trend prediction.
+
+
+    3. Methodology & Experimental setup
+
+3.1 Experimental setup
+
+This thesis utilizes numerical and daily features that influence the NASDAQ100. These variables are
+identified in existing literature as mentioned in the previous chapter and are therefore relevant to this
+thesis. The dataset spans from January 1, 2018, to December 30, 2022, encompassing a total of 1259
+trading days. Non-trading days have been excluded from the dataset for analysis.
+
+ Feature                            Description                         Source
+ Opening Price                      The price of an asset at the        Yahoo Finance, 2023a
+                                    beginning the day
+ Closing Price                      The price of an asset at the end    Yahoo Finance, 2023a
+                                    of the day
+ Trading volume                     The total number of shares or       Yahoo Finance, 2023a
+                                    contracts traded during the day
+ USD index                          A measure of the value of the       Yahoo Finance, 2023b
+                                    U.S. dollar relative to a basket
+                                    of other world currencies.
+ FED interest rate                  The interest rate set by the        ST. LOUIS FED, 2023
+                                    Federal Reserve
+ CNN Fear and Greed index           Measures investor sentiment in      CNN: Business, 2023
+                                    financial markets, indicating
+                                    whether the market is driven
+                                    by fear or greed based on
+                                    various factors
+ Oil Price (Crude)                  The current value of a barrel of    Investing.com, 2023
+                                    oil in the market, reflecting the
+                                    supply and demand dynamics
+                                    in the global oil industry
+ 14-day RSI                         A momentum oscillator               Calculated with the closing
+                                    measuring the speed and             price of the NASDAQ 100
+                                    change of price movements
+
+                                                                                                        10
+ MACD                                       A trend-following momentum          Calculated with the closing
+                                            indicator that shows the            price of the NASDAQ 100
+                                            relationship between two
+                                            moving averages
+ ADX                                        A trend strength indicator used     Calculated with the closing
+                                            to assess the strength of a price   price of the NASDAQ 100
+                                            trend
+ SO %K                                      Indicators measuring the            Calculated with the closing
+                                            momentum of price and               price of the NASDAQ 100
+                                            identifying overbought or
+                                            oversold conditions
+ SO %D                                      Indicators measuring the            Calculated with the closing
+                                            momentum of price and               price of the NASDAQ 100
+                                            identifying overbought or
+                                            oversold conditions
+ EMA 12                                     Moving averages that give           Calculated with the closing
+                                            more weight to recent prices,       price of the NASDAQ 100
+                                            helping identify trends
+ EMA 26                                     Moving averages that give           Calculated with the closing
+                                            more weight to recent prices,       price of the NASDAQ 100
+                                            helping identify trends
+Table 1: All features, description, and their source
+
+All formulas of the technical indicators can be found in appendix A.
+
+Non-trading days, serving no purpose in predicting short-term stock trends, are discarded from the
+dataset. Most features remain unchanged during these days as assets cannot be traded in the open
+market. The initial 27 days are excluded, as they are mostly empty for technical indicators. ADX,
+taking 27 days to assess the strength of a price trend, contributes to the highest number of empty
+values. Consequently, the dataset effectively comprises 1232 trading days. Opening price, closing
+price, and trading volume are scaled using the Sci-kit MinMaxScaler (Pedregosa, et al., 2011) to
+create a stable, consistent, and optimized input for the models, enhancing their performance and
+convergence during training.
+The thesis will leverage a combination of historical data and technical indicators, providing a
+comparative analysis against the prevailing state-of-the-art approach that relies solely on technical
+indicators using an LSTM model. Additionally, it will assess the performance in comparison to a
+baseline scenario using only the closing price, a secondary but widely used option. While not all
+historical and technical indicators in the dataset exhibit a strong correlation with the closing price, this
+is inconsequential. Existing literature supports the effectiveness and influential nature of all features
+considered, justifying their inclusion in the analysis. In the picture below, a notable observation is the
+presence of a correlation coefficient of precisely 1.00 between the opening and closing prices. This
+correlation arises from the inherent linkage between consecutive days, wherein the closing price of a
+particular day, such as day 1, aligns with the opening price of the subsequent day (day 2), establishing
+
+
+
+
+                                                                                                              11
+a direct interdependence between these variables.
+
+
+
+
+Image 1: Correlation heatmap of features with the closing price
+
+The model employs input sequences of 2, 4, and 6 days using a rolling window approach for
+prediction. These lengths are chosen to closely align input with output, maximizing correlation. The
+rolling window ensures consideration of a continuous and overlapping series of historical data,
+providing a dynamic context for each prediction. The model predicts trends over 1, 3, and 5 days, with
+the rolling window capturing the evolving nature of input sequences for effective prediction. The
+models will predict either an 'uptrend' or a 'downtrend', serving as a conceivable measure for traders,
+as suggested by Hassanpour (2020). The visualization below illustrates the relationship between the
+lag period, represented on the x-axis for a rolling window spanning 1 to 350 days, and the
+corresponding average correlation with the closing price, depicted on the y-axis.
+
+
+
+
+Image 2: average correlation with lag for the closing price
+
+The top-performing model, identified through accuracy, will be systematically applied to diverse
+sectors within the NASDAQ100, aiming to assess its adaptability and effectiveness across varied
+market dynamics. This sector-wise analysis aims to uncover the model's robustness and generalization
+capability, contributing to a comprehensive understanding of its effectiveness under different
+conditions for broader financial forecasting purposes. Features such as opening price, closing price,
+and trading volume will be utilized across sectors, with technical indicators adjusted based on
+
+                                                                                                    12
+changing closing prices. The study focuses on representative samples of at least 3 stocks per sector, as
+identified by NASDAQ (2023), to manage data abundance. A full breakdown of which stocks are
+included in each sector and will be used in this thesis can be found in appendix B.
+To assess the practical implications of this thesis, the model with the highest average test accuracy
+will undergo a simulation to evaluate its financial performance. The simulation involves executing
+buy or sell actions for the NASDAQ100 based on the model's predictions. Each simulation spans the
+entire period from the beginning to the end corresponding with the output sequence length, and this
+process will be repeated for every combination of input and output lengths using the best model.
+The data in this thesis is split into three sets for robust model evaluation: a 70% training set for
+learning historical patterns, and a combined 30% validation-test set further divided into 15% for
+hyperparameter tuning (validation set) and 15% as a benchmark (test set). Random seeds ensure result
+reproducibility and transparency. To enhance reliability, each model undergoes three runs with
+random different seeds (23, 27, and 98 (RANDOM.ORG, 2023)), and their mean test accuracy is
+computed. This approach aims to mitigate biases and provide a comprehensive evaluation of model
+performance. Furthermore, a table with the minimum and maximum test accuracy values for each
+model along with their respective configurations will be presented. This approach facilitates the
+examination of whether the observed results stem from randomization effects or if there is consistency
+among different seed values.
+
+3.2 LSTM
+
+Long Short-Term Memory (LSTM) is a specialized type of recurrent neural network (RNN) designed
+for effective time series forecasting. This application of LSTM also stretches to the financial domain,
+and more specifically short-term stock prediction (Namin & Namin, 2018; Balaji et al., 2018, Li &
+Lao, 2017; Yao et al., 2018; Nelson et al., 2017; Borovka & Tsiamas, 2019; Chen & Ge, 2019,
+Kobiela et al., 2022; Dong, 2022).
+The LSTM model architecture was defined using the Keras Sequential API (Chollet F. et al., 2023).
+The model consisted of a single LSTM layer with 64 units, configured to accept input sequences of
+varying lengths. The activation function for the LSTM layer was set to 'relu,' and a dropout rate was
+introduced to mitigate overfitting. A dense layer with a sigmoid activation function served as the
+output layer, reflecting the binary nature of the financial trend prediction task.
+To enhance the performance of the LSTM model, a systematic hyperparameter tuning approach was
+implemented. The model underwent training and validation for different input sequence lengths (2, 4,
+and 6) through a comprehensive grid search strategy. Key hyperparameters explored included the
+optimizer choice ('adam' or 'sgd'), activation function ('relu' or 'tanh'), and dropout rate (0.0, 0.2, or
+0.4). The grid search was implemented through scikit-learn's GridSearchCV (Pedregosa, et al., 2011),
+employing a three-fold cross-validation setup. The best-performing model, determined by the highest
+validation accuracy, was selected for predictions on the test set.
+The dataset was split into training (70%), validation (15%), and test (15%) sets, ensuring a robust
+evaluation of the model's generalization capability. This division helps prevent overfitting by training
+the model on a substantial portion of the data, validating its performance on a separate set, and
+ultimately testing it on an independent dataset. The diverse input sequence lengths and
+hyperparameter combinations, coupled with a rigorous training-validation-test split, contribute to the
+model's robustness and its ability to generalize well to new, unseen data, promoting effective out-of-
+sample predictions.
+The LSTM methodology chosen for short-term stock prediction ensures robust model comparison and
+generalization evaluation. The architecture includes a single layer of 64 units, and hyperparameter
+
+
+                                                                                                        13
+tuning systematically explores key parameters through grid search with three-fold cross-validation.
+The dataset is strategically split into training (70%), validation (15%), and test (15%) sets to prevent
+overfitting. This meticulous approach, including diverse sequence lengths and rigorous dataset
+splitting, enhances the LSTM model's robustness and generalization capability to previously unseen
+data.
+
+
+
+
+Image 3: Flowchart of the LSTM model
+
+3.3 ARIMA
+
+The ARIMA model is employed for time series prediction including time series predictions in the
+financial domain. ARIMA can be applied to short-term stock prediction (Adewumi et al., 2014;
+Caginalp & Constantine, 1995; Yang et al., 2017; Kim & Sayama, 2017; Khashei & Hajirahmi, 2019)
+ARIMA is a time series forecasting method. It combines autoregression (AR), differencing (I), and
+moving averages (MA) to model and predict the future values of a time series based on its historical
+patterns.
+A hyperparameter tuning process is executed on the validation set to optimize the model's parameters,
+specifically the autoregressive order (p), differencing order (d), and moving average order (q). Setting
+the values of p and q to the input length and examining each number in the range of 5 for d. The best-
+tuned ARIMA model per input and output length is subsequently trained on the combined training and
+validation sets. Predictions are generated for both the validation and test sets, and model performance
+is assessed through classification accuracy.
+The ARIMA model, employed for short-term stock prediction, demonstrates effectiveness and
+robustness in model comparison and generalization. Hyperparameter tuning on the validation set
+optimizes autoregressive, differencing, and moving average orders, with training on the combined
+dataset enhancing adaptability. Evaluation, focusing on classification accuracy, provides quantitative
+insights. Rigorous assessment of predictions includes calculating the p-value using different seeds and
+averaging the results, affirming ARIMA's reliability in capturing patterns and its generalization
+capability in short-term stock prediction scenarios.
+
+
+
+
+                                                                                                       14
+Image 4: Flowchart of the ARIMA model
+
+
+
+3.4 1D-CNN
+
+CNN is able to predict short-term stock trends and therefore is chosen as a model for this thesis (Di
+Persio & Honchar, 2016; Gunduz et al., 2017). The 1D-CNN model is constructed with three
+successive Conv1D layers, each associated with a distinct filter size. This architectural choice is
+pivotal in capturing hierarchical patterns within the temporal sequences of financial data, contributing
+to the model's capacity to discern nuanced trends.
+The initial filter, with 32 units, captures low-level patterns, while subsequent filters (64 and 128 units)
+extract increasingly complex features. This hierarchical convolutional architecture discerns patterns of
+varying granularity, allowing the model to identify local and global dependencies within temporal
+sequences. As the CNN model runs efficiently, maxpooling is omitted, ensuring a reasonable
+timeframe for execution.
+
+Notably, CNN is employed to discern binary trends across distinct temporal horizons (1 day, 3 days,
+and 5 days). The feature vectors are standardized, and a CNN model is instantiated with varying input
+day configurations (2, 4, and 6). Both contributing to robust out-of-sample model evaluation.
+The thesis utilizes GridSearchCV (Pedregosa, et al., 2011) for extensive hyperparameter tuning. The
+hyperparameters explored include:
+    -    Dropout rate: [0.2, 0.3, 0.4]
+    -    Filter configurations: [[32, 64, 128], [64, 128, 256], [32, 64, 128, 256]]
+    -    Kernel size: [3, 5]
+    -    Dense layer units: [64, 128, 256]
+The optimal hyperparameters, determined through cross-validated performance assessment on the
+validation set, guide the instantiation of an optimized CNN model, which is then evaluated on the
+validation, and test sets.
+
+                                                                                                        15
+The 1D-CNN method for short-term stock trend prediction ensures robust model comparison and
+comprehensive evaluation beyond training data. Employing three Conv1D layers with varying filter
+sizes captures hierarchical patterns, allowing nuanced trend discernment. Stratified data division
+(70%/15%/15%) and consideration of temporal horizons (1 day, 3 days, and 5 days) contribute to
+thorough out-of-sample model evaluation. Hyperparameter tuning via GridSearchCV optimizes
+performance for dropout rate, filter configurations, kernel size, and dense layer units. Daily accuracy
+computation provides a nuanced understanding of the model's robustness and effective generalization
+to new, unseen data.
+
+
+
+
+Image 5: flowchart of the CNN model
+
+3.5 Evaluation and implementation
+
+The thesis employs a comprehensive evaluation framework encompassing various metrics tailored to
+the tasks. Classification accuracy is a fundamental metric aligning with other studies, measuring the
+proportion of correctly predicted instances. While some studies use RMSE and MSE for stock price
+prediction, their application is beyond this study's scope due to a small input window size, potentially
+leading to inaccurate predictions. The inclusion of precision, recall, and F1 score supplements
+accuracy, providing a nuanced understanding of model performance and capturing strengths and
+limitations across domains. Additionally, the thesis thoughtfully contrasts machine learning models
+with a baseline for a thorough model comparison.
+The baseline model represents the current state-of-the-art, utilizing an LSTM model with solely
+technical indicators. An alternative approach, close to the state-of-the-art, involves LSTM prediction
+solely with the closing price as a feature, which is also considered as a baseline. Additionally,
+predictions will be compared with a simple "naive" or "lagged" model, using the previous period's
+'uptrend' or 'downtrend' to predict the next period, establishing a minimalistic baseline. The leading
+model identified in this thesis will assess various sectors within the NASDAQ100 to determine its
+generalizability across diverse industries. Finally, the model with the highest average accuracy will be
+used to simulate trading, providing insights into its practical implementation, considering the market's
+inherent upswings and downswings that may lead to potential losses for traders.
+
+The thesis, developed in Python3 within JupyterLab, utilizes Python's versatility for data science and
+machine learning. TensorFlow (v2.14.0) is a key library employed for constructing and training neural
+network models, focusing on deep learning (Abadi et al., 2015). Other essential libraries include
+scikit-learn (v1.3.2) for machine learning algorithms (Pedregosa, et al., 2011), statsmodels (v0.14.0)
+for time series analysis (Seabold & Perktold, 2010), and seaborn/matplotlib (v0.12.0/v3.8.2) for data
+
+                                                                                                      16
+visualization (Hunter, 2007; Waskom, 2021). This comprehensive approach integrates deep learning
+with traditional statistical methods, contributing to a robust analytical framework.
+
+       4. Results
+The results display test accuracies for all input and output lengths. Optimal hyperparameters per
+model can be found in appendix C. Due to space constraints, only optimal configuration confusion
+matrices for ARIMA, LSTM, and CNN are shown; others are in appendix D. Note that F1-score is
+reported in appendix E but not analyzed. In stock prediction, profitability is the focus, prioritizing
+accuracy over a balance between precision and recall, making F1-score less relevant to trading
+success. All test accuracies mentioned represent the mean accuracy of the three seeds described in the
+method. The full results are available in appendix E.
+
+4.1 LSTM
+
+The LSTM model's performance with historical and technical indicators ranges from 47.03% to
+61.08%. However, it's crucial to highlight that there is a noticeable increase in accuracy for longer
+output lengths, particularly evident in the 5-day scenarios. The test accuracy, with an average of
+54.76%, indicating that the model is capturing meaningful patterns but faces challenges in
+maintaining accuracy over shortened prediction horizons. Further investigation into improving
+performance for longer output lengths or exploring alternative model architectures may be considered.
+
+                    0,65
+                                                                                               6; 0,5815
+                                                      4; 0,5676       4; 0,5784
+                                2; 0,6108                                             6; 0,5652
+                     0,6
+    Test Accuracy
+
+
+
+
+                    0,55
+                                                                  4; 0,5568
+                                2; 0,5117
+                     0,5                                                                    6; 0,5598
+                                2; 0,4703
+                    0,45
+
+                     0,4
+                           2                      3               4               5                  6
+                                                            Input Length
+
+                               Output Length: 1           Output Length: 3        Output Length: 5
+
+
+Image 5: Mean accuracy for different input and output lengths for LSTM with historical and technical indicators
+
+The corresponding test accuracy for the technical indicators maintains a similar trend, averaging
+66.93%. However, there's a notable incline in accuracy for longer output lengths, especially in 5-day
+scenarios. While the model demonstrates competence in capturing longer-term patterns, optimizing
+performance for shortened prediction horizons may be worth exploring through potential adjustments
+
+
+
+
+                                                                                                                  17
+or alternative model architectures.
+                    0,85
+                                2; 0,8222
+                     0,8
+                    0,75                                            4; 0,7514
+    Test Accuracy
+
+
+
+                     0,7                                                                          6; 0,7658
+                                2; 0,6667
+                    0,65                                            4; 0,6505
+                                                                                                  6; 0,6703
+                     0,6
+                                                                    4; 0,564
+                    0,55
+                                2; 0,5207                                                         6; 0,5453
+                     0,5
+                    0,45
+                     0,4
+                           2                      3            4                 5                        6
+                                                         Input Length
+
+                               Output Length: 1       Output Length: 3           Output Length: 5
+
+
+Image 6: Mean accuracy for different input and output lengths for LSTM technical indicators
+
+The confusion matrix indicates that the best model (technical indicators, input 2 days, output 5 days)
+correctly predicted Uptrend 77.78% of the time and Downtrend 86.67% of the time. However, it
+mistakenly classified instances as Downtrend 22.22% of the time and Uptrend 13.33% of the time.
+ O/P       Uptrend Downtrend
+ Uptrend   77.78% 22.22%
+ Downtrend 13.33% 86.67%
+Table 2: Confusion matrix of the optimal configuration; technical indicators with 2 input days and 5 output days
+
+For the LSTM with historical indicators the test accuracy presents a somewhat varied picture,
+averaging 55.32%. There is a steep decline in the accuracy for the input length 4 combined with
+output 1 and 3. The model's ability to generalize to unseen data is apparent, although there's room for
+improvement, particularly in preserving accuracy over longer output lengths. Exploring potential
+enhancements or alternative model architectures may offer avenues for further optimization.
+
+                    0,65 2; 0,627
+                                                                   4; 0,5784                    6; 0,5622
+                                2; 0,6108                                           6; 0,5892
+                     0,6
+    Test Accuracy
+
+
+
+
+                    0,55 2; 0,5946
+                                                                    4; 0,5297
+                                                                                                6; 0,5568
+                     0,5
+                                                       4; 0,5189
+                    0,45
+
+                     0,4
+                           2                      3           4                 5                     6
+                                                        Input Length
+
+                           Output Length: 1           Output Length: 3          Output Length: 5
+
+
+
+
+                                                                                                                   18
+Image 7: Mean accuracy for different input and output lengths for LSTM with historical
+
+The LSTM model with just the closing price as feature performs reasonably well when predicting
+stock trends based on closing prices compared to other features. There is a noticeable drop in accuracy
+for certain configurations, especially evident in 5-day output scenarios. This decline is reflected in the
+average test accuracy of 54.54%, suggesting that the model faces challenges in maintaining consistent
+performance, particularly over longer prediction horizons.
+
+                    0,65       2; 0,6288
+                                                                      4; 0,5946
+                                2; 0,6108
+                     0,6                                                                       6; 0,5604
+    Test Accuracy
+
+
+
+
+                                                                    4; 0,5408
+                    0,55 2; 0,5838
+                                                                                               6; 0,5568
+                                                                      4; 0,5099
+                     0,5
+                                                                                               6; 0,4613
+                    0,45
+
+                     0,4
+                           2                      3               4               5                  6
+                                                            Input Length
+
+                               Output Length: 1           Output Length: 3        Output Length: 5
+
+
+Image 8: Mean accuracy for different input and output lengths for LSTM with the closing price
+
+LSTM models, leveraging technical indicators, consistently outperform counterparts with an average
+accuracy of 66.93%. Notably, reliance on closing prices alone yields lower accuracy, especially in
+longer projections, revealing challenges in sustained predictive power. Historical indicator-based
+models achieve an average accuracy of 55.32. The top LSTM model, with a 5-day output and 2-day
+input, emphasizes feature selection and sequence length's role in optimizing accuracy. In univariate
+setups, the LSTM achieves 55.78% average accuracy, excelling in 1-day projections (55.58%) and
+maintaining strong performance in 3 and 5-day forecasts (56.99% and 55.58%, respectively). These
+findings underscore LSTM models' robustness in financial trend forecasting, particularly when
+focusing on essential features like historical and technical indicators. Notably, the univariate setup
+outperforms in 1-day predictions and, in certain cases, specific input sequence lengths for 3-day
+forecasts.
+Surprisingly, the number of epochs in the model has no impact on outcomes due to the random nature
+of each epoch, with no discernible progression in accuracy.
+
+ Model                                                Test Accuracy
+ LSTM: Historical and                                 0.5476
+ technical indicators
+ (proposed model)
+ LSTM: Technical indicators                           0.6619
+ (baseline/state-of-the-art)
+ Univariate setup (baseline)                          0.5192
+
+Table 3: Model comparison of the LSTM Performance
+
+The table below presents the test accuracy outcomes for an LSTM model across various
+configurations and seed values. Notably, the results exhibit considerable variability in the
+
+
+                                                                                                           19
+performance of the model under different settings. For instance, when considering the 'Historical and
+technical' context with an output length of 1 and input lengths of 2, 4, and 6, the test accuracy ranges
+from 0.4649 to 0.5815. Furthermore, the standard deviations for these configurations are relatively
+low, indicating consistency across the three seeds. On the other hand, the 'Technical' context with an
+output length of 5 and input lengths of 2, 4, and 6 shows consistent maximum test accuracy values of
+0.8054 across all seeds, with minimal standard deviations. In contrast, the 'Closing price' context
+exhibits substantial variability, especially for configurations with an input length of 4 and 6, where the
+test accuracy ranges from 0.2378 to 0.6324. This suggests that the choice of context and input length
+significantly influences the model's performance, and the impact of seed variation varies depending
+on the specific configuration. Further investigation may be warranted to understand the factors
+contributing to these observed patterns.
+ Indicators Output        Input       Minimum      Maximum Standard
+            Length        Length      test         test     Deviation
+                                      accuracy     accuracy
+                                      of seeds     of seeds
+
+ Historical   1           2           0.4649       0.5351        0.0406
+ and
+ technical
+ Historical   1           4           0.5189       0.5676        0.0281
+ and
+ technical
+ Historical   1           6           0.5815       0.5815        0.0000
+ and
+ technical
+ Historical   3           2           0.3892       0.6108        0.1280
+ and
+ technical
+ Historical   3           4           0.5784       0.5784        0.0000
+ and
+ technical
+ Historical   3           6           0.5652       0.5652        0.0000
+ and
+ technical
+ Historical   5           2           0.4703       0.5297        0.0343
+ and
+ technical
+ Historical   5           4           0.5568       0.5568        0.0000
+ and
+ technical
+ Historical   5           6           0.5598       0.5598        0.0000
+ and
+ technical
+ Technical    1           2           0.4919       0.5622        0.0352
+
+ Technical    1           4           0.4649       0.5946        0.0667
+
+ Technical    1           6           0.5598       0.5815        0.0109
+
+ Technical    3           2           0.6865       0.7135        0.0136
+
+
+
+                                                                                                       20
+ Technical      3            4             0.6270         0.6703         0.0236
+
+ Technical      3            6             0.6467         0.6630         0.0094
+
+ Technical      5            2             0.7892         0.8054         0.0083
+
+ Technical      5            4             0.7351         0.7622         0.0143
+
+ Technical      5            6             0.8043         0.8478         0.0220
+
+ Historical     1            2             0.3892         0.6108         0.1280
+
+ Historical     1            4             0.5297         0.5297         0.0000
+ Historical     1            6             0.5622         0.5622         0.0000
+
+ Historical     3            2             0.3730         0.5656         0.1014
+
+ Historical     3            4             0.5676         0.5837         0.0093
+
+ Historical     3            6             0.5769         0.6054         0.0164
+
+ Historical     5            2             0.5027         0.5946         0.0531
+
+ Historical     5            4             0.5622         0.5784         0.0094
+
+ Historical     5            6             0.5568         0.5568         0.0000
+ Closing        1            2             0.4865         0.6108         0.0718
+ price
+ Closing        1            4             0.4811         0.5297         0.0281
+ price
+ Closing        1            6             0.4919         0.5622         0.0406
+ price
+ Closing        3            2             0.6270         0.6270         0.0000
+ price
+ Closing        3            4             0.4324         0.5568         0.0689
+ price
+ Closing        3            6             0.6054         0.6324         0.0156
+ price
+ Closing        5            2             0.7027         0.7297         0.0156
+ price
+ Closing        5            4             0.2378         0.5784         0.1966
+ price
+ Closing        5            6             0.3514         0.4432         0.0531
+ price
+Table 4: Standard deviation, minimum and maximum accuracy for different input and output lengths and indicator groups
+for LSTM
+
+4.2 ARIMA
+
+The graph below provides a comprehensive overview of the ARIMA model's performance across
+various combinations of output and input sequence lengths for different groups of indicators. The
+ARIMA model exhibited diverse accuracy levels across distinct input sequence lengths and output
+prediction scenarios, showcasing a noteworthy trend of increasing accuracy with longer output
+prediction periods. Notably, the highest test accuracy for historical and technical indicators was
+
+                                                                                                                        21
+achieved in the 5-day scenario with a 4-day input sequence, 78.38%. On average, the model attained a
+test accuracy of 64.38%. The observed pattern of accuracy improvement with extended output
+prediction days suggests the model's effectiveness in capturing and forecasting trends within the
+historical and technical indicators.
+
+                    0,85
+                     0,8        2; 0,7838
+                    0,75
+    Test Accuracy
+
+
+
+
+                                                                                          6; 0,7609
+                     0,7                                          4; 0,7838
+                                2; 0,6757                                                   6; 0,6359
+                    0,65                                           4; 0,6378
+                     0,6                                       4; 0,4919                    6; 0,4891
+                    0,55        2; 0,5351
+                     0,5
+                    0,45
+                     0,4
+                           2                      3           4                5                  6
+                                                        Input Length
+
+                               Output Length: 1       Output Length: 3         Output Length: 5
+
+
+Image 9: Accuracy for different input and output lengths for ARIMA with historical and technical indicators
+
+The ARIMA model using technical indicators also demonstrated varying accuracy levels based on
+different input sequence lengths and output prediction scenarios. Notably, similar to the historical and
+technical indicators case, there is an observable trend of increasing accuracy with longer output
+prediction periods. The model achieved its highest accuracy of 78.92% in the 5-day scenario with a 4-
+day input sequence. On average, the model achieved a test accuracy of 67.57%%. This consistency in
+the trend of improved accuracy with extended output prediction days suggests the model's robustness
+in leveraging technical indicators for forecasting.
+
+                    0,85
+                     0,8                                           4; 0,7892                 6; 0,788
+                                2; 0,7676
+                    0,75
+    Test Accuracy
+
+
+
+
+                                2; 0,7189
+                     0,7
+                                                                   4; 0,6757
+                    0,65                                                                    6; 0,6848
+                     0,6
+                                2; 0,5784
+                    0,55                                           4; 0,5459
+                     0,5                                                                    6; 0,5326
+                    0,45
+                     0,4
+                           2                      3           4                5                  6
+                                                       Input Length
+
+                               Output Length: 1       Output Length: 3         Output Length: 5
+
+
+Image 10: Accuracy for different input and output lengths for ARIMA technical indicators
+
+The confusion matrix indicates that the best model (input 4 days, output 5 days with technical
+indicators) correctly predicted Uptrend 83.08% of the time and Downtrend 73.44% of the time.
+
+
+                                                                                                              22
+However, it mistakenly classified instances as Downtrend 26.56% of the time and Uptrend 16.92% of
+the time.
+ O/P                             Uptrend          Downtrend
+
+ Uptrend                         83.08%           16.92%
+ Downtrend                       26.56%           73.44%
+Table 5: Confusion matrix for the optimal configuration; technical indicators with 4 input days and 5 output days
+
+Similar to the ARIMA models using historical and technical indicators, the ARIMA model relying
+solely on historical data also demonstrated a pattern of increasing accuracy with longer output
+prediction periods. The accuracy rates for this model range from 48.11% to 75.14%, and, on average,
+the model achieved a test accuracy of 63.42%. The highest accuracy of 75.14% was achieved in the 5-
+day output prediction scenario with a 6-day input sequence. This consistent improvement in accuracy
+for longer prediction periods suggests that the model benefits from a more extensive historical context
+when making predictions. Further analysis and comparison with other models would be essential to
+comprehensively assess the performance and predictive capabilities of this ARIMA model on the
+given dataset.
+                     0,8                                            4; 0,7351
+                                                                                                6; 0,7514
+                    0,75        2; 0,7405
+                     0,7                                                                        6; 0,6432
+    Test Accuracy
+
+
+
+
+                                2; 0,6811
+                    0,65
+                                                                    4; 0,6865
+                     0,6
+                    0,55
+                                                                    4; 0,4757
+                     0,5
+                                2; 0,4811
+                    0,45                                                            6; 0,5135
+                     0,4
+                           2                      3                4            5                     6
+                                                             Input Length
+
+                               Output Length: 1            Output Length: 3     Output Length: 5
+
+
+Image 11: Accuracy for different input and output lengths for ARIMA with historical indicators
+
+For the ARIMA model based on the closing price, the trend of increasing accuracy with longer output
+prediction periods is also observed. The accuracy rates range from 42.16% to 74.59%, with an an
+average test accuracy of 58.38%. The highest accuracy of 74.59% is achieved in the 5-day output
+prediction scenario with a 6-day input sequence. This consistent improvement in accuracy for longer
+prediction periods suggests that the model benefits from a more extended historical context when
+making predictions based on closing prices. As with the other ARIMA models, a comprehensive
+evaluation would involve further analysis and comparison with alternative modeling approaches to
+gauge the model's effectiveness on the given dataset.
+
+
+
+
+                                                                                                                    23
+                     0,8                                 4; 0,7351
+                    0,75
+                     0,7        2; 0,6919                                                     6; 0,7459
+    Test Accuracy
+
+                                2; 0,6703
+                    0,65
+                     0,6                                             4; 0,5351               6; 0,5303
+                    0,55
+                     0,5
+                    0,45        2; 0,4595
+                                                                                              6; 0,4649
+                     0,4                                             4; 0,4216
+                           2                      3               4              5                  6
+                                                            Input Length
+
+                               Output Length: 1           Output Length: 3       Output Length: 5
+
+
+Image 12: Accuracy for different input and output lengths for ARIMA with the closing price
+
+The ARIMA model, incorporating widely recognized technical indicators as input features, emerges as
+the top-performing approach in predicting stock price trends. Incorporating widely recognized
+technical indicators, the ARIMA model excels in predicting stock price trends. Using only the
+previous period's data, it achieves notable accuracies: 55.23% for 1-day, 69.31% for 3-day, and
+78.16% for 5-day predictions, averaging to 67.57%. These findings affirm the efficacy of integrating
+technical indicators in ARIMA modeling for enhanced predictive performance in financial forecasting
+across various timeframes. The model's proficiency in capturing trends aligns with established
+literature recommendations, emphasizing the importance of relevant indicators.
+Nevertheless, in the comparison between the proposed model of this thesis and the LSTM baseline,
+the proposed model falls short. However, it outperforms the baseline established by the univariate
+setup.
+
+ Model                                                Test Accuracy
+ ARIMA: Historical and                                0.6438
+ technical indicators
+ (proposed model)
+ LSTM: Technical indicators                           0.6619
+ (baseline/state-of-the-art)
+ Univariate setup (baseline)                          0.5191
+Table 6: Model comparison of the ARIMA Performance
+
+
+
+4.3 CNN
+
+The image below provides a comprehensive overview of the CNN model's performance across
+various combinations of output and input sequence lengths for the different indicator groups. For
+historical and technical indicators, the highest accuracy is observed for a 5-day output length with a 6-
+day input length, reaching 71.58%. The average test accuracy across all configurations is 58.24%,
+showcasing the model's ability to capture underlying patterns in historical and technical data.
+
+
+
+
+                                                                                                          24
+                    0,7500
+                    0,7000                                                                   6; 0,7158
+                                  2; 0,6739
+    Test Accuracy
+
+                    0,6500                                           4; 0,7192
+                                                                                            6; 0,5829
+                    0,6000                                           4; 0,5236
+                                  2; 0,5117
+                    0,5500
+                    0,5000                                       4; 0,5217
+                    0,4500        2; 0,5171                                             6; 0,4754
+                    0,4000
+                              2                  3              4                  5                  6
+                                                          Input Length
+
+                             Output Length: 1          Output Length: 3           Output Length: 5
+
+
+Image 13: Mean accuracy for different input and output lengths for CNN with historical and technical indicators
+
+The confusion matrix indicates that the best model (input 6 days, output 5 days with historical and
+technical indicators) correctly predicted Uptrend 66.67% of the time and Downtrend 75.03% of the
+time. However, it mistakenly classified instances as Downtrend 24.97% of the time and Uptrend
+33.33% of the time.
+ O/P                           Uptrend        Downtrend
+
+ Uptrend                       66.67%         33.33%
+ Downtrend                     24.97%         75.03%
+Table 7: Confusion matrix for the optimal configuration: Historical and technical indicators using 6 input days and 5 output
+days
+
+For the technical indicators the model achieves the highest test accuracy of 73.69% for a 5-day output
+length and 2-day input length. However, it is essential to highlight a decline in accuracy for longer
+input lengths, indicating a potential challenge in capturing relevant technical patterns with extended
+historical information. These findings underscore the need for careful consideration of sequence
+length parameters to balance model complexity and predictive accuracy.
+
+                    0,8000
+                    0,7500        2; 0,7369
+                    0,7000
+    Test Accuracy
+
+
+
+
+                    0,6500                                            4; 0,6467                6; 0,6359
+                    0,6000
+                                                                  4; 0,5217               6; 0,5399
+                                  2; 0,5676
+                    0,5500
+                                  2; 0,5297
+                    0,5000
+                                                                                             6; 0,5326
+                    0,4500                                           4; 0,5163
+                    0,4000
+                              2                  3               4                 5                  6
+                                                          Input Length
+
+                             Output Length: 1          Output Length: 3           Output Length: 5
+
+
+
+
+                                                                                                                         25
+Image 14: Mean accuracy for different input and output lengths for CNN technical indicators
+
+Noteworthy is the consistently high accuracy across different configurations for historical indicators,
+particularly achieving a peak validation accuracy of 66.67% for a 5-day output length and 2-day input
+length. The test accuracy averages slightly lower than models with using other indicators at 56.52%,
+indicating a potential challenge in generalizing predictions to unseen data. This suggests the need for
+further exploration to enhance the model's adaptability. Overall, the findings emphasize the
+effectiveness of the CNN model in leveraging historical data for trend prediction while emphasizing
+the importance of comprehensive evaluation metrics.
+
+                    0,7000                                       4; 0,6322                    6; 0,6431
+                                  2; 0,6667
+                    0,6500
+    Test Accuracy
+
+
+
+
+                                                                                      6; 0,5870
+                    0,6000
+                                                             4; 0,5362
+                    0,5500        2; 0,5063
+
+                    0,5000        2; 0,4919
+                                                                                  6; 0,5362
+                    0,4500                                       4; 0,4873
+                    0,4000
+                              2                 3            4                5                     6
+                                                       Input Length
+
+                             Output Length: 1       Output Length: 3         Output Length: 5
+
+
+Image 15: Mean accuracy for different input and output lengths for CNN with historical
+
+
+The model exhibits inconsistent accuracy across varied configurations for using solely the closing
+price, with notable peaks in test accuracy, such as 73.69% for a 5-day output length and 2-day input
+length. This indicates the model's proficiency in capturing patterns related to closing prices. The
+overall average test accuracy stands at 58.08%, reflecting the model's ability to generalize better to the
+test set.
+
+                    0,8000
+                    0,7500        2; 0,7369
+                    0,7000                           4; 0,6467
+    Test Accuracy
+
+
+
+
+                                                                                                6; 0,6359
+                    0,6500
+                    0,6000
+                                                                 4; 0,5217               6; 0,5399
+                                  2; 0,5676
+                    0,5500
+                                  2; 0,5297
+                    0,5000                                                                     6; 0,5326
+                                                                 4; 0,5163
+                    0,4500
+                    0,4000
+                              2                 3             4               5                      6
+                                                        Input Length
+
+                             Output Length: 1       Output Length: 3         Output Length: 5
+
+
+Image 16: Mean accuracy for different input and output lengths for CNN with the closing price
+
+
+
+                                                                                                            26
+Surprisingly, the CNN model outperforms itself when using solely the closing price when compared
+to using technical indicators, showcasing an average test accuracy of 58.08%. These findings
+highlight the efficacy of leveraging convolutional neural networks, especially when focusing on
+closing prices, for robust financial trend forecasting. Notably, the univariate setup outperforms the
+CNN model in 1-day trend prediction and, in some instances, for specific input sequence lengths in 3-
+day trend prediction.
+While the proposed model in this thesis does not outperform the LSTM baseline, it does surpass the
+baseline set by the univariate setup.
+ CNN: Historical and technical       0.5823
+ indicators (proposed model)
+ LSTM: Technical indicators          0.6693
+ (baseline/state-of-the-art)
+ Univariate setup (baseline)         0.5192
+Table 8: Model comparison of the CNN Performance
+
+The table below represents the performance metrics under various configurations, including output
+length, input length, and the associated minimum and maximum test accuracy of the different seeds.
+Observing the 'Historical and technical' context, the model exhibits varying test accuracy across
+different input lengths, with the minimum and maximum values ranging from 0.4590 to 0.7432. The
+standard deviations for these configurations are relatively moderate, suggesting a degree of
+consistency across seed variations. In the 'Technical' context, configurations with an input length of 5
+consistently demonstrate high test accuracy, ranging from 0.6486 to 0.7213, with low standard
+deviations. Conversely, the 'Closing price' context reveals limited variability, particularly in
+configurations with an input length of 3 and 5, where the test accuracy remains constant across
+different seeds. Notably, for certain configurations, the standard deviations are minimal, indicating
+stable model performance across varied seeds. These findings underscore the sensitivity of CNN
+models to specific input and context parameters, influencing the variability in test accuracy outcomes.
+Further exploration may be necessary to elucidate the factors contributing to the observed patterns and
+their implications for model robustness.
+
+ Indicators    Output         Input          Minimum    Maximum test     Standard
+               Length         Length         test       accuracy of      Deviation
+                                             accuracy   seeds
+                                             of seeds
+ Historical    1              2              0.4811     0.5351           0.0255
+ and
+ technical
+ Historical    1              4              0.5054     0.5489           0.0193
+ and
+ technical
+ Historical    1              6              0.4590     0.4918           0.0134
+ and
+ technical
+ Historical    3              2              0.4757     0.5459           0.0287
+ and
+ technical
+ Historical    3              4              0.5163     0.5380           0.0102
+ and
+ technical
+
+
+                                                                                                     27
+Historical   3   6   0.5410   0.6066   0.0297
+and
+technical
+Historical   5   2   0.6649   0.6811   0.0067
+and
+technical
+Historical   5   4   0.7065   0.7337   0.0112
+and
+technical
+Historical   5   6   0.6831   0.7432   0.0248
+and
+technical
+Technical    1   2   0.5081   0.5568   0.0202
+Technical    1   4   0.4348   0.4837   0.0203
+Technical    1   6   0.4317   0.5301   0.0402
+Technical    3   2   0.4811   0.5459   0.0270
+Technical    3   4   0.4728   0.4837   0.0044
+Technical    3   6   0.4973   0.5410   0.0178
+Technical    5   2   0.6486   0.6919   0.0192
+Technical    5   4   0.6902   0.7065   0.0068
+Technical    5   6   0.6721   0.7213   0.0201
+Historical   1   2   0.4757   0.5027   0.0117
+Historical   1   4   0.4728   0.5000   0.0112
+Historical   1   6   0.5217   0.5489   0.0112
+Historical   3   2   0.4973   0.5135   0.0067
+Historical   3   4   0.5326   0.5380   0.0026
+Historical   3   6   0.5815   0.5924   0.0044
+Historical   5   2   0.6541   0.6757   0.0092
+Historical   5   4   0.6141   0.6413   0.0128
+Historical   5   6   0.6359   0.6467   0.0051
+Closing      1   2   0.5297   0.5297   0.0000
+price
+Closing      1   4   0.5109   0.5217   0.0044
+price
+Closing      1   6   0.5109   0.5489   0.0160
+price
+Closing      3   2   0.5676   0.5676   0.0000
+price
+Closing      3   4   0.5217   0.5217   0.0000
+price
+Closing      3   6   0.5217   0.5489   0.0128
+price
+Closing      5   2   0.7297   0.7459   0.0067
+price
+Closing      5   4   0.6250   0.6685   0.0177
+price
+
+
+
+                                                28
+ Closing         5              6               0.6250          0.6522                0.0117
+ price
+Table 8: Standard deviation, minimum and maximum accuracy for different input and output lengths and indicator groups
+for CNN
+
+4.4 Sectors within NASDAQ
+
+Testing the best model, LSTM with technical indicators, across diverse NASDAQ sectors provides
+insightful findings. In Consumer Discretionary and Consumer Staples, the model shows moderate
+performance, beating the univariate baseline with validation accuracies of 57.13% and 53.17%, and
+test accuracies of 54.11% and 51.37%, respectively. In Healthcare, Industrials, Technology, and
+Telecommunications, the LSTM model exhibits strong performance, with accuracies from 65.62% to
+66.96%, showcasing its ability to generalize well across industries. This emphasizes the model's
+adeptness at forecasting trends in specific sectors. Overall, the LSTM model consistently performs
+well across sectors, highlighting its potential for broad applications in financial trend forecasting
+within the NASDAQ100.
+
+ Sector                        Average Test
+                               Accuracy
+ Consumer                      0.5411
+ Discretionary
+ Consumer Staples              0.5137
+ Healthcare                    0.6562
+ Industrials                   0.6733
+ Technology                    0.6695
+ Telecommunications            0.6588
+ Utilities                     0.6643
+Table 9: Results for different sectors of the NASDAQ100 using LSTM with technical indicators
+
+4.5 Trading simulation
+
+In the context of financial performance evaluation, an LSTM model, characterized by a 2-day input
+length and a 5-day output length, incorporating technical indicators, is subjected to a simulation. This
+model configuration has been selected due to its demonstrated highest accuracy in predictive
+capabilities. Notably, transaction costs are omitted from consideration to simplify the analytical
+framework. The primary objective of the LSTM model is to forecast the closing price of the
+NASDAQ, with an intentional temporal misalignment in subsequent predictions to assess the model's
+sustained predictive efficacy.
+The dataset is partitioned into a training set (70%), a validation set (15%), and a prediction set (15%).
+It is imperative to emphasize that the LSTM model generates binary predictions, wherein a value of '1'
+signifies an anticipated uptrend, while '0' indicates a predicted downtrend. These binary predictions
+serve as the basis for trading signals, thereby forming the basis for subsequent analysis and
+assessment of the model's effectiveness in capturing market trends. This research framework allows
+for a comprehensive examination of the LSTM model's performance under diverse conditions and
+temporal sequences, contributing valuable insights to the field of financial prediction and modeling.
+The trading simulation operates daily, initiating a trade each day with a fixed amount of $200. The
+direction of the trade, whether it is a buy or sell, is determined based on the model's prediction. The
+profit or loss of the trade is adjusted daily in accordance with the closing price changes. Trades
+initiated on day 1 will be cashed out on the 5th day. Trades initiated on day 2 will be cashed out on the
+6th day, and so on. This aligns with the chosen output length.
+
+
+                                                                                                                        29
+The starting trading balance is set at $1000, and the simulation does not incorporate any leverage.
+This approach ensures a feasible trading simulation, addressing concerns related to randomization and
+maintaining the correct temporal ordering of events.
+In addition to the LSTM model, two baseline scenarios are considered for comparison. The first
+baseline involves using 'true labels' as predictions, aiming to maximize profit. The second baseline
+employs the previous day's outcome as the prediction for the subsequent 5 days, providing a
+benchmark for comparison against the LSTM model's predictive capabilities. These baselines serve as
+essential references to gauge the relative success of the LSTM model in the context of the financial
+simulation.
+
+
+
+
+Image 17: Visualization of the trading simulation using LSTM with technical indicators, true labels, and previous labels
+
+Ending Balance Based on Predicted Labels at Day 120: 5772.87 USD
+Ending Balance Based on True Labels at Day 120: 14598.32 USD
+Ending Balance Based on Previous Labels at Day 120: 1196.52 USD
+
+To see all the trades in detail, including their individual profit and loss. Please refer to appendix F.
+
+4.6 Comparison of models
+
+Models using ARIMA, LSTM, and CNN with historical and technical indicators fall short of the state-
+of-the-art LSTM model relying solely on technical indicators. This emphasizes the supremacy of a
+focused approach, where LSTM excels with a streamlined set of features. Findings underscore the
+pivotal role of feature selection, suggesting that the LSTM model, leveraging impactful technical
+indicators, outperforms more complex counterparts. In financial time series forecasting, a strategic
+balance between model complexity and feature relevance is crucial for optimal predictive
+performance. The table below presents test accuracies averaged across all input and output lengths for
+the best model per ARIMA, LSTM, and CNN, supporting the statements above.
+
+ Model        Features                  Average
+                                        test
+                                        accuracy
+
+                                                                                                                           30
+ LSTM         Technical                0.6693
+              indicators (state-
+              of-the-art)
+ ARIMA        Technical                0.6665
+              indicators
+ CNN          Historical and           0.5824
+              technical
+              indicators
+Table 10: Accuracy comparison of the best performing features per model
+
+The LSTM model consistently outperforms ARIMA and CNN models in financial trend forecasting,
+demonstrating robust performance across various configurations. It excels in predicting closing prices,
+historical trends, and technical indicators, confirming its state-of-the-art status in the domain. Versatile
+across input sequence lengths and output horizons, the LSTM model proves promising for capturing
+both short-term and long-term trends. Statistically significant results, higher average test accuracy,
+and an optimal configuration of 2 input and 5 output days reinforce the LSTM model's reliability and
+flexibility in financial time series forecasting, making it a top choice.
+
+    5. Discussion
+This thesis aims to assess ARIMA, LSTM, and CNN models in financial time series forecasting,
+incorporating historical and technical indicators. Contrary to expectations, the outcomes consistently
+demonstrate the superior performance of the LSTM model, leveraging only technical indicators. The
+LSTM model excels in predicting closing prices, historical trends, and technical indicators,
+showcasing robust performance compared to ARIMA and CNN. The thesis identifies an optimal
+configuration for the LSTM model with an input length of 2 and an output length of 5 days.
+Furthermore, the LSTM model exhibits generalization across all individual sectors within the
+NASDAQ100. These findings underscore the dominance of the LSTM model in financial trend
+forecasting, emphasizing the importance of considering various input and output time horizons for a
+comprehensive understanding of its predictive performance.
+This thesis advances understanding of LSTM models in stock price prediction, building on insights
+from studies like Namin and Namin (2018) and Balaji et al. (2018). The findings underscore LSTM's
+robustness, especially in short-term predictions, addressing a literature gap focused on shorter
+horizons. While supporting LSTM's effectiveness for short-term trading, our model falls short of
+Nabipour et al.'s (2020) 84.90% accuracy, possibly due to differences in technical indicators and their
+binary encoding approach. Extending Nelson et al.'s (2017) work, this study showcases LSTM's
+adaptability in various financial configurations and introduces a distinctive perspective by assessing
+LSTM models across diverse sectors within the NASDAQ100, contributing significantly to a
+literature landscape primarily focused on general accuracy comparisons.
+Scientifically, the thesis advances stock forecasting by integrating technical and historical indicators
+into LSTM modeling, offering a comprehensive perspective on feature relevance and predictive
+accuracy. Building upon established studies (Namin and Namin, 2018; Balaji et al., 2018; Nabipour et
+al., 2020), this approach extends the analysis to enhance the understanding of temporal dynamics in
+predictive models. Societally, the thesis addresses the challenge of high loss rates for day traders,
+aiming to mitigate emotional decision-making in financial trading (Barber et al., 2014). By employing
+advanced data-driven models like LSTM and ARIMA, it provides a practical solution empowering
+retail investors to make more informed decisions and improve trading strategies. Furthermore, the
+analysis of LSTM, ARIMA, and 1D-CNN models on different segments within the NASDAQ100 fills
+a notable gap in the current literature, offering up-to-date insights into their comparative performance
+for both researchers and practitioners in the evolving landscape of financial markets.
+
+
+                                                                                                         31
+    6. Limitations and Future Research
+
+An identified limitation in the thesis is the overfitting in many models due to the short input lengths
+used. Overfitting occurs when a model becomes too tailored to the training data, potentially capturing
+noise rather than genuine patterns. To address this, the thesis implemented standard practices such as
+cross-validation and careful parameter tuning. Future research could explore more advanced
+regularization techniques or ensemble methods to further mitigate overfitting risks associated with
+short input lengths. Another consideration involves the constraints of the historical stock data used.
+The dynamic nature of financial markets introduces uncertainties, and unexpected events or market
+anomalies could impact model performance. Future work could enhance robustness by incorporating a
+more extensive and diverse dataset, potentially integrating market shocks influencing financial
+markets. The thesis is constrained by specific input and output lengths, acknowledging that numerous
+alternative configurations exist for short-term stock trend prediction. The limitations inherent in the
+chosen lengths underscore the potential for further exploration and experimentation with diverse input
+and output configurations to enhance the depth of the analysis.
+Future research should focus on identifying the specific technical indicators that consistently
+contribute to accurate predictions, guiding feature selection for enhanced model performance. A
+systematic analysis of various indicators and their impact on forecasting accuracy is crucial for
+valuable insights. Investigating the optimal output period is necessary for refining model
+configurations, with future work systematically exploring the point where prediction accuracy
+stabilizes or degrades, informing the selection of appropriate prediction horizons. Addressing
+overfitting concerns, especially with short input lengths, remains a focus, and exploring advanced
+techniques like regularization methods or ensemble approaches could improve model generalization
+and reduce overfitting risks. Beyond LSTM, ARIMA, and 1D-CNN models, future research could
+explore alternative architectures, including emerging models or hybrid approaches, offering novel
+perspectives on financial time series forecasting. Additionally, extending the thesis to real-time
+applications is crucial for practical implications, developing models that can adapt to evolving market
+conditions and incorporate up-to-the-minute data, bridging the gap between theoretical insights and
+actionable strategies for traders and investors.
+
+    7. Conclusion
+
+The comparative analysis of ARIMA, LSTM, and 1D-CNN models in forecasting short-term price
+trends reveals LSTM's supremacy, leveraging only technical indicators for optimal predictive
+performance.
+How does the accuracy of ARIMA, LSTM and 1D-CNN models differ when diverse indicator types,
+encompassing historical and technical indicators, are integrated into the analysis?
+The thesis demonstrates that when diverse indicator types, encompassing both historical and technical
+indicators, are integrated into the analysis, the LSTM model consistently outperforms ARIMA and
+1D-CNN. Contrary to expectations, LSTM leveraging only technical indicators exhibits superior
+predictive accuracy in forecasting financial time series, particularly in predicting closing prices,
+historical trends, and technical indicators.
+How does the variation in input time horizons, spanning from 2 days to 6 days, impact the predictive
+accuracy when contrasting ARIMA, LSTM, and 1D-CNN models?
+The variation in input time horizons, spanning from 2 days to 6 days, is systematically evaluated for
+ARIMA, LSTM, and 1D-CNN models. The findings underscore the importance of considering
+different input time horizons, revealing an optimal configuration for the LSTM model with an input
+
+
+                                                                                                     32
+length of 2 days. This variation significantly influences the predictive accuracy of the models, further
+emphasizing the adaptability and robustness of LSTM across diverse time horizons.
+How is the accuracy of ARIMA, LSTM, and 1D-CNN models affected by adjustments in output time
+horizons, ranging from 1 day to 5 days?
+Adjustments in output time horizons, ranging from 1 day to 5 days, are investigated for ARIMA,
+LSTM, and 1D-CNN models. The thesis identifies that the LSTM model maintains its superior
+performance across various output time horizons, showcasing its efficacy in short-term predictions.
+This analysis provides insights into the model's ability to adapt and generate accurate forecasts for
+different temporal intervals.
+How does dividing forecasted stock price trends into specific sectors influence the predictive precision
+of the optimal model?
+The accuracy of ARIMA, LSTM, and 1D-CNN models is assessed concerning the division of
+forecasted stock price trends into specific sectors within the NASDAQ100. The study reveals that the
+LSTM model exhibits generalization across all individual sectors, reinforcing its dominance in
+financial trend forecasting. This sector-specific analysis introduces a distinctive perspective,
+contributing significantly to the literature landscape primarily focused on general accuracy
+comparisons.
+The study emphasizes the balance between model simplicity and feature relevance, providing valuable
+guidance for practitioners and researchers. The identified optimal configuration and improved
+predictive capabilities offer practical guidelines for forecasting models in dynamic financial markets,
+reaffirming the LSTM model's supremacy with a focus on technical indicators.
+
+
+
+
+                                                                                                        33
+References
+Abadi, M., & et al.,. (2015). TensorFlow: Large-Scale Machine Learning on Heterogeneous
+       Distributed Systems. Google Research.
+Adewumi, A., Adebiyi, A. A., & Ayo, C. K. (2014). Stock Price Prediction Using the ARIMA Model.
+     16th International Conference on Computer Modelling and Simulation, 1-7.
+Bai, S., & Kong, K. (2018). Oil prices, stock returns, and exchange rates: Empirical evidence from
+         China and the United States. The North American Journal of Economics and Finance, 12-33.
+Balaji, A. J., Ram, D. H., & Nair, B. B. (2018). Applicability of Deep Learning Models for Stock
+         Price Forecasting An Empirical Study on BANKEX Data. Procedia Computer Science, 947-
+         953.
+Banerjee, M., & Garg, V. (2022). A state-of-the-art of stock market prediction using neural network in
+       recent years. Proceedings of the international conference on computational intelligence.
+Barber, B. M., Lee, Y.-T., Liu, Y.-J., & Odean, T. (2014). The cross-section of speculator skill:
+        Evidence from day trading. Journal of Financial Markets, 1-24.
+Borovkova, S., & Tsiamas, I. (2019). An ensemble of LSTM neural networks for high-frequency stock
+       market classification. Journal of Forecasting, 600-619.
+Caginalp, G., & Constantine, G. (1995). Statistical inference and modelling of momentum in stock
+       prices. Applied Mathematical Finance.
+Chen, S., & Ge, L. (2019). Exploring the attention mechanism in LSTM-based Hong Kong stock price
+       movement prediction. Quantitative Finance, 1507-1515.
+Chollet F., & & others. (2023). Keras. From GitHub: https://github.com/fchollet/keras
+CNN: Business. (2023). Fear & Greed Index. From CNN: Business:
+      https://edition.cnn.com/markets/fear-and-greed
+Di Persio, L., & Honchar, O. (2016). Artificial Neural Networks architectures for stock price
+        prediction: comparisons and applications. INTERNATIONAL JOURNAL OF CIRCUITS,
+        SYSTEMS AND SIGNAL PROCESSING, 1-11.
+Dong, H. (2022). Stock Price Prediction Using ARIMA and LSTM. 2022 6th Annual International
+       Conference on Data Science and Business Analytics (ICDSBA), 1-7.
+Fama, E. (1970). Efficient capital markets: A review of theory and empirical work. Journal of
+       Finance, 383-417.
+Gomez-Martinez, R., Medrano-Garcia, M., & Prado Roman, C. (2023). CNN fear and greed index as
+      trend signal in global financial markets. Universidad Rey Juan Carlos de Madrid.
+Gunduz, H., Yaslan, Y., & Cataltepe, Z. (2017). Intraday prediction of Borsa Istanbul using
+      convolutional neural networks and feature correlations. Knowledge-Based Systems, 138-148.
+Hassanpour, H. (2020). Evaluation of Deep Neural Network in Directional Prediction of Forex
+       Market. TechRxiv.
+Hunter, J. (2007). Matplotlib: A 2D Graphics Environment. Computing in Science & Engineering, 90-
+        95.
+Investing.com. (2023). Crude Oil WTI Futures Historical Data. From Investing.com:
+        https://www.investing.com/commodities/crude-oil-historical-data
+
+                                                                                                    34
+Johnson, J. (2023). The Relationship Between CNN Money’s US Stock Market Fear and Greed Index
+       and US Stock Indices. Johnson Research, 1-21.
+Kang, W., Ratti, R., & Yoon, K. (2015). The impact of oil price shocks and the stock market return
+       and volatility relationship. Journal of International FInancial Markets, Institutions and
+       Money, 41-54.
+Kaur, A., Bhadauria, M., & Monika, M. (2022). Heuristic approach for forecasting stock price using
+        LSTM and technical indicators. 2022 4th International Conference on Artificial Intelligence
+        and Speech Technology (AIST), 1-6.
+Khashei, M., & Hajirahimi, Z. (2019). A comparative study of series arima/mlp hybrid models for
+       stock price forecasting. Communications in Statistics-Simulation and Computation,, 2625-
+       2640.
+Kim, M., & Sayama, H. (2017). Predicting stock market movements using network science: an
+      information theoretic approach. Applied Network Science, 2:35.
+Kobiela, D., Krefta, D., Krol, W., & Weichbroth, P. (2022). ARIMA vs LSTM on NASDAQ stock
+       exchange data. 26th International Conference on Knowledge-based and Intelligent
+       Information & Engineering Systems (KES 2022), 3830-3839.
+Kobiela, D., Krefta, D., Król, W., & Weichbroth, P. (2022). ARIMA vs LSTM on NASDAQ stock
+       exchange data. Procedia Computer Science, 3836-3845.
+Li, W., & Liao, J. (2017). A comparative study on trend forecasting approach for stock price time
+        series. 11th IEEE International Conference on Anti-counterfeiting, Security, and Identification
+        (ASID), 74-78.
+Liu, H. (2021). A research on stock forecasting based on principal component LSTM model. 2021
+        IEEE International Conference on Advances in Electrical Engineering and Computer
+        Applications (AEECA), 684-688.
+Nabipour, M., Nayyeri, P., Jabani, H., Shabab, S., & Mosavi, A. (2020). Predicting Stock Market
+       Trends Using Machine Learning and Deep Learning Algorithm Via Continuous and Binary
+       Data; a Comparative Analysis. IEEE Access, 150199-150212.
+Namin, S. S., & Namin, A. S. (2018). FORECASTING ECONOMIC AND FINANCIAL TIME
+       SERIES: ARIMA VS. LSTM. Texas Tech University, 1-19.
+NASDAQ. (2023). Nasdaq-100® Companies. From Nasdaq-100:
+     https://www.nasdaq.com/solutions/nasdaq-100/companies#utilities
+Nelson, D. M., Pereira, A. C., & de Oliveira, R. A. (2017). Stock Market’s Price Movement Prediction
+        With LSTM Neural Networks. International Joint Conference on Neural Networks (IJCNN),
+        1419-1426.
+Nelson, M., Pereira, A., & de Oliveira, R. (2017). Stock markets price movement prediction with
+        LSTM neural networks. 2017 International Joint Conference on Neural Networks (IJCNN),
+        1419-1426.
+Parida, N., Balabantaray, K., Nayak, R., & Rout, J. (2023). A Deep Learning based Approach to Stock
+        Market Price Prediction using Technical indicators. 2023 International Conference on
+        Advances in Intelligent Computing and Applications (AICAPS), 1-7.
+Pedregosa, F., Varoquaux , G., GramfortAlexandre , A., Michel , V., Thirion , B., Grisel , O., . . .
+       Duchesnay , E. (2011). Scikit-learn: Machine Learning in Python. JMLR 12, 2825-2830.
+
+                                                                                                       35
+Piravechsakul, P., Kasetkasem, T., Marukatat , S., & Kumazawa, I. (2021). Combining Technical
+        Indicators and Deep Learning by using LSTM Stock Price Predictor. 2021 18th International
+        Conference on Electrical Engineering/Electronics, Computer, Telecommunications and
+        Information Technology (ECTI-CON), 1155-1158.
+RANDOM.ORG. (2023). True random number service. From RANDOM.ORG: www.random.org
+Rutdledge, D. (1986). Futures Markets. Routledge.
+Seabold, S., & Perktold, J. (2010). statsmodels: Econometric and statistical modeling with python.
+       Proceedings of the 9th Python in Science Conference.
+Sheth, D., & Shah, M. (2023). Predicting stock market using machine learning: best and accurate way
+        to know future stock prices. International Journal of System Assurance Engineering and
+        Management, 1-18.
+ST. LOUIS FED. (2023). Federal Funds Effective Rate (FEDFUNDS). From FRED: Economic
+      Research Federal Reserve Bank St. Louis: https://fred.stlouisfed.org/series/FEDFUNDS
+Thorbecke, W. (2012). On Stock Market Returns and Monetary Policy. The Journal of Finance, 635-
+       654.
+Uma Devi, B., Sundar, D., & ALli, P. (2013). An Effective Time Series Analysis for Stock Trend
+      Prediction Using ARIMA Model for Nifty Midcap-50. International Journal of Data Mining
+      & Knowledge Management Process (IJDKP) .
+Unggara, I., Musdholifah, A., & Sari, A. K. (2019). Optimization of ARIMA Forecasting Model Using
+       Firefly Algorithm. Indonesian Journal of Computing and Cybernetics Systems, 127-136.
+Vincent, B., Saputra, J., Izzatunnisa, S., Lucky, H., & Iswanto, I. (2023). Stock Market Prediction
+        System Using LSTM with Technical Indicators as Voters. 2023 4th International Conference
+        on Artificial Intelligence and Data Sciences (AiDAS), 229-234.
+Waskom, M. (2021). seaborn: statistical data visualization. Journal of Open Source Software.
+Wu, J., Li, Z., Srivastava, G., Frnda, J., Diaz, V., & Lin, J.-W. (2020). A CNN-based Stock Price Trend
+        Prediction With Futures and Historical Price. 2020 International Conference on Pervasive
+        Artificial Intelligence (ICPAI), 134-139.
+Yahoo Finance. (2023). ICE US Dollar Index - Index - C (DX-Y.NYB). From Yahoo! Finance:
+       https://finance.yahoo.com/quote/DX-Y.NYB/
+Yahoo Finance. (2023a). NASDAQ Composite (^IXIC). From Yahoo! Finance:
+       https://finance.yahoo.com/quote/%5EIXIC/
+Yang, B., Li, C., & Li, M. (2017). Forecasting Analysis of Shanghai Stock Index Based on ARIMA
+       Model. 13th Global Congress on Manufacturing and Management (GCMM 2016, 1-6.
+Yao, S., Luo, L., & Peng, H. (2018). High-Frequency Stock Trend Forecast Using LSTM Model. 2018
+         13th International Conference on Computer Science & Education (ICCSE), 1-4.
+
+
+
+
+                                                                                                     36
+Appendix
+
+Appendix A Technical indicator formulas
+
+                    𝐴𝑣𝑒𝑟𝑎𝑔𝑒 14 𝑑𝑎𝑦 𝑔𝑎𝑖𝑛            100
+14-day RSI: 𝑅𝑆 = 𝐴𝑣𝑒𝑟𝑎𝑔𝑒 14 𝑑𝑎𝑦 𝑙𝑜𝑠𝑠 𝑅𝑆𝐼 = 100 − ( 1+𝑅𝑆)
+
+MACD: 𝑀𝐴𝐶𝐷 = 𝐸𝑀𝐴(12) − 𝐸𝑀𝐴(26)
+ADX:
+
+
+
+
+                    𝐶𝑢𝑟𝑟𝑒𝑛𝑡 𝑐𝑙𝑜𝑠𝑒−𝐿𝑜𝑤𝑒𝑠𝑡 𝐿𝑜𝑤
+SO %K: 𝑆𝑂 %𝐾 = 𝐻𝑖𝑔ℎ𝑒𝑠𝑡 ℎ𝑖𝑔ℎ−𝐿𝑜𝑤𝑒𝑠𝑡 𝐿𝑜𝑤 ∗ 100
+SO %D: 3-period SMA of %K
+
+EMA 12: 𝐸𝑀𝐴(12) = ((𝐶𝑀𝑃 ∗ 𝑆𝐹) + (𝐸𝑀𝐴(𝑝) ∗ (1 − 𝑆𝐹)))
+EMA 26: 𝐸𝑀𝐴(26) = ((𝐶𝑀𝑃 ∗ 𝑆𝐹) + (𝐸𝑀𝐴(𝑝) ∗ (1 − 𝑆𝐹)))
+
+where:
+CMP = Current market price
+SF = Smoothing factor
+EMA(p) = Previous EMA
+
+
+
+Appendix B NASDAQ sectors
+
+ Sector                                         Stocks
+ Consumer discretionary                         Amazon (AMZN). Starbucks (SBUX). Verisk
+                                                Analytics (VRSK). Marriot International
+                                                (MAR). Dollar Tree (DLTR)
+ Consumer staples                               Monster Beverage (MNST). Kraft Heinz
+                                                (KHC). PepsiCo (PEP). Amgen (AMGN).
+                                                Mondelez International (MDLZ)
+ Health Care                                    Gilead Sciences (GILD). AstraZeneca (AZN).
+                                                Seagen (SGEN). IDEXX Laboratories (IDXX)
+
+
+                                                                                             37
+ Industrials                                      CSX corporation (CSX). Honeywell
+                                                  international (HON). Baker Hughes (BKR)
+ Technology                                       Autodesk (ADSK). Apple (AAPL). Alphabet
+                                                  incorporated (GOOGL). Microchip technology
+                                                  incorporated (MCHP)
+ Telecommunications                               T-Mobile US (TMUS). Charter communications
+                                                  (CHTR). American Electric Power Company
+                                                  (AEP)
+ Utilities                                        Xcel Energy (XEL). Exelon corporation (EXC)
+All data has been obtained from Yahoo Finance (2023).
+
+
+
+Appendix C hyperparameters per model
+
+LSTM:
+
+ Historical and technical
+ indicators
+ Output        Input        Optimal hyperparameters
+ length        Length       (Activation. dropout rate. optimizer)
+ 1             2            (Relu. 0.0. SGD)
+ 1             4            (Relu. 0.2. Adam)
+ 1             6            (tanh. 0.0. SGD)
+ 3             2            (Relu. 0.2. SGD)
+ 3             4            (tanh. 0.0. Adam)
+ 3             6            (tanh. 0.0. Adam)
+ 5             2            (Relu. 0.0. SGD)
+ 5             4            (tanh. 0.0. Adam)
+ 5             6            (tanh. 0.0. Adam)
+
+
+ Historical indicators
+ Output         Input       Optimal hyperparameters
+ length         Length      (Activation. dropout rate. optimizer)
+ 1              2           (tanh. 0.0. Adam)
+ 1              4           (tanh. 0.0. Adam)
+ 1              6           (tanh. 0.0. SGD)
+ 3              2           (Relu. 0.4. SGD)
+ 3              4           (tanh. 0.0. Adam)
+ 3              6           (tanh. 0.0. Adam)
+ 5              2           (Relu. 0.4. Adam)
+ 5              4           (Relu. 0.2. Adam)
+ 5              6           (tanh. 0.0. Adam)
+
+
+
+
+ Technical indicators
+
+
+                                                                                            38
+Output        Input        Optimal hyperparameters
+length        Length       (Activation. dropout rate. optimizer)
+1             2            (tanh. 0.0. Adam)
+1             4            (Relu. 0.2. Adam)
+1             6            (tanh. 0.0. SGD)
+3             2            (tanh. 0.2. Adam)
+3             4            (tanh. 0.0. Adam)
+3             6            (tanh. 0.2. Adam)
+5             2            (tanh. 0.0. Adam)
+5             4            (tanh. 0.2. Adam)
+5             6            (tanh. 0.4. Adam)
+
+
+Closing Price
+Output        Input        Optimal hyperparameters
+length        Length       (Activation. dropout rate. optimizer)
+1             2            (Relu. 0.0. SGD)
+1             4            (tanh. 0.0. Adam)
+1             6            (tanh. 0.0. Adam)
+3             2            (Relu. 0.0. SGD)
+3             4            (Relu. 0.2. Adam)
+3             6            (tanh. 0.0. Adam)
+5             2            (Relu. 0.4. Adam)
+5             4            (Relu. 0.0. SGD)
+5             6            (Relu. 0.2. SGD)
+
+
+ARIMA:
+
+Historical and technical
+indicators
+Output        Input        Optimal hyperparameters
+length        Length       (p.d.q)
+1             2            (0. 0. 0)
+1             4            (1. 0. 2)
+1             6            (2. 0. 3)
+3             2            (0. 0. 0)
+3             4            (0. 0. 0)
+3             6            (0. 0. 0)
+5             2            (0. 0. 0)
+5             4            (0. 0. 0)
+5             6            (0. 0. 3)
+
+
+Historical indicators
+Output         Input       Optimal hyperparameters
+length         Length
+                           (p.d.q)
+1             2            (0. 0. 0)
+1             4            (2. 0. 2)
+
+
+                                                                   39
+1             6            (0. 0. 0)
+3             2            (0. 0. 0)
+3             4            (0. 0. 0)
+3             6            (0. 0. 0)
+5             2            (0. 0. 0)
+5             4            (0. 0. 0)
+5             6            (0. 0. 0)
+
+
+
+
+Technical indicators
+Output        Input        Optimal hyperparameters
+length        Length
+                           (p.d.q)
+1             2            (1. 0. 1)
+1             4            (3. 0. 3)
+1             6            (4. 0. 3)
+3             2            (0. 0. 1)
+3             4            (0. 0. 1)
+3             6            (0. 0. 1)
+5             2            (0. 0. 1)
+5             4            (2. 0. 2)
+5             6            (0. 0. 1)
+
+
+Closing Price
+Output        Input        Optimal hyperparameters
+length        Length
+                           (p.d.q)
+1             2            (0. 0. 0)
+1             4            (0. 0. 0)
+1             6            (1. 1. 3)
+3             2            (0. 1. 1)
+3             4            (0. 1. 2)
+3             6            (0. 1. 2)
+5             2            (1. 0. 0)
+5             4            (0. 0. 0)
+5             6            (0. 0. 0)
+
+
+CNN:
+
+Historical and technical
+indicators
+Output        Input        Optimal hyperparameters
+length        Length       (Dropout. filters. kernel size. dense
+                           units)
+1             2            (5. (32. 64. 128). 0.2. 128)
+
+                                                                   40
+1            4          (5. (32. 64. 128). 0.4. 256)
+1            6          (5. (32. 64. 128). 0.2. 128)
+3            2
+                        (3. (32. 64. 128). 0.4. 256)
+3            4          (3. (32. 64. 128). 0.4. 256)
+3            6          (3. (32. 64. 128). 0.4. 256)
+5            2          (5. (32. 64. 128). 0.2. 128)
+5            4          (3. (64. 128. 256). 0.3. 256)
+5            6          (3. (32. 64. 128). 0.4. 64)
+
+
+Historical indicators
+Output         Input    Optimal hyperparameters
+length         Length   (Dropout. filters. kernel size. dense
+                        units)
+1            2          (3. (64. 128. 256). 0.3. 256)
+1            4          (3. (32. 64. 128). 0.4. 64)
+1            6          (5. (32. 64. 128). 0.2. 128)
+3            2          (3. (32. 64. 128). 0.4. 64)
+3            4          (5. (32. 64. 128). 0.4. 256)
+3            6          (3. (32. 64. 128). 0.4. 64)
+5            2          (3. (32. 64. 128). 0.4. 64)
+5            4          (3. (64. 128. 256). 0.3. 256)
+5            6          (3. (32. 64. 128). 0.4. 64)
+
+
+
+
+Technical indicators
+Output        Input     Optimal hyperparameters
+length        Length    (Dropout. filters. kernel size. dense
+                        units)
+1            2          (3. (32. 64. 128). 0.4. 256)
+1            4          (5. (32. 64. 128). 0.2. 128)
+1            6          (5. (32. 64. 128). 0.2. 128)
+3            2          (3. (32. 64. 128). 0.4. 64)
+3            4          (3. (32. 64. 128). 0.4. 64)
+3            6          (5. (32. 64. 128). 0.2. 128)
+5            2          (3. (32. 64. 128). 0.4. 64
+5            4          (3. (64. 128. 256). 0.3. 256)
+5            6          (3. (32. 64. 128). 0.4. 256)
+
+
+Closing Price
+Output        Input     Optimal hyperparameters
+length        Length    (Dropout. filters. kernel size. dense
+                        units)
+1            2          (5. (32. 64. 128). 0.2. 128)
+
+                                                                41
+ 1             4            (3. (32. 64. 128). 0.4. 256)
+ 1             6            (5. (32. 64. 128). 0.2. 128)
+ 3             2            (3. (32. 64. 128). 0.4. 256)
+ 3             4            (3. (32. 64. 128). 0.4. 256)
+ 3             6            (5. (32. 64. 128). 0.4. 256)
+ 5             2            (3. (32. 64. 128). 0.4. 64)
+ 5             4            (3. (64. 128. 256). 0.3. 256)
+ 5             6            (5. (32. 64. 128). 0.4. 256)
+
+
+
+Appendix D Confusion Matrices
+Please note that all confusion matrices are averages of 3 seeds for LSTM and CNN.
+LSTM
+ Historical and technical
+ indicators
+ Output        Input        Confusion Matrix
+ length        Length
+ 1             2             O/P           Uptrend    Downtrend
+                             Uptrend       57.33      28.67
+                             Downtrend     70.67      28.33
+ 1             4             O/P           Uptrend    Downtrend
+                             Uptrend       0.67       48.67
+                             Downtrend     3.67       66.33
+ 1             6             O/P           Uptrend    Downtrend
+                             Uptrend       0.00       46
+                             Downtrend     0.00       64.33
+ 3             2             O/P           Uptrend    Downtrend
+                             Uptrend       24         39.67
+                             Downtrend     13.67      89.33
+ 3             4             O/P           Uptrend    Downtrend
+                             Uptrend       0          80
+                             Downtrend     0          107
+ 3             6             O/P           Uptrend    Downtrend
+                             Uptrend       0          80
+                             Downtrend     0          104
+ 5             2             O/P           Uptrend    Downtrend
+                             Uptrend       21         43.33
+                             Downtrend     14.33      87.67
+ 5             4             O/P           Uptrend    Downtrend
+                             Uptrend       0          82
+                             Downtrend     0          103
+ 5             6             O/P           Uptrend    Downtrend
+                             Uptrend       0          81
+                             Downtrend     0          103
+
+
+
+
+ Technical indicators
+
+
+                                                                                    42
+Output       Input      Confusion Matrix
+length       Length
+1            2           O/P         Uptrend   Downtrend
+                         Uptrend     21        65
+                         Downtrend   22.30     76.70
+1            4           O/P         Uptrend   Downtrend
+                         Uptrend     35.70     93
+                         Downtrend   29.30     122
+1            6           O/P         Uptrend   Downtrend
+                         Uptrend     26.30     152
+                         Downtrend   29        156
+3            2           O/P         Uptrend   Downtrend
+                         Uptrend     39        99.70
+                         Downtrend   22.70     90.30
+3            4           O/P         Uptrend   Downtrend
+                         Uptrend     47        62.30
+                         Downtrend   30.70     76.70
+3            6           O/P         Uptrend   Downtrend
+                         Uptrend     42.70     63.70
+                         Downtrend   25.70     78.30
+5            2           O/P         Uptrend   Downtrend
+                         Uptrend     62.33     24.67
+                         Downtrend   13        85
+5            4           O/P         Uptrend   Downtrend
+                         Uptrend     52        29.67
+                         Downtrend   16        87
+5            6           O/P         Uptrend   Downtrend
+                         Uptrend     63        18
+                         Downtrend   13.67     89.33
+
+
+Historical indicators
+Output         Input    Validation Accuracy
+length         Length
+1              2         O/P         Uptrend   Downtrend
+                         Uptrend     0         72
+                         Downtrend   0         113
+1            4           O/P         Uptrend   Downtrend
+                         Uptrend     0         87
+                         Downtrend   0         98
+1            6           O/P         Uptrend   Downtrend
+                         Uptrend     0         81
+                         Downtrend   0         104
+3            2           O/P         Uptrend   Downtrend
+                         Uptrend     69        0
+                         Downtrend   116       0
+3            4           O/P         Uptrend   Downtrend
+                         Uptrend     0         80
+                         Downtrend   0         105
+3            6           O/P         Uptrend   Downtrend
+                         Uptrend     0         73
+                         Downtrend   0         112
+
+                                                           43
+5            2          O/P         Uptrend   Downtrend
+                        Uptrend     14        61
+                        Downtrend   31        79
+5            4          O/P         Uptrend   Downtrend
+                        Uptrend     5         73
+                        Downtrend   8         99
+5            6          O/P         Uptrend   Downtrend
+                        Uptrend     0         82
+                        Downtrend   0         103
+Closing Price
+Output        Input    Confusion Matrix
+length        Length
+1             2         O/P         Uptrend   Downtrend
+                        Uptrend     0         72
+                        Downtrend   0         113
+1            4          O/P         Uptrend   Downtrend
+                        Uptrend     13.50     73.60
+                        Downtrend   18.00     80.00
+1            6          O/P         Uptrend   Downtrend
+                        Uptrend     0         81
+                        Downtrend   0         104
+3            2          O/P         Uptrend   Downtrend
+                        Uptrend     0         69
+                        Downtrend   0         116
+3            4          O/P         Uptrend   Downtrend
+                        Uptrend     29.00     51.00
+                        Downtrend   45.67     59.33
+3            6          O/P         Uptrend   Downtrend
+                        Uptrend     0         73
+                        Downtrend   0         112
+5            2          O/P         Uptrend   Downtrend
+                        Uptrend     0         72
+                        Downtrend   0         113
+5            4          O/P         Uptrend   Downtrend
+                        Uptrend     9.00      78.00
+                        Downtrend   12.00     86.00
+5            6          O/P         Uptrend   Downtrend
+                        Uptrend     0         81
+                        Downtrend   0         104
+
+
+
+
+                                                          44
+ARIMA:
+
+Historical and technical
+indicators
+Output        Input        Confusion Matrix
+length        Length
+1             2             O/P         Uptrend   Downtrend
+                            Uptrend     58        46
+                            Downtrend   40        41
+1             4             O/P         Uptrend   Downtrend
+                            Uptrend     53        51
+                            Downtrend   43        38
+1             6             O/P         Uptrend   Downtrend
+                            Uptrend     43        61
+                            Downtrend   33        47
+3             2             O/P         Uptrend   Downtrend
+                            Uptrend     68        35
+                            Downtrend   25        57
+3             4             O/P         Uptrend   Downtrend
+                            Uptrend     66        37
+                            Downtrend   30        52
+3             6             O/P         Uptrend   Downtrend
+                            Uptrend     64        38
+                            Downtrend   29        53
+5             2             O/P         Uptrend   Downtrend
+                            Uptrend     90        16
+                            Downtrend   24        55
+5             4             O/P         Uptrend   Downtrend
+                            Uptrend     94        12
+                            Downtrend   28        51
+5             6             O/P         Uptrend   Downtrend
+                            Uptrend     91        14
+                            Downtrend   29        50
+
+
+
+
+Technical indicators
+Output        Input        Confusion Matrix
+length        Length
+1             2             O/P         Uptrend   Downtrend
+                            Uptrend     79        25
+                            Downtrend   53        28
+1             4             O/P         Uptrend   Downtrend
+                            Uptrend     77        27
+                            Downtrend   57        24
+1             6             O/P         Uptrend   Downtrend
+                            Uptrend     64        40
+                            Downtrend   46        34
+3             2             O/P         Uptrend   Downtrend
+                            Uptrend     78        25
+                            Downtrend   27        55
+
+
+                                                              45
+3            4           O/P         Uptrend   Downtrend
+                         Uptrend     75        28
+                         Downtrend   32        50
+3            6           O/P         Uptrend   Downtrend
+                         Uptrend     74        28
+                         Downtrend   30        52
+5            2           O/P         Uptrend   Downtrend
+                         Uptrend     86        20
+                         Downtrend   23        56
+5            4           O/P         Uptrend   Downtrend
+                         Uptrend     88        18
+                         Downtrend   21        58
+5            6           O/P         Uptrend   Downtrend
+                         Uptrend     88        17
+                         Downtrend   22        57
+
+
+Historical indicators
+Output         Input    Validation Accuracy
+length         Length
+1              2         O/P         Uptrend   Downtrend
+                         Uptrend     50        54
+                         Downtrend   42        39
+1            4           O/P         Uptrend   Downtrend
+                         Uptrend     48        56
+                         Downtrend   41        40
+1            6           O/P         Uptrend   Downtrend
+                         Uptrend     43        61
+                         Downtrend   29        52
+3            2           O/P         Uptrend   Downtrend
+                         Uptrend     73        30
+                         Downtrend   29        53
+3            4           O/P         Uptrend   Downtrend
+                         Uptrend     73        30
+                         Downtrend   26        56
+3            6           O/P         Uptrend   Downtrend
+                         Uptrend     69        34
+                         Downtrend   29        53
+5            2           O/P         Uptrend   Downtrend
+                         Uptrend     82        24
+                         Downtrend   23        56
+5            4           O/P         Uptrend   Downtrend
+                         Uptrend     89        17
+                         Downtrend   26        53
+5            6           O/P         Uptrend   Downtrend
+                         Uptrend     88        18
+                         Downtrend   21        58
+
+
+Closing Price
+Output        Input     Confusion Matrix
+length        Length
+
+                                                           46
+1   2   O/P         Uptrend   Downtrend
+        Uptrend     12        92
+        Downtrend   8         73
+1   4   O/P         Uptrend   Downtrend
+        Uptrend     11        93
+        Downtrend   14        67
+1   6   O/P         Uptrend   Downtrend
+        Uptrend     12        92
+        Downtrend   7         74
+3   2   O/P         Uptrend   Downtrend
+        Uptrend     64        39
+        Downtrend   17        65
+3   4   O/P         Uptrend   Downtrend
+        Uptrend     18        85
+        Downtrend   0         82
+3   6   O/P         Uptrend   Downtrend
+        Uptrend     38        65
+        Downtrend   16        66
+5   2   O/P         Uptrend   Downtrend
+        Uptrend     60        46
+        Downtrend   15        64
+5   4   O/P         Uptrend   Downtrend
+        Uptrend     80        26
+        Downtrend   16        63
+5   6   O/P         Uptrend   Downtrend
+        Uptrend     82        24
+        Downtrend   16        63
+
+
+
+
+                                          47
+CNN:
+
+Historical and technical
+indicators
+Output        Input        Confusion Matrix
+length        Length
+1             2             O/P         Uptrend   Downtrend
+                            Uptrend     24        56
+                            Downtrend   30        75
+1             4             O/P         Uptrend   Downtrend
+                            Uptrend     27        51
+                            Downtrend   38        67
+1             6             O/P         Uptrend   Downtrend
+                            Uptrend     34        45
+                            Downtrend   47        55
+3             2             O/P         Uptrend   Downtrend
+                            Uptrend     30        47
+                            Downtrend   42        64
+3             4             O/P         Uptrend   Downtrend
+                            Uptrend     31        62
+                            Downtrend   34        61
+3             6             O/P         Uptrend   Downtrend
+                            Uptrend     38        39
+                            Downtrend   34        69
+5             2             O/P         Uptrend   Downtrend
+                            Uptrend     44.67     37.33
+                            Downtrend   27        76
+5             4             O/P         Uptrend   Downtrend
+                            Uptrend     52.33     32.67
+                            Downtrend   18        81
+5             6             O/P         Uptrend   Downtrend
+                            Uptrend     50.67     25.33
+                            Downtrend   26.67     80.33
+
+
+
+
+Technical indicators
+Output        Input        Confusion Matrix
+length        Length
+1             2             O/P         Uptrend   Downtrend
+                            Uptrend     28.67     58.33
+                            Downtrend   36        62
+1             4             O/P         Uptrend   Downtrend
+                            Uptrend     6         84
+                            Downtrend   10.33     83.67
+1             6             O/P         Uptrend   Downtrend
+                            Uptrend     26.33     64
+                            Downtrend   26        71
+3             2             O/P         Uptrend   Downtrend
+                            Uptrend     22.67     58.33
+                            Downtrend   29.67     74
+
+
+                                                              48
+3            4           O/P         Uptrend   Downtrend
+                         Uptrend     17.67     70.67
+                         Downtrend   19.67     76.67
+3            6           O/P         Uptrend   Downtrend
+                         Uptrend     28        53.67
+                         Downtrend   18.33     82
+5            2           O/P         Uptrend   Downtrend
+                         Uptrend     48.33     29.67
+                         Downtrend   30.33     76.67
+5            4           O/P         Uptrend   Downtrend
+                         Uptrend     48.33     29.67
+                         Downtrend   30.33     76.67
+5            6           O/P         Uptrend   Downtrend
+                         Uptrend     23        54
+                         Downtrend   13        94
+
+
+Historical indicators
+Output         Input    Confusion Matrix
+length         Length
+1              2         O/P         Uptrend   Downtrend
+                         Uptrend     28.33     52
+                         Downtrend   37.67     67.33
+1            4           O/P         Uptrend   Downtrend
+                         Uptrend     32.33     45.67
+                         Downtrend   51        55
+1            6           O/P         Uptrend   Downtrend
+                         Uptrend     35.67     44.33
+                         Downtrend   50.67     52.33
+3            2           O/P         Uptrend   Downtrend
+                         Uptrend     17.33     60.67
+                         Downtrend   31        75.33
+3            4           O/P         Uptrend   Downtrend
+                         Uptrend     38.33     50.67
+                         Downtrend   44.33     50.67
+3            6           O/P         Uptrend   Downtrend
+                         Uptrend     32.33     47.67
+                         Downtrend   33.67     69.33
+5            2           O/P         Uptrend   Downtrend
+                         Uptrend     46.67     34.67
+                         Downtrend   25.67     78.67
+5            4           O/P         Uptrend   Downtrend
+                         Uptrend     55.67     29.33
+                         Downtrend   24        75
+5            6           O/P         Uptrend   Downtrend
+                         Uptrend     56        20
+                         Downtrend   30        77
+
+
+Closing Price
+Output        Input     Confusion Matrix
+length        Length
+
+                                                           49
+ 1                2            O/P          Uptrend   Downtrend
+                               Uptrend      0         87
+                               Downtrend    0         98
+ 1                4            O/P          Uptrend   Downtrend
+                               Uptrend      0.6667    89.33
+                               Downtrend    0         94
+ 1                6            O/P          Uptrend   Downtrend
+                               Uptrend      28        59
+                               Downtrend    23.33     73.76
+ 3                2            O/P          Uptrend   Downtrend
+                               Uptrend      0         80
+                               Downtrend    0         105
+ 3                4            O/P          Uptrend   Downtrend
+                               Uptrend      0         88
+                               Downtrend    0         96
+ 3                6            O/P          Uptrend   Downtrend
+                               Uptrend      0         83
+                               Downtrend    0         101
+ 5                2            O/P          Uptrend   Downtrend
+                               Uptrend      53        25
+                               Downtrend    26        81
+ 5                4            O/P          Uptrend   Downtrend
+                               Uptrend      39        49.33
+                               Downtrend    11        84.67
+ 5                6            O/P          Uptrend   Downtrend
+                               Uptrend      36.67     40
+                               Downtrend    21        85.33
+
+
+Appendix E Results per indicator group and output/input length
+
+LSTM:
+
+ Indicators           Output Length   Input Length    Mean Test   F1-score   Standard
+                                                      Accuracy               Deviation
+ Historical and       1               2                           0.3815
+ technical                                            0.4883                 0.0406
+ Historical and       1               4                           0.3669
+ technical                                            0.5514                 0.0281
+ Historical and       1               6                           0.4046
+ technical                                            0.5815                 0.0000
+ Historical and       3               2                           0.4234
+ technical                                            0.5369                 0.1280
+ Historical and       3               4                           0.5676
+ technical                                            0.5784                 0.0000
+ Historical and       3               6                           0.6054
+ technical                                            0.5652                 0.0000
+ Historical and       5               2                           0.4524
+ technical                                            0.5099                 0.0343
+ Historical and       5               4                           0.4349
+ technical                                            0.5568                 0.0000
+
+
+
+                                                                                         50
+ Historical and    5         6                        0.3982
+ technical                                  0.5598              0.0000
+ Technical         1         2              0.5279    0.4907    0.0352
+ Technical         1         4              0.5387    0.5096    0.0667
+ Technical         1         6              0.5707    0.5547    0.0109
+ Technical         3         2              0.6991    0.6941    0.0136
+ Technical         3         4              0.6541    0.6538    0.0236
+ Technical         3         6              0.6576    0.6526    0.0094
+ Technical         5         2              0.7964    0.8273    0.0083
+ Technical         5         4              0.7514    0.7476    0.0143
+ Technical         5         6              0.8279    0.7948    0.0220
+ Historical        1         2              0.5369    0.3815    0.1280
+ Historical        1         4              0.5297    0.3669    0.0000
+ Historical        1         6              0.5622    0.4046    0.0000
+ Historical        3         2              0.4876    0.4492    0.1014
+ Historical        3         4              0.5729    0.4110    0.0093
+ Historical        3         6              0.5959    0.4566    0.0164
+ Historical        5         2              0.5640    0.4534    0.0531
+ Historical        5         4              0.5730    0.4349    0.0094
+ Historical        5         6              0.5568    0.3982    0.0000
+ Closing price     1         2              0.5694    0.4678    0.0718
+ Closing price     1         4              0.5135    0.4005    0.0281
+ Closing price     1         6              0.5387    0.4339    0.0406
+ Closing price     3         2              0.6270    0.4833    0.0000
+ Closing price     3         4              0.4775    0.3567    0.0689
+ Closing price     3         6              0.6144    0.5169    0.0156
+ Closing price     5         2              0.7207    0.6072    0.0156
+ Closing price     5         4              0.4649    0.3823    0.1966
+ Closing price     5         6              0.3820    0.2896    0.0531
+
+
+Average:
+
+ Indicators                 Test accuracy            F1-score
+ Historical and technical   0.54757                  0.4483
+ Technical                  0.66930                  0.6584
+ Historical                 0.55322                  0.3815
+ Closing price              0.54535                  0.4376
+
+
+
+ARIMA:
+
+
+
+
+                                                                         51
+ Indicators       Output Length   Input Length   Test Accuracy   F1-score   p-value
+ Historical and   1               2              0.5351          0.5872     0.1610
+ technical
+ Historical and   1               4              0.4919          0.5153     0.0791
+ technical
+ Historical and   1               6              0.4891          0.4483     0.3310
+ technical
+ Historical and   3               2              0.6757          0.6603     0.1309
+ technical
+ Historical and   3               4              0.6378          0.6364     0.0882
+ technical
+ Historical and   3               6              0.6359          0.5882     0.0818
+ technical
+ Historical and   5               2              0.7838          0.7353     0.1621
+ technical
+ Historical and   5               4              0.7838          0.7398     0.1084
+ technical
+ Historical and   5               6              0.7609          0.7238     0.0775
+ technical
+ Technical        1               2              0.5784          0.4938     0.3513
+ Technical        1               4              0.5459          0.4513     0.4571
+ Technical        1               6              0.5326          0.4384     0.4358
+ Technical        3               2              0.7189          0.7342     0.3250
+ Technical        3               4              0.6757          0.6881     0.3732
+ Technical        3               6              0.6848          0.6939     0.4004
+ Technical        5               2              0.7676          0.7759     0.2939
+ Technical        5               4              0.7892          0.7778     0.3905
+ Technical        5               6              0.7880          0.7799     0.3896
+ Historical       1               2              0.4811          0.4286     0.2209
+ Historical       1               4              0.4757          0.4110     0.2026
+ Historical       1               6              0.5135          0.5556     0.1977
+ Historical       3               2              0.6811          0.6885     0.1384
+ Historical       3               4              0.6865          0.6842     0.1256
+ Historical       3               6              0.6432          0.6471     0.1523
+ Historical       5               2              0.7405          0.7848     0.1720
+ Historical       5               4              0.7351          0.7925     0.1965
+ Historical       5               6              0.7514          0.7778     0.1910
+ Closing price    1               2              0.4595          0.2330     0.2393
+ Closing price    1               4              0.4216          0.2254     0.3011
+ Closing price    1               6              0.4649          0.2330     0.3913
+ Closing price    3               2              0.6919          0.5613     0.0987
+ Closing price    3               4              0.5351          0.3846     0.1317
+ Closing price    3               6              0.5303          0.4640     0.2503
+ Closing price    5               2              0.6703          0.6472     0.2829
+ Closing price    5               4              0.7351          0.7805     0.0905
+ Closing price    5               6              0.7459          0.7746     0.1125
+
+Average:
+
+
+
+                                                                                      52
+Indicators                 Test accuracy               F1-score
+Historical and technical   0.6438                      0.6261
+Technical                  0.6757                      0.6481
+Historical                 0.6342                      0.6411
+Closing price              0.5838                      0.4782
+
+CNN:
+
+
+Indicators       Output    Input Length    Mean Test   F1-score   Standard
+                 Length                    Accuracy               Deviation
+Historical and   1         2                           0.6401
+technical                                  0.5171                 0.0255
+Historical and   1         4                           0.5519
+technical                                  0.5217                 0.0193
+Historical and   1         6                           0.5433
+technical                                  0.4754                 0.0134
+Historical and   3         2                           0.5993
+technical                                  0.5117                 0.0287
+Historical and   3         4                           0.5787
+technical                                  0.5236                 0.0102
+Historical and   3         6                           0.5930
+technical                                  0.5829                 0.0297
+Historical and   5         2                           0.7029
+technical                                  0.6739                 0.0067
+Historical and   5         4                           0.7614
+technical                                  0.7192                 0.0112
+Historical and   5         6                           0.7542
+technical                                  0.7158                 0.0248
+Technical        1         2               0.5297      0.6011     0.0202
+Technical        1         4               0.4565      0.5330     0.0203
+Technical        1         6               0.4809      0.5224     0.0402
+Technical        3         2               0.5171      0.6192     0.0270
+Technical        3         4               0.4783      0.5183     0.0044
+Technical        3         6               0.5191      0.6387     0.0178
+Technical        5         2               0.6757      0.7272     0.0192
+Technical        5         4               0.6975      0.7379     0.0068
+Technical        5         6               0.6958      0.7549     0.0201
+Historical       1         2               0.4919      0.5671     0.0117
+Historical       1         4               0.4873      0.6395     0.0112
+Historical       1         6               0.5362      0.6201     0.0112
+Historical       3         2               0.5063      0.5998     0.0067
+Historical       3         4               0.5362      0.6644     0.0026
+Historical       3         6               0.5870      0.6721     0.0044
+Historical       5         2               0.6667      0.7188     0.0092
+Historical       5         4               0.6322      0.7340     0.0128
+Historical       5         6               0.6431      0.7372     0.0051
+Closing price    1         2               0.5297      0.6926     0.0000
+Closing price    1         4               0.5163      0.6776     0.0044
+Closing price    1         6               0.5326      0.6407     0.0160
+Closing price    3         2               0.5676      0.7241     0.0000
+Closing price    3         4               0.5217      0.6857     0.0000
+Closing price    3         6               0.5399      0.7088     0.0128
+Closing price    5         2               0.7369      0.7810     0.0067
+
+                                                                              53
+ Closing price     5              4                   0.6467          0.7486         0.0177
+ Closing price     5              6                   0.6359          0.7308         0.0117
+
+
+
+
+Average:
+
+ Indicators                       Test accuracy                       F1-score
+ Historical and technical         0.58237                             0.6361
+ Technical                        0.56118                             0.6281
+ Historical                       0.56522                             0.6614
+ Closing price                    0.58082                             0.7080
+
+
+
+
+Appendix F Simulation trades
+
+ Day       Trade       Amount         Closing Price      Days Until        Balance        Ending
+           Type        Invested                          Cash Out          Change         Balanc
+                                                                                          e
+ 2         Buy         200            13897.29981        5                 208.1824051    1008.1
+                                                                                          82
+ 2         Sell        200            13897.29981        0                 200            1200
+
+ 2         Buy         200            13897.29981        5                 208.1824051    1008.1
+                                                                                          82
+ 3         Buy         200            13711              5                 205.6800092    1013.8
+                                                                                          62
+ 3         Sell        200            13711              0                 200            1400
+ 3         Buy         200            13711              5                 205.6800092    1013.8
+                                                                                          62
+
+                                                                                               54
+4    Buy    200   13411.95996   5   196.9499945   1010.8
+                                                  12
+4    Sell   200   13411.95996   0   200           1600
+
+4    Sell   200   13411.95996   0   200           1013.8
+                                                  62
+5    Buy    200   13371.57031   5   198.7883807   1009.6
+                                                  01
+5    Buy    200   13371.57031   5   198.7883807   1598.7
+                                                  88
+5    Sell   200   13371.57031   0   200           1013.8
+                                                  62
+6    Buy    200   13643.58984   5   207.1188144   1016.7
+                                                  2
+6    Buy    200   13643.58984   5   207.1188144   1605.9
+                                                  07
+6    Sell   200   13643.58984   0   200           1013.8
+                                                  62
+7    Buy    200   13351.08008   5   207.9722483   1024.6
+                                                  92
+7    Sell   200   13351.08008   0   200           1805.9
+                                                  07
+7    Buy    200   13351.08008   5   207.9722483   1021.8
+                                                  35
+8    Buy    200   13332.36035   5   205.0367479   1029.7
+                                                  29
+8    Sell   200   13332.36035   0   200           2005.9
+                                                  07
+8    Sell   200   13332.36035   0   200           1021.8
+                                                  35
+9    Buy    200   13619.66016   5   218.0761092   1047.8
+                                                  05
+9    Sell   200   13619.66016   0   200           2205.9
+                                                  07
+9    Sell   200   13619.66016   0   200           1021.8
+                                                  35
+10   Buy    200   13453.07031   5   215.439924    1063.2
+                                                  45
+10   Sell   200   13453.07031   0   200           2405.9
+                                                  07
+10   Buy    200   13453.07031   5   215.439924    1037.2
+                                                  75
+11   Buy    200   13174.65039   5   204.7099313   1067.9
+                                                  55
+11   Sell   200   13174.65039   0   200           2605.9
+                                                  07
+11   Sell   200   13174.65039   0   200           1037.2
+                                                  75
+12   Buy    200   12839.29004   5   208.1826532   1076.1
+                                                  37
+12   Sell   200   12839.29004   0   200           2805.9
+                                                  07
+12   Sell   200   12839.29004   0   200           1037.2
+                                                  75
+
+                                                       55
+13   Buy    200   13004.84961   5   207.4797279   1083.6
+                                                  17
+13   Sell   200   13004.84961   0   200           3005.9
+                                                  07
+13   Sell   200   13004.84961   0   200           1037.2
+                                                  75
+14   Buy    200   12490.74023   5   198.8376166   1082.4
+                                                  55
+14   Sell   200   12490.74023   0   200           3205.9
+                                                  07
+14   Buy    200   12490.74023   5   198.8376166   1036.1
+                                                  12
+15   Buy    200   12488.92969   5   192.6581444   1075.1
+                                                  13
+15   Buy    200   12488.92969   5   192.6581444   3198.5
+                                                  65
+15   Sell   200   12488.92969   0   200           1036.1
+                                                  12
+16   Buy    200   12871.53027   5   208.9925923   1084.1
+                                                  05
+16   Buy    200   12871.53027   5   208.9925923   3207.5
+                                                  58
+16   Sell   200   12871.53027   0   200           1036.1
+                                                  12
+17   Buy    200   12334.63965   5   203.1286094   1087.2
+                                                  34
+17   Sell   200   12334.63965   0   200           3407.5
+                                                  58
+17   Buy    200   12334.63965   5   203.1286094   1039.2
+                                                  41
+18   Buy    200   12536.01953   5   215.7059262   1102.9
+                                                  4
+18   Sell   200   12536.01953   0   200           3607.5
+                                                  58
+18   Sell   200   12536.01953   0   200           1039.2
+                                                  41
+19   Buy    200   12563.75977   5   214.0758745   1117.0
+                                                  16
+19   Sell   200   12563.75977   0   200           3807.5
+                                                  58
+19   Buy    200   12563.75977   5   214.0758745   1053.3
+                                                  17
+20   Sell   200   12964.86035   0   200           1317.0
+                                                  16
+20   Sell   200   12964.86035   0   200           4007.5
+                                                  58
+20   Buy    200   12964.86035   5   228.1694171   1081.4
+                                                  86
+21   Buy    200   12317.69043   5   216.6517246   1333.6
+                                                  67
+21   Sell   200   12317.69043   0   200           4207.5
+                                                  58
+21   Buy    200   12317.69043   5   216.6517246   1098.1
+                                                  38
+
+                                                       56
+22   Sell   200   12144.66016   0   200           1533.6
+                                                  67
+22   Sell   200   12144.66016   0   200           4407.5
+                                                  58
+22   Sell   200   12144.66016   0   200           1098.1
+                                                  38
+23   Buy    200   11623.25      5   199.3219455   1532.9
+                                                  89
+23   Sell   200   11623.25      0   200           4607.5
+                                                  58
+23   Sell   200   11623.25      0   200           1098.1
+                                                  38
+24   Buy    200   11737.66992   5   195.8805256   1528.8
+                                                  7
+24   Buy    200   11737.66992   5   195.8805256   4603.4
+                                                  38
+24   Sell   200   11737.66992   0   200           1098.1
+                                                  38
+25   Buy    200   11364.24023   5   199.0557112   1527.9
+                                                  26
+25   Buy    200   11364.24023   5   199.0557112   4602.4
+                                                  94
+25   Buy    200   11364.24023   5   199.0557112   1097.1
+                                                  94
+26   Buy    200   11370.95996   5   199.6919693   1527.6
+                                                  18
+26   Buy    200   11370.95996   5   199.6919693   4602.1
+                                                  86
+26   Sell   200   11370.95996   0   200           1097.1
+                                                  94
+27   Buy    200   11805         5   207.9329802   1535.5
+                                                  51
+27   Buy    200   11805         5   207.9329802   4610.1
+                                                  19
+27   Buy    200   11805         5   207.9329802   1105.1
+                                                  27
+28   Sell   200   11662.79004   0   200           1735.5
+                                                  51
+28   Sell   200   11662.79004   0   200           4810.1
+                                                  19
+28   Buy    200   11662.79004   5   202.2109671   1107.3
+                                                  37
+29   Buy    200   11984.51953   5   212.784811    1748.3
+                                                  35
+29   Sell   200   11984.51953   0   200           5010.1
+                                                  19
+29   Sell   200   11984.51953   0   200           1107.3
+                                                  37
+30   Sell   200   11418.15039   0   200           1948.3
+                                                  35
+30   Sell   200   11418.15039   0   200           5210.1
+                                                  19
+30   Buy    200   11418.15039   5   199.7098344   1107.0
+                                                  47
+
+                                                       57
+31   Buy    200   11388.5       5   194.0011775   1942.3
+                                                  37
+31   Buy    200   11388.5       5   194.0011775   5204.1
+                                                  2
+31   Sell   200   11388.5       0   200           1107.0
+                                                  47
+32   Buy    200   11354.62012   5   187.1980636   1929.5
+                                                  35
+32   Buy    200   11354.62012   5   187.1980636   5191.3
+                                                  18
+32   Sell   200   11354.62012   0   200           1107.0
+                                                  47
+33   Buy    200   11535.26953   5   190.9593162   1920.4
+                                                  94
+33   Buy    200   11535.26953   5   190.9593162   5182.2
+                                                  78
+33   Sell   200   11535.26953   0   200           1107.0
+                                                  47
+34   Sell   200   11264.4502    0   200           2120.4
+                                                  94
+34   Buy    200   11264.4502    5   187.8275509   5170.1
+                                                  05
+34   Buy    200   11264.4502    5   187.8275509   1094.8
+                                                  75
+35   Buy    200   11434.74023   5   185.6756143   2106.1
+                                                  7
+35   Buy    200   11434.74023   5   185.6756143   5155.7
+                                                  81
+35   Sell   200   11434.74023   0   200           1094.8
+                                                  75
+36   Sell   200   11740.65039   0   200           2306.1
+                                                  7
+36   Buy    200   11740.65039   5   195.4701376   5151.2
+                                                  51
+36   Buy    200   11740.65039   5   195.4701376   1090.3
+                                                  45
+37   Buy    200   12131.12988   5   201.156747    2307.3
+                                                  26
+37   Buy    200   12131.12988   5   201.156747    5152.4
+                                                  08
+37   Buy    200   12131.12988   5   201.156747    1091.5
+                                                  02
+38   Sell   200   12081.38965   0   200           2507.3
+                                                  26
+38   Sell   200   12081.38965   0   200           5352.4
+                                                  08
+38   Buy    200   12081.38965   5   198.4584962   1089.9
+                                                  6
+39   Buy    200   11994.45996   5   198.4807625   2505.8
+                                                  07
+39   Buy    200   11994.45996   5   198.4807625   5350.8
+                                                  88
+39   Sell   200   11994.45996   0   200           1089.9
+                                                  6
+
+                                                       58
+40   Sell   200   12316.90039   0   200           2705.8
+                                                  07
+40   Buy    200   12316.90039   5   209.5739134   5360.4
+                                                  62
+40   Sell   200   12316.90039   0   200           1089.9
+                                                  6
+41   Buy    200   12012.73047   5   211.86437     2717.6
+                                                  71
+41   Sell   200   12012.73047   0   200           5560.4
+                                                  62
+41   Buy    200   12012.73047   5   211.86437     1101.8
+                                                  25
+42   Sell   200   12061.37012   0   200           2917.6
+                                                  71
+42   Sell   200   12061.37012   0   200           5760.4
+                                                  62
+42   Sell   200   12061.37012   0   200           1101.8
+                                                  25
+43   Buy    200   12175.23047   5   224.8769371   2942.5
+                                                  48
+43   Sell   200   12175.23047   0   200           5960.4
+                                                  62
+43   Buy    200   12175.23047   5   224.8769371   1126.7
+                                                  02
+44   Sell   200   12086.26953   0   200           3142.5
+                                                  48
+44   Sell   200   12086.26953   0   200           6160.4
+                                                  62
+44   Buy    200   12086.26953   5   217.7872919   1144.4
+                                                  89
+45   Buy    200   11754.23047   5   220.8175933   3163.3
+                                                  66
+45   Sell   200   11754.23047   0   200           6360.4
+                                                  62
+45   Sell   200   11754.23047   0   200           1144.4
+                                                  89
+46   Buy    200   11340.01953   5   210.0324576   3173.3
+                                                  98
+46   Sell   200   11340.01953   0   200           6560.4
+                                                  62
+46   Sell   200   11340.01953   0   200           1144.4
+                                                  89
+47   Buy    200   10809.23047   5   195.3010698   3168.6
+                                                  99
+47   Sell   200   10809.23047   0   200           6760.4
+                                                  62
+47   Sell   200   10809.23047   0   200           1144.4
+                                                  89
+48   Buy    200   10828.34961   5   195.9336137   3164.6
+                                                  33
+48   Buy    200   10828.34961   5   195.9336137   6756.3
+                                                  96
+48   Sell   200   10828.34961   0   200           1144.4
+                                                  89
+
+                                                       59
+49   Buy    200   11099.15039   5   197.6310936   3162.2
+                                                  64
+49   Buy    200   11099.15039   5   197.6310936   6754.0
+                                                  27
+49   Buy    200   11099.15039   5   197.6310936   1142.1
+                                                  2
+50   Buy    200   10646.09961   5   183.4329432   3145.6
+                                                  97
+50   Buy    200   10646.09961   5   183.4329432   6737.4
+                                                  6
+50   Buy    200   10646.09961   5   183.4329432   1125.5
+                                                  53
+51   Buy    200   10798.34961   5   187.3973351   3133.0
+                                                  94
+51   Buy    200   10798.34961   5   187.3973351   6724.8
+                                                  57
+51   Sell   200   10798.34961   0   200           1125.5
+                                                  53
+52   Buy    200   11069.29981   5   197.9924012   3131.0
+                                                  87
+52   Buy    200   11069.29981   5   197.9924012   6722.8
+                                                  5
+52   Buy    200   11069.29981   5   197.9924012   1123.5
+                                                  45
+53   Buy    200   11053.08008   5   197.7668491   3128.8
+                                                  54
+53   Buy    200   11053.08008   5   197.7668491   6720.6
+                                                  17
+53   Buy    200   11053.08008   5   197.7668491   1121.3
+                                                  12
+54   Buy    200   11232.19043   5   203.6894549   3132.5
+                                                  43
+54   Buy    200   11232.19043   5   203.6894549   6724.3
+                                                  06
+54   Sell   200   11232.19043   0   200           1121.3
+                                                  12
+55   Buy    200   11607.62012   5   208.6228791   3141.1
+                                                  66
+55   Sell   200   11607.62012   0   200           6924.3
+                                                  06
+55   Buy    200   11607.62012   5   208.6228791   1129.9
+                                                  35
+56   Sell   200   11524.54981   0   200           3341.1
+                                                  66
+56   Sell   200   11524.54981   0   200           7124.3
+                                                  06
+56   Buy    200   11524.54981   5   203.5736668   1133.5
+                                                  09
+57   Buy    200   11181.54004   5   196.8260525   3337.9
+                                                  92
+57   Sell   200   11181.54004   0   200           7324.3
+                                                  06
+57   Sell   200   11181.54004   0   200           1133.5
+                                                  09
+
+                                                       60
+58   Buy    200   11177.88965   5   192.3681848   3330.3
+                                                  6
+58   Buy    200   11177.88965   5   192.3681848   7316.6
+                                                  74
+58   Sell   200   11177.88965   0   200           1133.5
+                                                  09
+59   Buy    200   11028.74023   5   189.5736451   3319.9
+                                                  34
+59   Buy    200   11028.74023   5   189.5736451   7306.2
+                                                  48
+59   Sell   200   11028.74023   0   200           1133.5
+                                                  09
+60   Buy    200   11127.84961   5   195.695795    3315.6
+                                                  3
+60   Buy    200   11127.84961   5   195.695795    7301.9
+                                                  44
+60   Sell   200   11127.84961   0   200           1133.5
+                                                  09
+61   Buy    200   11322.24023   5   201.0210589   3316.6
+                                                  51
+61   Buy    200   11322.24023   5   201.0210589   7302.9
+                                                  65
+61   Buy    200   11322.24023   5   201.0210589   1134.5
+                                                  3
+62   Buy    200   11361.84961   5   202.0318954   3318.6
+                                                  83
+62   Sell   200   11361.84961   0   200           7502.9
+                                                  65
+62   Buy    200   11361.84961   5   202.0318954   1136.5
+                                                  62
+63   Buy    200   11621.34961   5   206.5799114   3325.2
+                                                  63
+63   Sell   200   11621.34961   0   200           7702.9
+                                                  65
+63   Buy    200   11621.34961   5   206.5799114   1143.1
+                                                  42
+64   Buy    200   11635.30957   5   203.193904    3328.4
+                                                  57
+64   Sell   200   11635.30957   0   200           7902.9
+                                                  65
+64   Buy    200   11635.30957   5   203.193904    1146.3
+                                                  35
+65   Buy    200   11372.59961   5   200.2209463   3328.6
+                                                  77
+65   Sell   200   11372.59961   0   200           8102.9
+                                                  65
+65   Buy    200   11372.59961   5   200.2209463   1146.5
+                                                  56
+66   Sell   200   11264.73047   0   200           3528.6
+                                                  77
+66   Sell   200   11264.73047   0   200           8302.9
+                                                  65
+66   Sell   200   11264.73047   0   200           1146.5
+                                                  56
+
+                                                       61
+67   Buy    200   11247.58008   5   189.0722909   3517.7
+                                                  5
+67   Buy    200   11247.58008   5   189.0722909   8292.0
+                                                  37
+67   Sell   200   11247.58008   0   200           1146.5
+                                                  56
+68   Buy    200   11251.19043   5   186.5929346   3504.3
+                                                  43
+68   Buy    200   11251.19043   5   186.5929346   8278.6
+                                                  3
+68   Sell   200   11251.19043   0   200           1146.5
+                                                  56
+69   Buy    200   11452.41992   5   193.5493177   3497.8
+                                                  92
+69   Buy    200   11452.41992   5   193.5493177   8272.1
+                                                  79
+69   Buy    200   11452.41992   5   193.5493177   1140.1
+                                                  06
+70   Buy    200   11360.04981   5   192.8264117   3490.7
+                                                  18
+70   Buy    200   11360.04981   5   192.8264117   8265.0
+                                                  06
+70   Buy    200   11360.04981   5   192.8264117   1132.9
+                                                  32
+71   Buy    200   11713.15039   5   202.6046125   3493.3
+                                                  23
+71   Buy    200   11713.15039   5   202.6046125   8267.6
+                                                  1
+71   Sell   200   11713.15039   0   200           1132.9
+                                                  32
+72   Buy    200   11897.65039   5   197.7598932   3491.0
+                                                  83
+72   Sell   200   11897.65039   0   200           8467.6
+                                                  1
+72   Buy    200   11897.65039   5   197.7598932   1130.6
+                                                  92
+73   Buy    200   12059.61035   5   198.306619    3489.3
+                                                  9
+73   Buy    200   12059.61035   5   198.306619    8465.9
+                                                  17
+73   Buy    200   12059.61035   5   198.306619    1128.9
+                                                  99
+74   Buy    200   11834.11035   5   191.0161572   3480.4
+                                                  06
+74   Buy    200   11834.11035   5   191.0161572   8456.9
+                                                  33
+74   Buy    200   11834.11035   5   191.0161572   1120.0
+                                                  15
+75   Buy    200   11782.66992   5   190.5196625   3470.9
+                                                  25
+75   Buy    200   11782.66992   5   190.5196625   8447.4
+                                                  53
+75   Sell   200   11782.66992   0   200           1120.0
+                                                  15
+
+                                                       62
+76   Sell   200   11562.57031   0   200           3670.9
+                                                  25
+76   Buy    200   11562.57031   5   187.2669083   8434.7
+                                                  2
+76   Sell   200   11562.57031   0   200           1120.0
+                                                  15
+77   Buy    200   12032.41992   5   189.9631797   3660.8
+                                                  89
+77   Buy    200   12032.41992   5   189.9631797   8424.6
+                                                  83
+77   Sell   200   12032.41992   0   200           1120.0
+                                                  15
+78   Buy    200   12162.58984   5   191.2269687   3652.1
+                                                  15
+78   Buy    200   12162.58984   5   191.2269687   8415.9
+                                                  1
+78   Buy    200   12162.58984   5   191.2269687   1111.2
+                                                  42
+79   Buy    200   12390.69043   5   195.783396    3647.8
+                                                  99
+79   Buy    200   12390.69043   5   195.783396    8411.6
+                                                  93
+79   Buy    200   12390.69043   5   195.783396    1107.0
+                                                  25
+80   Buy    200   12368.98047   5   195.6426847   3643.5
+                                                  42
+80   Buy    200   12368.98047   5   195.6426847   8407.3
+                                                  36
+80   Buy    200   12368.98047   5   195.6426847   1102.6
+                                                  68
+81   Buy    200   12348.75977   5   197.6761527   3641.2
+                                                  18
+81   Buy    200   12348.75977   5   197.6761527   8405.0
+                                                  12
+81   Sell   200   12348.75977   0   200           1102.6
+                                                  68
+82   Sell   200   12668.16016   0   200           3841.2
+                                                  18
+82   Buy    200   12668.16016   5   197.0961874   8402.1
+                                                  08
+82   Sell   200   12668.16016   0   200           1102.6
+                                                  68
+83   Buy    200   12720.58008   5   199.0715102   3840.2
+                                                  89
+83   Buy    200   12720.58008   5   199.0715102   8401.1
+                                                  8
+83   Buy    200   12720.58008   5   199.0715102   1101.7
+                                                  39
+84   Sell   200   12657.54981   0   200           4040.2
+                                                  89
+84   Buy    200   12657.54981   5   194.0272103   8395.2
+                                                  07
+84   Buy    200   12657.54981   5   194.0272103   1095.7
+                                                  67
+
+                                                       63
+85   Buy    200   12644.45996   5   192.6327238   4032.9
+                                                  22
+85   Buy    200   12644.45996   5   192.6327238   8387.8
+                                                  4
+85   Sell   200   12644.45996   0   200           1095.7
+                                                  67
+86   Sell   200   12493.92969   0   200           4232.9
+                                                  22
+86   Buy    200   12493.92969   5   190.7098981   8378.5
+                                                  5
+86   Sell   200   12493.92969   0   200           1095.7
+                                                  67
+87   Buy    200   12854.79981   5   198.7120183   4231.6
+                                                  34
+87   Buy    200   12854.79981   5   198.7120183   8377.2
+                                                  62
+87   Sell   200   12854.79981   0   200           1095.7
+                                                  67
+88   Sell   200   12779.91016   0   200           4431.6
+                                                  34
+88   Buy    200   12779.91016   5   197.1396093   8374.4
+                                                  01
+88   Buy    200   12779.91016   5   197.1396093   1092.9
+                                                  06
+89   Buy    200   13047.19043   5   205.3831529   4437.0
+                                                  17
+89   Buy    200   13047.19043   5   205.3831529   8379.7
+                                                  84
+89   Sell   200   13047.19043   0   200           1092.9
+                                                  06
+90   Sell   200   13128.04981   0   200           4637.0
+                                                  17
+90   Sell   200   13128.04981   0   200           8579.7
+                                                  84
+90   Buy    200   13128.04981   5   212.0579131   1104.9
+                                                  64
+91   Buy    200   13102.54981   5   211.6506346   4648.6
+                                                  68
+91   Sell   200   13102.54981   0   200           8779.7
+                                                  84
+91   Buy    200   13102.54981   5   211.6506346   1116.6
+                                                  15
+92   Sell   200   12938.12012   0   200           4848.6
+                                                  68
+92   Sell   200   12938.12012   0   200           8979.7
+                                                  84
+92   Sell   200   12938.12012   0   200           1116.6
+                                                  15
+93   Buy    200   12965.33984   5   205.1596386   4853.8
+                                                  27
+93   Sell   200   12965.33984   0   200           9179.7
+                                                  84
+93   Sell   200   12965.33984   0   200           1116.6
+                                                  15
+
+                                                       64
+94    Buy    200   12705.21973   5   209.2822142   4863.1
+                                                   1
+94    Sell   200   12705.21973   0   200           9379.7
+                                                   84
+94    Buy    200   12705.21973   5   209.2822142   1125.8
+                                                   97
+95    Buy    200   12381.57031   5   206.056089    4869.1
+                                                   66
+95    Sell   200   12381.57031   0   200           9579.7
+                                                   84
+95    Sell   200   12381.57031   0   200           1125.8
+                                                   97
+96    Buy    200   12381.29981   5   208.3843188   4877.5
+                                                   5
+96    Sell   200   12381.29981   0   200           9779.7
+                                                   84
+96    Sell   200   12381.29981   0   200           1125.8
+                                                   97
+97    Buy    200   12431.53027   5   210.4150246   4887.9
+                                                   65
+97    Sell   200   12431.53027   0   200           9979.7
+                                                   84
+97    Sell   200   12431.53027   0   200           1125.8
+                                                   97
+98    Buy    200   12639.26953   5   214.4952098   4902.4
+                                                   6
+98    Sell   200   12639.26953   0   200           10179.
+                                                   78
+98    Buy    200   12639.26953   5   214.4952098   1140.3
+                                                   92
+99    Buy    200   12141.70996   5   208.7843821   4911.2
+                                                   45
+99    Sell   200   12141.70996   0   200           10379.
+                                                   78
+99    Buy    200   12141.70996   5   208.7843821   1149.1
+                                                   77
+100   Buy    200   12017.66992   5   208.1899254   4919.4
+                                                   35
+100   Sell   200   12017.66992   0   200           10579.
+                                                   78
+100   Sell   200   12017.66992   0   200           1149.1
+                                                   77
+101   Buy    200   11883.13965   5   201.5474903   4920.9
+                                                   82
+101   Sell   200   11883.13965   0   200           10779.
+                                                   78
+101   Sell   200   11883.13965   0   200           1149.1
+                                                   77
+102   Buy    200   11816.2002    5   199.2256081   4920.2
+                                                   08
+102   Sell   200   11816.2002    0   200           10979.
+                                                   78
+102   Sell   200   11816.2002    0   200           1149.1
+                                                   77
+
+                                                        65
+103   Buy    200   11785.12988   5   194.5975673   4914.8
+                                                   05
+103   Buy    200   11785.12988   5   194.5975673   10974.
+                                                   38
+103   Sell   200   11785.12988   0   200           1149.1
+                                                   77
+104   Buy    200   11630.86035   5   189.6375582   4904.4
+                                                   43
+104   Buy    200   11630.86035   5   189.6375582   10964.
+                                                   02
+104   Sell   200   11630.86035   0   200           1149.1
+                                                   77
+105   Buy    200   11544.91016   5   198.4757877   4902.9
+                                                   19
+105   Buy    200   11544.91016   5   198.4757877   10962.
+                                                   5
+105   Sell   200   11544.91016   0   200           1149.1
+                                                   77
+106   Buy    200   11791.90039   5   201.2324689   4904.1
+                                                   51
+106   Buy    200   11791.90039   5   201.2324689   10963.
+                                                   73
+106   Sell   200   11791.90039   0   200           1149.1
+                                                   77
+107   Buy    200   11862.12988   5   205.3628786   4909.5
+                                                   14
+107   Sell   200   11862.12988   0   200           11163.
+                                                   73
+107   Buy    200   11862.12988   5   205.3628786   1154.5
+                                                   39
+108   Sell   200   12112.30957   0   200           5109.5
+                                                   14
+108   Sell   200   12112.30957   0   200           11363.
+                                                   73
+108   Buy    200   12112.30957   5   211.5982872   1166.1
+                                                   38
+109   Buy    200   12266.41016   5   212.6812204   5122.1
+                                                   95
+109   Sell   200   12266.41016   0   200           11563.
+                                                   73
+109   Buy    200   12266.41016   5   212.6812204   1178.8
+                                                   19
+110   Sell   200   11633.57031   0   200           5322.1
+                                                   95
+110   Sell   200   11633.57031   0   200           11763.
+                                                   73
+110   Buy    200   11633.57031   5   203.6502337   1182.4
+                                                   69
+111   Buy    200   11719.67969   5   208.9034007   5331.0
+                                                   99
+111   Sell   200   11719.67969   0   200           11963.
+                                                   73
+111   Sell   200   11719.67969   0   200           1182.4
+                                                   69
+
+                                                        66
+112   Sell   200   11552.36035   0   200           5531.0
+                                                   99
+112   Sell   200   11552.36035   0   200           12163.
+                                                   73
+112   Buy    200   11552.36035   5   208.7749008   1191.2
+                                                   44
+113   Buy    200   11448.40039   5   210.6822683   5541.7
+                                                   81
+113   Sell   200   11448.40039   0   200           12363.
+                                                   73
+113   Sell   200   11448.40039   0   200           1191.2
+                                                   44
+114   Buy    200   11535.01953   5   213.5537357   5555.3
+                                                   35
+114   Sell   200   11535.01953   0   200           12563.
+                                                   73
+114   Sell   200   11535.01953   0   200           1191.2
+                                                   44
+115   Buy    200   11425.04981   5   210.9986575   5566.3
+                                                   33
+115   Sell   200   11425.04981   0   200           12763.
+                                                   73
+115   Buy    200   11425.04981   5   210.9986575   1202.2
+                                                   43
+116   Buy    200   11220.19043   5   203.0502403   5569.3
+                                                   83
+116   Sell   200   11220.19043   0   200           12963.
+                                                   73
+116   Sell   200   11220.19043   0   200           1202.2
+                                                   43
+117   Buy    200   11066.80957   5   206.1336345   5575.5
+                                                   17
+117   Sell   200   11066.80957   0   200           13163.
+                                                   73
+117   Sell   200   11066.80957   0   200           1202.2
+                                                   43
+118   Buy    200   10867.92969   5   205.5279892   5581.0
+                                                   45
+118   Sell   200   10867.92969   0   200           13363.
+                                                   73
+118   Sell   200   10867.92969   0   200           1202.2
+                                                   43
+119   Buy    200   10802.91992   5   199.7686682   5580.8
+                                                   14
+119   Sell   200   10802.91992   0   200           13563.
+                                                   73
+119   Sell   200   10802.91992   0   200           1202.2
+                                                   43
+120   Buy    200   10829.5       5   193.7921005   5574.6
+                                                   06
+120   Buy    200   10829.5       5   193.7921005   13557.
+                                                   52
+120   Sell   200   10829.5       0   200           1202.2
+                                                   43
+
+                                                        67
+121   Buy   200   11051.63965   5   198.2598774   5572.8
+                                                  66
+121   Buy   200   11051.63965   5   198.2598774   13555.
+                                                  78
+121   Buy   200   11051.63965   5   198.2598774   1200.5
+                                                  03
+
+
+
+
+                                                       68
+

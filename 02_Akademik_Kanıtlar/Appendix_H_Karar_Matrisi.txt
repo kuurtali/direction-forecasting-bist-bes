@@ -1,0 +1,33 @@
+﻿# APPENDIX H: STRATEJIK MODEL DEGERLENDIRME MATRISI
+
+## H.1 Nihai Sampiyon Model Tablosu
+Bu tablo, juri savunmasi sirasinda her bir varlik icin 'Hangi model neden secilmeli?' sorusuna verilecek nihai akademik cevaptir.
+
+| Varlik Sinifi | Sampiyon Model | Balanced Acc. | Stratejik Savunma Argumani |
+| :--- | :--- | :--- | :--- |
+| THYAO (Blue Chip) | LSTM (hist_tech) | 58.71% | BIST rejim degisikligine (Concept Drift) ragmen %50 baseline'i koruyan en dengeli model. |
+| ALZ (Dusuk Risk) | ARIMA (Baseline) | 50.00% | Sabit yukselis trendinde DL modellerinin MC riskini kanitlayan kontrol grubudur. |
+| AZS (Orta Risk) | CNN (Technical) | 76.70% | Konvolusyonel katmanlarin periyodik piyasa dongulerini yakalama ustunlugunu kanitlar. |
+| AMZ (Yuksek Risk) | LSTM (Full Set) | 84.86% | YILDIZ BULGU: Naive baseline'i istatistiksel olarak geride birakan, projenin en guclu kaniti. |
+
+## H.2 Neden AMZ'de LSTM, CNN'den Ustun?
+AMZ fonu yuksek volatilite ve dusuk otokorelasyon icerir. LSTM'in 'Long-Term Memory' (Uzun Vadeli Hafiza) yetenegi, CNN'in yerel filtreleme mantigina gore bu tur karmasik verilerde %23 daha fazla 'Specificity' (Dusus Yakalama) skoru uretmistir.
+
+## H.3 'Accuracy Illuzyonu' Esigi
+ALZ fonunun %100 basarisi bir 'basari' olarak degil, akademik bir 'anomali tespiti' olarak sunulmustur. Bu durust yaklasim, calismanin bilimsel tarafsizligini (Unbiased Evaluation) kanitlar.
+
+## H.4 Tum Kritik Sayilar Ozet
+
+| Model | Varlik | Donem | Best Acc | MC Sayi | Sens | Spec | p-val |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| LSTM | THYAO | 2018-26 | 57.56% | 12/36 | 57.42% | 60.00% | p=0.0016 |
+| CNN | THYAO | 2018-26 | 53.97% | 9/36 | 75.80% | 33.10% | p=0.0371 |
+| ARIMA | THYAO | 2018-26 | 55.78% | N/A | - | - | N/A |
+| Naive | THYAO | 2018-26 | 79.73%* | N/A | - | - | - |
+| LSTM (non-MC) | AZS | 2021-26 | 68.89% | 13/27 | 79.17% | 66.67% | p=0.0026 |
+| CNN (non-MC) | AZS | 2021-26 | 75.56% | 9/27 | 90.91% | 62.50% | p=0.0002 |
+| LSTM (non-MC) | AMZ | 2021-26 | 80.21% | 10/27 | 84.00% | 85.71% | p=0.0001 |
+| CNN (non-MC) | AMZ | 2021-26 | 74.36% | 9/27 | 90.00% | 33.33% | p=0.0047 |
+| ALZ (tum) | ALZ | 2021-26 | ~100% | 27/27 | 100% | NA | - |
+
+Not: THYAO ARIMA satirindaki p-val=N/A; kanonik `02_Akademik_Kanıtlar/.../ARIMA_sonuclar.csv` yalnizca Test_Acc uretir, P_Value sutunu yoktur (FINAL_KANIT_RAPORU bonus tablo dipnotu ile ayni kural).

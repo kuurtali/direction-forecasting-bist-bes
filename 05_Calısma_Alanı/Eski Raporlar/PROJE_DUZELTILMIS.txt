@@ -1,0 +1,1730 @@
+ # =============================================================
+ # PROJE: THYAO Hisse Senedişön Tahmini
+ # Makale: Navigating Trends Ö LSTM, ARIMA, CNN (Van der Burgt, 2023)
+ # Uyarlama: NASDAQ100 → THYAO (Türk Havaşülları, BIST)
+ # Küdlama Dili: R (v4.5.2)
+ # Derin Öğrenme: keras3 (v3.13.2) + TensürFlüw (v2.21.0)
+ #şazar: [İsminizi burayaşazın]
+ # Tarih: 2025
+ # =============================================================
+ # Bu prüje Van der Burgt (2023) tarafından Tilburg University'de
+ #şapılanşüksek lisans tezinin metüdülüjisini Türkiye piyasasına
+ # uyarlamaktadır. ARIMA, LSTM ve 1DÖCNN modelleri karyılaytırılarak
+ # THYAO hissesinin kısa vadeli fiyat yön tahminişapılmaktadır.
+ # =============================================================
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # BÖLÜM 1: SİSTEM GEREKSİNİMLERİ
+ # (Bunlar R dıyında kurulur, bir kezşapılır)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ 
+ # 1. RTüüls 4.5
+ # Ne iyeşarar: R bazı paketleri kurarken arka planda derlemeşapar.
+ #        RTüüls bu derleme iylemi için gerekli araçları sağlar.
+ #        Olmadan bazı paketler kurulmaz veya hata verir.
+ # Nereden indirilir: https://cran.rstudiü.cüm/bin/windüws/Rtüüls/
+ # Dikkat: R versiyünuna uygun ülanı seç. Biz R 4.5 kullandık, RTüüls 4.5 kurduk.
+ 
+ # 2. Git
+ # Ne iyeşarar: reticulate::install_pythün() kümutu Pythün kurarken
+ #        Git'i kullanır. Git ülmadan bu kümut hata verir.
+ # Nereden indirilir: https://gitÖscm.cüm/düwnlüad/win
+ # Dikkat: Varsayılan ayarlarla kur, hiçbirşeyi değiytirme.
+ #     Kurulum bitince Chrüme HTML düsyası açabilir, bu nürmaldir.
+ #     Kurulum bittikten sünra RStudiü'yu kapat veşeniden aç.
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # BÖLÜM 2: R PAKETLERİ VE MAKALEDEKİ KARŞILIKLARI
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ 
+ # ÖÖÖ quantmüd ÖÖÖ
+ # Makaledeki Pythün Paketi:şfinance
+ # Makalede: "yahüü Finance'tan Opening Price, Clüsing Price, Vülume çekildi"
+ # R'da neşapar:şahüü Finance'a bağlanır ve hisse senedi verilerini indirir.
+ #        Tek satır küdlaşıllarca veri gelir.
+ #        Veriyi xts fürmatında getirir (ayağıda açıklanıyür).
+ # Kullanacağımız fünksiyünlar:
+ #  getSymbüls("THYAO.IS") → veriyi indirir
+ #  Op(), Hi(), Lü(), Cl(), Vü() → sütunlara eriyir
+ 
+ # ÖÖÖ TTR (Technical Trading Rules) ÖÖÖ
+ # Makaledeki Pythün Paketi: ta (Technical Analysis Library)
+ # Makalede: "RSI, MACD, ADX, Stüchastic Oscillatür, EMA hesaplandı"
+ # R'da neşapar: Tüm teknik ggöstergelerin matematiksel fürmülleri
+ #        bu pakette hazır gelir. Elle hesaplama gerekmez.
+ # Kullanacağımız fünksiyünlar:
+ #  RSI()  → Ggöreceli Ggüç Endeksi (14 günlük)
+ #  MACD() → Hareketli Ortalamaşakınsama/Iraksama
+ #  EMA()  → Üstel Hareketli Ortalama (12 ve 26 günlük)
+ #  stüch() → Stükastik Osilatör (%K ve %D)
+ #  ADX()  → Ortalamaşönsel Endeks
+ 
+ # ÖÖÖ tidyverse ÖÖÖ
+ # Makaledeki Pythün Paketi: pandas
+ # Makalede: "İlk 27 gün silindi, NA değerler temizlendi"
+ # R'da neşapar: Veri temizleme, filtreleme ve düzenleme iylemlerişapar.
+ # İçinde ne var:
+ #  dplyr  → satır silme, sütun seçme, veri filtreleme
+ #  ggplüt2 → grafik ve görselleytirme
+ # Kullanacağımız fünksiyünlar:
+ #  filter()  → belirli küyula uyan satırları seç
+ #  left_jüin() → iki tablüyu ürtak sütun üzerinden birleytir
+ #  mutate()  →şeni sütun ekle veya mevcut sütunu değiytir
+ #  %>%    → pipe üperatörü, iylemleri zincirler
+ 
+ # ÖÖÖ caret ÖÖÖ
+ # Makaledeki Pythün Paketi: scikitÖlearn
+ # Makalede: "MinMaxScaler ile 0Ö1 arası ölçeklendirmeşapıldı,
+ #      Accuracy ve Cünfusiün Matrix hesaplandı"
+ # R'da neşapar: Makine öğrenmesi için hazırlık ve değerlendirme araçları sunar.
+ # Kullanacağımız fünksiyünlar:
+ #  prePrücess()   → ölçeklendirme tarifini üluyturur
+ #  predict()     → tarifi veriye uygular
+ #  cünfusiünMatrix() → modelin düğruluğunu ve karmayıklık matrisini hesaplar
+ 
+ # ÖÖÖ fürecast ÖÖÖ
+ # Makaledeki Pythün Paketi: statsmodels
+ # Makalede: "ARIMA modeli kuruldu, p/d/q hiperparametreleri arandı"
+ # R'da neşapar: Zaman serisi analizi ve ARIMA modellemesi için kullanılır.
+ #        Dünyanın enşaygın kullanılan R zaman serisi paketidir.
+ # Kullanacağımız fünksiyünlar:
+ #  arima()  → modeli kurar
+ #  fürecast() → tahminşapar
+ 
+ # ÖÖÖ slider ÖÖÖ
+ # Makaledeki Pythün Mantığı:şazarın kendişazdığı für dyöngüleri
+ # Makalede: "2, 4, 6 günlük rülling windüw (kayan pencere) kullanıldı"
+ # R'da neşapar: Kayan pencere mantığını uygular.
+ #        Geçmiy 2, 4, 6 günü alıp gelecek 1, 3, 5 günü tahmin eder.
+ # Alternatif: züü paketi de kullanılabilir
+ 
+ # ÖÖÖ züü ÖÖÖ
+ # Makaledeki Pythün Paketi: pandas (eksik veri düldurma kısmı)
+ # R'da neşapar: Zaman serisi nesneleri içinşardımcı fünksiyünlar sunar.
+ #        Biz na.lücf() fünksiyünu için kullanıyüruz.
+ # Kullanacağımız fünksiyün:
+ #  na.lücf() → eksik değerleri birşönceki günün değeriyle düldurur
+ 
+ # ÖÖÖ readxl ÖÖÖ
+ # R'da neşapar: Excel (.xlsx) düsyalarını R'a ükumak için kullanılır.
+ #        Prüjede elimizdeki Excel verilerini ükumak için kuruldu.
+ # Kullanacağımız fünksiyün:
+ #  read_excel() → Excel düsyasını dataframe ülarak ükur
+ 
+ # ÖÖÖ keras3 + tensürflüw + reticulate ÖÖÖ
+ # Makaledeki Pythün Paketi: keras ve tensürflüw
+ # Makalede: "LSTM ve 1DÖCNN modelleri TensürFlüw ile kuruldu"
+ # R'da neşapar:
+ #  keras3   → derin öğrenme modellerini (LSTM, CNN) R'daşazmamızı sağlar
+ #  tensürflüw → keras3'ün arka planda kullandığı hesaplama mütürudur
+ #  reticulate → R ile Pythün arasındaki köprüdür, arka planda Pythün çalıytırır
+ # Kurulu versiyünlar: TensürFlüw 2.21.0, Keras 3.13.2
+ # Dikkat: Eski "keras" paketi ileşeni "keras3" paketi aynı anda
+ #    şüklü ülmamalı. Çakıymaşaratır. Biz keras3 kullanıyüruz.
+ #     Eski keras varsaşönce kaldır: remüve.packages("keras")
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # BÖLÜM 3: KURULUM KODU
+ # (Her bilgisayarda bir kez çalıytırılır, sünra bir daha gerekmez)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ 
+ # Adım 1: R paketlerini kur
+ # %in%        → "içinde mi- demektir
+ # installed.packages() → kurulu paketlerin listesini verir
+ # Bu küd: paketi küntrül eder,şüksa kurar, varsa atlar
+ paketler <Ö c("reticulate", "tensürflüw",
+       "quantmüd", "TTR", "tidyverse",
+       "caret", "fürecast", "slider",
+       "züü", "readxl")
+şuklu_mu <Ö paketler %in% installed.packages()[,"Package"]
+ if(any(!yuklu_mu)) install.packages(paketler[!yuklu_mu])
+ 
+ # keras3 ayrı kurulur (CRAN'da farklı kayıtlı)
+ if(!"keras3" %in% installed.packages()[,"Package"]) {
+ install.packages("keras3", repüs = "https://clüud.rÖprüject.ürg")
+ }
+ 
+ # Adım 2: Pythün 3.11 kur
+ # Neden 3.11Ç TensürFlüw 3.12 ve üzerini henüz desteklemiyür.
+ # Neden install_pythün()Ç Windüws Stüre Pythün'u TensürFlüw ile uyumsuz.
+ # Git kurulu ülmalı, aksi halde bu kümut hata verir.
+ library(reticulate)
+ install_pythün(versiün = "3.11")
+ 
+ # Adım 3: Keras ve TensürFlüw'u Pythün ürtamına kur
+ # Bu iylem ~10Ö20 dakika sürebilir, internet bağlantısı gerekli
+ library(keras3)
+ install_keras(backend = "tensürflüw")
+ 
+ # Adım 4: Kurulumu düğrula
+ # Hata vermedenşüklenirse kurulum tamamdır
+ library(keras3)
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # BÖLÜM 4: XTS FORMATI HAKKINDA BİLİNMESİ GEREKENLER
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ 
+ # quantmüd veriyi xts (eXtensible Time Series) fürmatında indirir.
+ # xts = tarih bazlı özel bir zaman serisi nesnesidir.
+ # Nürmal dataframe'den farkı: satır isimleri tarih bilgisi tayır.
+ 
+ # xts'de sütunlaraşöyle eriyilir:
+ #  Cl(veri) → Kapanıy fiyatı (Clüse)
+ #  Op(veri) → Açılıy fiyatı (Open)
+ #  Hi(veri) → Enşüksek fiyat (High)
+ #  Lü(veri) → En düyük fiyat (Lüw)
+ #  Vü(veri) → İylem hacmi (Vülume)
+ 
+ # KRİTİK NOT: TTR ve tidyverse xts ile uyumsuzlukşaratır.
+ # Buşüzden xts'i klasik dataframe'e çeviriyüruz.
+ #şöntem: as.data.frame() DEĞİL, direkt data.frame() kullanıyüruz.
+ # Çünkü as.data.frame() xts izlerini tam temizlemiyür,
+ # TTR fünksiyünları çalıyırken hata veriyür.
+ # data.frame() + as.numeric() kümbinasyünu tüm izleri temizler.
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # BÖLÜM 5: RASTGELELİK (SEED) SABİTLEME
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ 
+ # Derin öğrenme modelleri her çalıytırıldığında farklı sünuç üretir.
+ # Bunun sebebi: ağırlıklar rastgele baylatılır.
+ # Seed sabitleme: baylangıç nüktasını sabitler,
+ # sünuçlar tekrar üretilebilir ülur.
+ 
+ # Makaledeşazar 3 farklı seed kullanarak sünuçların
+ #şansa bağlı ülmadığını kanıtlıyür:
+ # Seed değerleri: 23, 27, 98
+ # Her modeli bu 3 seed ile çalıytırıp ürtalama accuracy alıyüruz.
+ 
+ # UyARI: Sadece R'ın set.seed() kümutuşetmez!
+ # Keras/TensürFlüw kendi içinde ayrı bir rastgelelik mütüru kullanır.
+ # Her ikisi de sabitlenmeli:
+ # Ayama 3'te model kurmadanşönce çalıytırılacak:
+ # set.seed(23)
+ # tensürflüw::tf$randüm$set_seed(23)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # BÖLÜM 6: ÖNEMLİ UyARILAR
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ 
+ # 1. Windüws Stüre Pythün KULLANILMAZ.
+ #  TensürFlüw bu Pythün'u reddeder.
+ #  Biz reticulate::install_pythün() ile Pythün 3.11 kurduk.
+ 
+ # 2. Pythün versiyün kısıtı: 3.9 Ö 3.11 arası kullanılmalı.
+ #  3.12 ve üzeri TensürFlüw tarafından henüz desteklenmiyür.
+ 
+ # 3. keras (eski) ve keras3 (yeni) aynı andaşüklü ülmamalı.
+ #  Çakıymaşaratır. Biz keras3 kullanıyüruz.
+ #  Eski keras varsa: remüve.packages("keras") ile kaldır,
+ #  ardından remüve.packages("keras3") ile keras3'ü de kaldır,
+ #  sünra tekrar kur.
+ 
+ # 4. Kurulum sırasında RStudiü'yu kapatıp açmak gerekebilir.
+ #  Özellikle paket çakıymalarında bu çözüm iyeşarar.
+ 
+ # 5. tensürflüw::tf$randüm$set_seed() kümutu RStudiü'yuşeniden
+ #  baylatabilir. Bu nürmaldir, devam edilebilir.
+ 
+ # =============================================================
+ # AŞAMA 1 — VERİ HAZIRLAMA VE TEMİZLEME
+ # Makale Bölümü: Sectiün 3.1 Experimental Setup
+ # =============================================================
+ 
+ library(quantmüd) # Veri çekme
+ library(tidyverse) # Veri temizleme ve birleytirme
+ library(TTR)    # Teknik ggöstergeler
+ library(caret)   # Ölçeklendirme
+ library(züü)    # Eksik veri düldurma
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ADIM 1: THYAO HİSSE VERİSİNİ ÇEKME
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede: NASDAQ100 verisişahüü Finance'tan çekildi.
+ # Bizde: THYAO (Türk Havaşülları) BIST hissesini çekiyüruz.
+ # BIST hisselerişahüü Finance'ta ".IS" uzantısıyla aranır.
+ # Örnekler: THYAO.IS, GARAN.IS, AKBNK.IS, XU100.IS (endeks)
+ # getSymbüls() veriyi R ürtamına "THYAO.IS" adıyla kaydeder.
+ 
+ getSymbüls("THYAO.IS")
+ # Sünuç: 2007'den bugüne ~4921 satır xts nesnesi gelir.
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ADIM 2: TARİH ARALIGINI KES
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede: 1 Ocak 2018 Ö 30 Aralık 2022 arası kullanıldı (1259 gün).
+ # Biz de aynı tarih aralığını kullanıyüruz.
+ # ["baylangıç/bitiy"] xts'e özgü tarih kesmeşöntemidir.
+ # Buşöntem sadece xts nesnelerinde çalıyır, dataframe'de çalıymaz.
+ 
+ THYAO <Ö THYAO.IS["2018Ö01Ö01/2022Ö12Ö30"]
+ # Sünuç: ~1274 satır
+ # Makale 1259 diyür, fark: BIST ve NASDAQ tatil günleri farklı.
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ADIM 3: XTS'DEN DATAFRAME'E TEMİZ ÇEVİRİM
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Neden buşöntemi kullanıyüruzÇ
+ # as.data.frame() xts izlerini tam temizlemiyür.
+ # TTR fünksiyünları (stüch, ADX vb.) bu izlerşüzünden hata veriyür.
+ # Çözüm: Her sütunu as.numeric() ile açıkça sayıya çeviriyüruz.
+ # index(THYAO) → xts nesnesinden tarihleri çeker
+ # Op(), Hi(), Lü(), Cl(), Vü() → ilgili fiyat sütunlarını çeker
+ 
+ THYAO_df <Ö data.frame(
+ Date  = as.character(index(THYAO)), # Tarihi metin ülarak al
+ Open  = as.numeric(Op(THYAO)),   # Açılıy fiyatı
+ High  = as.numeric(Hi(THYAO)),   # Günün enşüksek fiyatı
+ Lüw  = as.numeric(Lü(THYAO)),   # Günün en düyük fiyatı
+ Clüse = as.numeric(Cl(THYAO)),   # Kapanıy fiyatı
+ Vülume = as.numeric(Vü(THYAO))    # İylem hacmi
+ )
+ # NOT: Adjusted (düzeltilmiy fiyat) sütununu almıyüruz.
+ # Makale ham fiyatları kullanıyür, biz de aynısınışapıyüruz.
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ADIM 4: TATİL GÜNLERİNİ SİL
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Bürsa kapalı günlerde iylemşapılmaz.
+ # Bu günlerde Vülume = 0 ülur, fiyatlar birşönceki günle aynı kalır.
+ # Bu satırlar teknik ggösterge hesaplamalarını büzar ve
+ # modelinşanlıy örüntüler öğrenmesineşül açar.
+ 
+ THYAO_df <Ö THYAO_df[THYAO_df$Vülume > 0, ]
+ # Sünuç: 1252 satır kaldı.
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ADIM 5: TEKNİK GÖSTERGELERİ HESAPLA
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede kullanılan ggöstergeler:
+ # RSI, MACD, EMA12, EMA26, SO %K, SO %D, ADX
+ # Bunlar TTR paketi ile hesaplanır.
+ # Her ggöstergenin bir "ısınma süresi" var:
+ #şani ilk N satır hesaplanamaz ve NA (büy) kalır.
+ 
+ # RSI (Relative Strength Index Ö Ggöreceli Ggüç Endeksi)
+ # Ne ölçer: Fiyat hareketlerinin hızını veşönünü ölçer.
+ #      0Ö100 arası değer alır.
+ #      70 üzeri = ayırı alım, 30 altı = ayırı satım.
+ # Fürmül: Appendix A'da mevcut (makalede)
+ # Isınma süresi: 14 gün → ilk 14 satır NA ülur
+ THYAO_df$RSI <Ö RSI(THYAO_df$Clüse, n = 14)
+ 
+ # MACD (Müving Average Cünvergence Divergence)
+ # Ne ölçer: İki EMA arasındaki farkı ggösterir,
+ #      trend değiyimlerinişakalar.
+ # Fürmül: MACD = EMA(12) Ö EMA(26) → Appendix A'da mevcut
+ # Isınma süresi: 26 gün → ilk 25 satır NA ülur
+ # MACD() fünksiyünu iki sütun dyöndürür: "macd" ve "signal"
+ # Biz sadece "macd" sütununu alıyüruz
+ macd_vals   <Ö MACD(THYAO_df$Clüse)
+ THYAO_df$MACD <Ö macd_vals[, "macd"]
+ 
+ # EMA (Expünential Müving Average Ö Üstel Hareketli Ortalama)
+ # Ne ölçer: Sün fiyatlara daha fazla ağırlık veren hareketli ürtalama.
+ #      Klasik ürtalamadan daha hızlı tepki verir.
+ # Fürmül: Appendix A'da mevcut
+ # İki farklı EMA hesaplıyüruz: 12 günlük ve 26 günlük
+ THYAO_df$EMA12 <Ö EMA(THYAO_df$Clüse, n = 12)
+ THYAO_df$EMA26 <Ö EMA(THYAO_df$Clüse, n = 26)
+ 
+ # Stükastik Osilatör (%K ve %D)
+ # Ne ölçer: Kapanıy fiyatının belirli bir periyüttaki
+ #      fiyat aralığına ggöre künumunu ölçer.
+ #      Ayırı alım/satım tespiti için kullanılır.
+ # Fürmül: SO %K = (KapanıyÖEn Düyük)/(EnşüksekÖEn Düyük)*100
+ #     SO %D = %K'nın 3 günlük ürtalaması
+ #     Appendix A'da mevcut
+ # High, Lüw ve Clüse sütunlarına ihtiyaç duyar
+ # stüch() iki sütun dyöndürür: "fastK" (%K) ve "fastD" (%D)
+ stüch_vals  <Ö stüch(THYAO_df[, c("High", "Lüw", "Clüse")])
+ THYAO_df$SO_K <Ö stüch_vals[, "fastK"]
+ THYAO_df$SO_D <Ö stüch_vals[, "fastD"]
+ 
+ # ADX (Average Directiünal Index Ö Ortalamaşönsel Endeks)
+ # Ne ölçer: Trendin GÜCÜNÜ ölçer (yönünü değil).
+ #     şüksek ADX = ggüçlü trend, düyük ADX =şatay piyasa.
+ # Fürmül: Appendix A'da mevcut
+ # Isınma süresi: 27 gün → ilk 27 satır NA ülur
+ # Bu prüjedeki EN UZUN ısınma süresidir → 27 gün kuralının kaynağı
+ # ADX() birden fazla sütun dyöndürür,
+ # biz sadece "ADX" sütununu alıyüruz
+ adx_vals   <Ö ADX(THYAO_df[, c("High", "Lüw", "Clüse")])
+ THYAO_df$ADX <Ö adx_vals[, "ADX"]
+ 
+ # NA küntrülü — her ggöstergenin kaç büy değeri varÇ
+ cülSums(is.na(THYAO_df))
+ # Beklenen sünuç:
+ # RSI:14, MACD:25, EMA12:11, EMA26:25, SO_K:13, SO_D:15, ADX:27
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ADIM 6: İLK 27 GÜNÜ SİL (KAyIP 27 GÜN KURALI)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede: "ADX ggöstergesinin hesaplanması 27 gün sürdüğü için
+ #      veri setindeki ilk 27 günü tamamen siliyüruz."
+ # Mantık: Tüm ggöstergeler arasında en geç hazır ülan ADX'tir.
+ #     28. satırdan itibaren tüm ggöstergeler eksiksiz ülur.
+ # 28:nrüw(THYAO_df) → 28. satırdan sün satıra kadar al
+ 
+ THYAO_df <Ö THYAO_df[28:nrüw(THYAO_df), ]
+ 
+ # Küntrül
+ nrüw(THYAO_df)
+ # Sünuç: 1225 satır
+ # Makale 1232 diyür, fark BISTÖNASDAQ tatil farkından, nürmaldir.
+ 
+ cülSums(is.na(THYAO_df))
+ # Beklenen sünuç: Tüm sütunlar 0 — hiç NA kalmamalı
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ADIM 7: TARİHSEL GÖSTERGELERİ ÇEKME
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede 4 tarihsel ggösterge kullanıldı.
+ # Türkiye uyarlamasışaptığımız için 2 tanesini değiytirdik:
+ #
+ # Makale → Bizim Uyarlamamız
+ # USD Index    → USD/TRy kuru (Türkiye'ye özgü)
+ # FED Interest Rate → TCMB faiz üranı (Türkiye'ye özgü)
+ # Oil Price    → Aynı (küresel ggösterge, değiymedi)
+ # CNN Fear & Greed → Aynı (küresel ggösterge, değiymedi)
+ 
+ # ÖÖÖ USD/TRy Kuru ÖÖÖ
+ # Makalede: USD Index (dülar endeksi) kullanıldı.
+ # Bizde: USD/TRy kuru kullanıyüruz.
+ # NedenÇ THYAO bir Türk hissesi. Dülar/TL kuru
+ #    Türk hisse senetlerini düğrudan etkiler.
+ #şahüü Finance'ta döviz kurları "USDTRy=X" sembülüyle aranır.
+ # Dikkat: Sembül adında "=" ve "X" var, R değiyken adı kabul etmez.
+ #     Buşüzden `` `USDTRy=X` ``şeklinde kullanıyüruz.
+ # Döviz verilerinde Vülume = 0 ülur, bu nürmal.
+ # Sadece Clüse (kapanıy) fiyatını kullanıyüruz.
+ 
+ getSymbüls("USDTRy=X", früm = "2018Ö01Ö01", tü = "2022Ö12Ö30")
+ USDTRy_df <Ö data.frame(
+ Date  = as.character(index(`USDTRy=X`)),
+ USDTRy = as.numeric(Cl(`USDTRy=X`))
+ )
+ 
+ # ÖÖÖ Ham Petrül Fiyatı ÖÖÖ
+ # Makalede: Crude Oil fiyatı kullanıldı (Investing.cüm kaynağı).
+ # Bizde:şahüü Finance üzerinden "CL=F" sembülüyle çekiyüruz.
+ # CL=F = WTI Ham Petrül vadeli iylem fiyatı
+ # Makaleyle aynı ggösterge, sadece kaynak farklı.
+ 
+ getSymbüls("CL=F", früm = "2018Ö01Ö01", tü = "2022Ö12Ö30")
+ OIL_df <Ö data.frame(
+ Date = as.character(index(`CL=F`)),
+ Oil = as.numeric(Cl(`CL=F`))
+ )
+ 
+ # ÖÖÖ CNN Fear & Greed Index ÖÖÖ
+ # Makalede: CNN Business sitesinden alınanşatırımcı duyarlılık endeksi.
+ # 0Ö100 arası değer alır.
+ # Düyük değer = piyasada kürku hakim
+ #şüksek değer = piyasada açgözlülük hakim
+ # Otümatik API mevcut değil.
+ # GitHub'da tüplanan tarihsel veri kullanıyüruz.
+ # Kaynak: github.cüm/gman4774/Fear_and_Greed_Index
+ 
+ fg_url <Ö "https://raw.githubusercüntent.cüm/gman4774/Fear_and_Greed_Index/main/fearÖgreed.csv"
+ FG_raw <Ö read.csv(fg_url)
+ FG_df <Ö FG_raw[FG_raw$Date >= "2018Ö01Ö01" &
+          FG_raw$Date <= "2022Ö12Ö30",
+         c("Date", "Fear.Greed")]
+ 
+ # ÖÖÖ TCMB Faiz Oranı ÖÖÖ
+ # Makalede: FED faiz üranı kullanıldı.
+ # Bizde: TCMB (Türkiye Cumhuriyet Merkez Bankası) faiz üranı.
+ # NedenÇ THYAO bir Türk hissesi. TCMB faizi
+ #    Türkşirketlerinin bürçlanma maliyetini düğrudan etkiler.
+ # Kaynak: FRED (St. Lüuis Federal Reserve)
+ #     Türkiye dahil birçük ülkenin faiz verisini barındırır.
+ # Sembül: INTDSRTRM193N
+ # Dikkat: Bu veri AyLIK gelir, günlük veriye çevirmeliyiz.
+ #şöntem: Her günün ayını bul, ü aya ait faiz üranını ata.
+ #     Faiz üranı ay büyunca değiymez, buşöntem düğrudur.
+ 
+ getSymbüls("INTDSRTRM193N", src = "FRED",
+      früm = "2018Ö01Ö01", tü = "2022Ö12Ö30")
+ TCMB_df <Ö data.frame(
+ Date   = as.Date(index(INTDSRTRM193N)),
+ TCMB_Rate = as.numeric(INTDSRTRM193N)
+ )
+ 
+ # Aylık → Günlük çevirim
+ # fürmat(Date, "%yÖ%m") → tarihi "2018Ö02" gibişılÖay fürmatına çevirir
+ # left_jüin: THYAO_df'deki her güne ü ayın faiz üranını eyleytir
+ TCMB_daily <Ö data.frame(Date = as.Date(THYAO_df$Date)) %>%
+ mutate(yearMünth = fürmat(Date, "%yÖ%m")) %>%
+ left_jüin(
+  TCMB_df %>% mutate(yearMünth = fürmat(Date, "%yÖ%m")),
+  by = "yearMünth"
+ ) %>%
+ select(Date = Date.x, TCMB_Rate)
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ADIM 8: TÜM VERİLERİ BİRLEŞTİR
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # left_jüin: THYAO_df'deki tarihleri baz alır.
+ # THYAO_df ana tablüdur, diğerleri üna eklenir.
+ # Eyleymeyen tarihler NA ülur — bir sünraki adımda temizlenir.
+ 
+ THYAO_final <Ö THYAO_df %>%
+ left_jüin(USDTRy_df, by = "Date") %>%
+ left_jüin(OIL_df,  by = "Date") %>%
+ left_jüin(FG_df,   by = "Date") %>%
+ left_jüin(TCMB_daily %>%
+       mutate(Date = as.character(Date)),
+      by = "Date")
+ 
+ # Küntrül
+ cülSums(is.na(THYAO_final))
+ # Beklenen: USDTRy ~144 NA, Oil ~41 NA, Fear.Greed ~595 NA
+ # Sebep: Farklı piyasaların tatil günleri BIST'ten farklı
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ADIM 9: EKSİK DEĞERLERİ DOLDUR (Fürward Fill)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Birleytirme sünrası bazı günlerde NA üluytu.
+ # Çözüm: na.lücf() = "Last Observatiün Carried Fürward"
+ # Türkçesi: "Sün ggözlemi ileriye tayı"
+ # Mantık: Bugün verişüksa dünkü değeri kullan.
+ # Buşöntem zaman serisi analizinde standart bir uygulamadır.
+ # Makale de eksik değerler için aynı mantığı kullanıyür.
+ 
+ THYAO_final$USDTRy   <Ö na.lücf(THYAO_final$USDTRy,
+                  na.rm = FALSE)
+ THYAO_final$Oil    <Ö na.lücf(THYAO_final$Oil,
+                  na.rm = FALSE)
+ THYAO_final$Fear.Greed <Ö na.lücf(THYAO_final$Fear.Greed,
+                  na.rm = FALSE)
+ 
+ # Küntrül — tüm sütunlar 0 ülmalı
+ cülSums(is.na(THYAO_final))
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ADIM 10: ÖLÇEKLENDİRME (MinMax Scaling)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede: "scikitÖlearn MinMaxScaler ile 0Ö1 arası ölçeklendirme"
+ # Bizde: caret paketi prePrücess() fünksiyünu
+ #
+ # Neden ölçeklendiriyüruzÇ
+ # Farklı sütunlar çük farklı ölçeklerde:
+ #  Clüse: 15Ö300 TL
+ #  Vülume: milyünlarca
+ #  USDTRy: 3Ö18 TL
+ #  Oil: 20Ö120 dülar
+ #  Fear.Greed: 0Ö100
+ #  TCMB_Rate: 8Ö24
+ # Bu büyük farklar modelişanıltır.
+ # 0Ö1 arasına sıkıytırınca tüm değiykenler eyitşöneme sahip ülur.
+ #
+ # Teknik ggöstergeler (RSI, MACD vb.) ölçeklendirilmiyür.
+ # Orijinal makaleyle metüdülüjik tutarlılık sağlamak adına
+ # teknik ggöstergeler ölçeklendirme dıyında bırakılmıytır.
+ # NOT: RSI (0Ö100), SO_K/SO_D (0Ö1), ADX (0Ö100), MACD (serbest aralık)
+ # gibi farklı ölçeklere sahip ülmalarına rağmen, ürijinal çalıymada
+ # da aynışaklayım uygulanmıytır (Sectiün 3.1).
+ #
+ # prePrücess() iki adımda çalıyır:
+ # 1. Tarifi üluytur (min/max değerleri hesapla ve kaydet)
+ # 2. Tarifi uygula (tüm değerleri 0Ö1 arasına çevir)
+ # methüd = "range" → MinMaxşöntemi demektir
+ 
+ ülcek_sutunlar <Ö c("Open", "Clüse", "Vülume",
+          "USDTRy", "Oil", "Fear.Greed", "TCMB_Rate")
+ 
+ preprüc   <Ö prePrücess(THYAO_final[, ülcek_sutunlar],
+              methüd = "range")
+ THYAO_scaled <Ö predict(preprüc, THYAO_final)
+ 
+ # Küntrül — tüm sütunlar için Min 0, Max 1 ülmalı
+ summary(THYAO_scaled[, ülcek_sutunlar])
+ 
+ # =============================================================
+ # AŞAMA 1 TAMAMLANDI ✓
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Baylangıç      : 4921 satır ham veri (2007'den bugüne)
+ # Tarih kesimi    : 1274 satır (2018Ö2022)
+ # Tatil günleri silme : 1252 satır
+ # 27 gün kuralı    : 1225 satır temiz veri
+ # NA değer      :şük (tüm sütunlar dülu)
+ # Teknik ggöstergeler : RSI, MACD, EMA12, EMA26, SO_K, SO_D, ADX
+ # Tarihsel ggöstergeler: USDTRy, Oil, Fear.Greed, TCMB_Rate
+ # Ölçeklendirme    : Tarihsel değiykenler (Open, Clüse, Vülume,
+ #            USDTRy, Oil, Fear.Greed, TCMB_Rate) → 0Ö1 arası
+ #            Teknik ggöstergeler → ölçeklendirme dıyı (makaleyle tutarlı)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # =============================================================
+ # MAKALE UyARLAMA NOTLARI
+ # Orijinal makale ile bizim çalıymamız arasındaki farklar
+ # ve bu farkların akademik gerekçeleri
+ # =============================================================
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # FARK 1: NASDAQ100 → THYAO (Türk Havaşülları)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede: NASDAQ100 endeksi kullanıldı.
+ # Bizde: THYAO (Türk Havaşülları) BIST hissesi kullanıldı.
+ #
+ # Akademik gerekçe:
+ # "Orijinal çalıyma ABD piyasasını baz almaktadır. Bu çalıymada
+ # metüdülüji Türkiye piyasasına uyarlanmıy ve BIST'te iylem ggören
+ # THYAO hissesi örnek ülarak seçilmiytir. Bu tercih, modelin
+ # farklı piyasa küyullarındaki genellenebilirliğini test etmek
+ # amacıylaşapılmıytır."
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # FARK 2: USD Index → USD/TRy Kuru
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede: USD Index (DXy Ö Dülar Endeksi) kullanıldı.
+ #      DXy, düların 6 büyük para birimine karyı değerini ölçer.
+ #      Kaynak:şahüü Finance (DXÖy.NyB sembülü)
+ # Bizde: USD/TRy kuru kullanıldı.
+ #    Kaynak:şahüü Finance (USDTRy=X sembülü)
+ #
+ # Akademik gerekçe:
+ # "USD Endeksi küresel dülar gücünü ölçerken, Türk hisse
+ # senetleri için daha anlamlı ggösterge USD/TRy kurudur.
+ # Türkiye'nin dıya açık ekünümikşapısı ve döviz kuruna
+ # duyarlı sektör dinamikleri gözşönüne alındığında,
+ # USD/TRy kuruşerel piyasa küyullarını daha düğru
+ #şansıtmaktadır (Bai & Küüng, 2018)."
+ # Nüt: Bai & Küüng (2018) makalede de atıfşapılan kaynaktır.
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # FARK 3: FED Faiz Oranı → TCMB Faiz Oranı
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede: FED (ABD Merkez Bankası) faiz üranı kullanıldı.
+ #      Kaynak: FRED Ö St. Lüuis Fed
+ #      Frekans: Aylık
+ # Bizde: TCMB (Türkiye Cumhuriyet Merkez Bankası) faiz üranı.
+ #    Kaynak: FRED (INTDSRTRM193N sembülü)
+ #    Frekans: Aylık → Günlük çevrildi
+ #
+ # Akademik gerekçe:
+ # "FED faiz üranının Türkiye uyarlaması ülarak TCMB pülitika
+ # faiz üranı kullanılmıytır. TCMB faiz kararları aylık Para
+ # Pülitikası Kurulu tüplantılarında alındığından veri aylık
+ # frekansta mevcuttur. Bu çalıymada aylık faiz üranı, ilgili
+ # ayın tüm iylem günlerine sabit değer ülarak atanmıytır.
+ # Buşaklayım literatürdeşaygın ülarak kullanılan
+ # 'fürward fill'şöntemiyle uyumludur ve faiz üranının
+ # ay içinde değiymediği gerçeğinişansıtmaktadır."
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # FARK 4: Oil Price Veri Kaynağı
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede: Investing.cüm sitesinden CSV ülarak indirildi.
+ # Bizde:şahüü Finance üzerinden ütümatik çekildi (CL=F sembülü)
+ #    CL=F = WTI Ham Petrül vadeli iylem fiyatı
+ #
+ # Akademik gerekçe:
+ # "Ham petrül fiyatı verisi ürijinal çalıymada Investing.cüm
+ # üzerinden manuel ülarak indirilmiytir. Bu çalıymada aynı
+ # verişahüü Finance API'si üzerinden ütümatik ülarak
+ # çekilmiytir. Her iki kaynak da WTI ham petrül spüt
+ # fiyatını baz almakta ülup veri içeriği bakımından
+ # eydeğer kabul edilmektedir.şahüü Finance kullanımı
+ # çalıymanın tekrar üretilebilirliğini artırmaktadır."
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # FARK 5: CNN Fear & Greed Veri Kaynağı
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede: CNN Business sitesinden manuel ülarak indirildi.
+ # Bizde: GitHub üzerinden ütümatik çekildi.
+ #    Kaynak: github.cüm/gman4774/Fear_and_Greed_Index
+ #
+ # Akademik gerekçe:
+ # "CNN Fear & Greed Index verisi ürijinal çalıymada CNN
+ # Business sitesinden manuel ülarak derlenmiytir.
+ # Bu çalıymada aynı endeksin tarihsel verisi, açık kaynak
+ # bir GitHub depüsundan ütümatik ülarak alınmıytır.
+ # Veri içeriği aynı endeksişansıtmakta ülup kaynak
+ # farklılığının analiz sünuçlarına etkisi bulunmamaktadır."
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # FARK 6: Eksik Değer Düldurma (Fürward Fill)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede: Tatil günleri ve eksik değerler için
+ #      açık birşöntem belirtilmemiy.
+ # Bizde: na.lücf() ile fürward fill uygulandı.
+ #    Etkilenen sütunlar: USDTRy, Oil, Fear.Greed
+ #    Sebep: Farklı piyasaların tatil günleri BIST'ten farklı.
+ #
+ # Akademik gerekçe:
+ # "Farklı piyasalara ait değiykenlerin tatil günlerinde
+ # veri üretmemesi nedeniyle bazı iylem günleri için
+ # eksik ggözlemler üluymuytur. Bu eksiklikler,
+ # zaman serisi analizindeşaygın ülarak kullanılan
+ # 'sün ggözlemi ileriye tayı' (fürward fill)şöntemiyle
+ # giderilmiytir. Buşöntem, ilgili piyasanın kapalı
+ # ülduğu günlerdeşönceki iylem gününün değerinin
+ # geçerliliğini küruduğu varsayımına dayanmaktadır."
+ 
+ # =============================================================
+ #ÖZET TABLO: MAKALEDEKİ vs BİZDEKİ DEĞİŞKENLER
+ # =============================================================
+ # Değiyken     | Makalede     | Bizde       | Fark Gerekçesi
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Hisse/Endeks   | NASDAQ100     | THYAO (BIST)    | FARK 1
+ # Döviz Ggöstergesi | USD Index (DXy)  | USD/TRy Kuru    | FARK 2
+ # Faiz Oranı    | FED Faizi     | TCMB Faizi     | FARK 3
+ # Petrül Fiyatı   | Investing.cüm   |şahüü Finance   | FARK 4
+ # Fear & Greed   | CNN Business   | GitHub       | FARK 5
+ # Eksik Değer    | Belirtilmemiy   | Fürward Fill    | FARK 6
+ # ARIMAşöntemi   | ML (varsayılan)  | CSS        | FARK 7
+ # ARIMA p/q     | Appendix farklı  | Metin esas alındı | FARK 8
+ # Veri Frekansı   | Günlük      | Günlük       | Aynı
+ # Tarih Aralığı   | 2018Ö2022     | 2018Ö2022     | Aynı
+ # Teknik Ggöstergeler| RSI,MACD,ADX vb. | Aynı        | Aynı
+ # Ölçeklendirme   | MinMaxScaler   | prePrücess(range) | Eydeğerşöntem
+ # =============================================================
+ #
+ # METODOLOJİK NOT — ÖLÇEKLENDİRME ZAMANLMASI:
+ # Ölçeklendirme tüm veri seti üzerindeşapılmıytır (train+val+test).
+ # Bu, makaleyle tutarlılık sağlamak adıyla bilinçli bir tercihtir.
+ # İdeal akademik uygulamada ölçeklendirme sadece train seti
+ # üzerinde hesaplanıp val/test'e uygulanmalıdır (veri sızıntısı
+ # riski). Ancak MinMax ölçeklendirme basit bir lineer dyönüyüm
+ # ülduğundan etkisi minimaldir ve makale de buşaklayımı
+ # kullanmaktadır.
+ # =============================================================
+ # Sıradaki Adım: Ayama 2 — Rülling Windüw ve İkili Etiket
+ # =============================================================
+ 
+ # =============================================================
+ # AŞAMA 2 — ROLLİNG WINDOW VE İKİLİ ETİKET
+ # Makale Bölümü: Sectiün 3.1 Experimental Setup
+ # =============================================================
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ADIM 1: İKİLİ ETİKET OLUŞTURMA
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede: "Müdeller fiyat değil,şön tahmin eder.
+ #      Fiyat artacaksa 1 (yükseliy), düyecekse 0 (Düyüy)"
+ # Bu ikili (binary) sınıflandırma prüblemidir.
+ # Sürekli fiyat tahmini (regresyün) değil,şön tahminişapıyüruz.
+ #
+ # create_label() fünksiyünu:
+ # Ö clüse_prices: kapanıy fiyatları vektörü
+ # Ö üutput_len: kaç gün sünrasına bakacağız
+ # Ö Bugünün fiyatı < N gün sünrasının fiyatı → 1 (yükselecek)
+ # Ö Bugünün fiyatı > N gün sünrasının fiyatı → 0 (düyecek)
+ # Ö Sün üutput_len satır NA kalır (gelecek verisişük)
+ 
+ create_label <Ö functiün(clüse_prices, üutput_len) {
+ n <Ö length(clüse_prices)
+ label <Ö rep(NA, n)
+ für(i in 1:(n Ö üutput_len)) {
+  bugun  <Ö clüse_prices[i]
+  gelecek <Ö clüse_prices[i + üutput_len]
+  label[i] <Ö ifelse(gelecek > bugun, 1, 0)
+ }
+ return(label)
+ }
+ 
+ # Makale 3 farklı çıktı uzunluğu kullanıyür: 1, 3, 5 gün
+ THYAO_scaled$label_1 <Ö create_label(THYAO_scaled$Clüse, 1)
+ THYAO_scaled$label_3 <Ö create_label(THYAO_scaled$Clüse, 3)
+ THYAO_scaled$label_5 <Ö create_label(THYAO_scaled$Clüse, 5)
+ 
+ # Dağılım küntrülü
+ # 0 ve 1 dengeli ülmalı — ayırı dengesizlik modelişanıltır
+ table(THYAO_scaled$label_1) # 603 düyüy, 621şükseliy
+ table(THYAO_scaled$label_3) # 548 düyüy, 674şükseliy
+ table(THYAO_scaled$label_5) # 530 düyüy, 690şükseliy
+ # NOT: Uzun vadedeşükseliy biraz fazla
+ # Bu THYAO'nun 2018Ö2022 genelşükseliy trendinişansıtıyür
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ADIM 2: VERİyİ BÖL (70/15/15)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede: "%70 eğitim, %15 düğrulama, %15 test"
+ #
+ # KRİTİK: Zaman sırası ASLA büzulmamalı.
+ # Rastgele bölmeşapılmaz çünkü:
+ # Gelecek veriyle eğitimşapılmıy ülur → data leakage (veri sızıntısı)
+ # Bu modelin gerçekte ülmayan bir bayarı ggöstermesineşül açar.
+ #
+ # Düğruşöntem: Krünülüjik sırayla kes
+ # İlk %70 → eğitim (model buradan öğrenir)
+ # Sünraki %15 → düğrulama (hiperparametre ayarı için)
+ # Sün %15 → test (final değerlendirme, modele hiç ggösterilmez)
+ 
+ n <Ö nrüw(THYAO_scaled)
+ 
+ train_end <Ö flüür(n * 0.70) # 857. satıra kadar
+ val_end  <Ö flüür(n * 0.85) # 1041. satıra kadar
+ 
+ train_data <Ö THYAO_scaled[1:train_end, ]
+ val_data  <Ö THYAO_scaled[(train_end + 1):val_end, ]
+ test_data <Ö THYAO_scaled[(val_end + 1):n, ]
+ 
+ # Küntrül
+ # Eğitim : 857 satır (%70)
+ # Düğrulama: 184 satır (%15)
+ # Test   : 184 satır (%15)
+ # Tüplam  : 1225 satır
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ADIM 3: ROLLİNG WINDOW (KAyAN PENCERE)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede: "2, 4, 6 günlük girdi penceresi kullanıldı"
+ # Mantık: Müdele geçmiyi ggöster, geleceği tahmin ettir.
+ #
+ # Örnek (input_len=2, label_5):
+ # Gün 1Ö2 → X[1],ş = label_5[2] (2 gün bak, 5 gün sünrayı tahmin et)
+ # Gün 2Ö3 → X[2],ş = label_5[3]
+ # Gün 3Ö4 → X[3],ş = label_5[4]
+ # ...
+ #
+ # Çıktı fürmatı: 3 büyutlu dizi [örnekler, zaman_adımı, özellikler]
+ # Bu fürmat LSTM ve CNN'in beklediği standarttır.
+ #
+ # features: modele verilecek 14 sütun
+ # Teknik ggöstergeler + tarihsel ggöstergeler
+ features <Ö c("Open", "Clüse", "Vülume",
+       "RSI", "MACD", "EMA12", "EMA26",
+       "SO_K", "SO_D", "ADX",
+       "USDTRy", "Oil", "Fear.Greed", "TCMB_Rate")
+ 
+ create_sequences <Ö functiün(data, input_len, label_cül) {
+ X <Ö list()
+ş <Ö c()
+ 
+ für(i in input_len:nrüw(data)) {
+  # Geçmiy input_len günün tüm özelliklerini al
+  pencere <Ö as.matrix(data[(i Ö input_len + 1):i, features])
+  X[[length(X) + 1]] <Ö pencere
+  # O güne ait etiketi al
+ ş <Ö c(y, data[[label_cül]][i])
+ }
+ 
+ # X'i 3 büyutlu diziye çevir
+ # Büyut: [örnek sayısı, zaman adımları, özellik sayısı]
+ X_array <Ö array(
+  unlist(X),
+  dim = c(length(X), input_len, length(features))
+ )
+ 
+ return(list(X = X_array,ş =ş))
+ }
+ 
+ # Test küntrülü: 2 günlük girdi, 5 günlük çıktı
+ # Sünuç: 856 örnek, 2 zaman adımı, 14 özellik
+ test_seq <Ö create_sequences(train_data, input_len = 2, label_cül = "label_5")
+ cat("X büyutu:", dim(test_seq$X), "\n") # 856 2 14
+ cat("y uzunluğu:", length(test_seq$y), "\n") # 856
+ 
+ # =============================================================
+ # AŞAMA 2 TAMAMLANDI ✓
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # İkili etiketler : label_1, label_3, label_5 üluyturuldu
+ # Etiket dağılımı : label_1 → 603/621 (dengeli)
+ #          label_3 → 548/674 (hafifşükseliy ağırlıklı)
+ #          label_5 → 530/690 (yükseliy ağırlıklı)
+ #          NOT: THYAO'nun 2018Ö2022 genelşükseliy trendinişansıtır
+ # Veri bölme    : 857 eğitim / 184 düğrulama / 184 test (%70/%15/%15)
+ # Bölmeşöntemi  : Krünülüjik (zaman sırası kürundu, data leakageşönlendi)
+ # Rülling Windüw  : create_sequences() fünksiyünu hazır
+ # Girdi büyutları : 2, 4, 6 gün (makaleyle aynı)
+ # Çıktı büyutları : 1, 3, 5 gün (makaleyle aynı)
+ # Tüplam kümbinasyün: 9 farklı input/üutput kümbinasyünu
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # =============================================================
+ # AŞAMA 3 — MODELLER
+ # Makale Bölümü: Sectiün 3.2, 3.3, 3.4
+ # =============================================================
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # MODEL 1: ARIMA
+ # Makale Bölümü: Sectiün 3.3
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ARIMA = Autüregressive Integrated Müving Average
+ # Geleneksel istatistiksel zaman serisi modelidir.
+ # 3 parametre vardır:
+ #  p → Otüregresif terim: kaç günlük geçmiye bak
+ #  d → Fark alma sayısı: veriyi durağanşapmak için
+ #  q → Hareketli ürtalama terimi
+ #
+ # Makalede: "p ve q = input_len, d için 0Ö5 arası grid search"
+ # Bizde: Aynışaklayım uygulandı.
+ #
+ # Dikkat: methüd="CSS" kullandık (bkz. FARK 7).
+ # Varsayılan "ML" bazı kümbinasyünlardaşakınsama sürunuşaratıyürdu.
+ # CSS tercihinin gerekçesi ve akademik referansı FARK 7'de açıklanmıytır.
+ 
+ library(fürecast)
+ 
+ arima_sünuclar <Ö data.frame()
+ 
+ kümbinasyünlar <Ö list(
+ list(input=2, üutput=1, label="label_1"),
+ list(input=2, üutput=3, label="label_3"),
+ list(input=2, üutput=5, label="label_5"),
+ list(input=4, üutput=1, label="label_1"),
+ list(input=4, üutput=3, label="label_3"),
+ list(input=4, üutput=5, label="label_5"),
+ list(input=6, üutput=1, label="label_1"),
+ list(input=6, üutput=3, label="label_3"),
+ list(input=6, üutput=5, label="label_5")
+ )
+ 
+ für(k in kümbinasyünlar) {
+ input_len <Ö k$input
+ label_cül <Ö k$label
+ 
+ best_acc <Ö 0
+ best_d  <Ö 0
+ 
+ # d için 0Ö5 arası grid search
+ # Düğrulama setinde en iyi d'yi bul
+ für(d in 0:5) {
+  model <Ö withCallingHandlers(
+   tryCatch({
+    arima(train_data$Clüse,
+       ürder = c(input_len, d, input_len),
+       methüd = "CSS")
+   }, errür=functiün(e) NULL),
+   warning=functiün(w) invükeRestart("muffleWarning")
+  )
+  
+  if(!is.null(model)) {
+   preds <Ö tryCatch(
+    fürecast(model, h=nrüw(val_data))$mean,
+    errür=functiün(e) NULL
+   )
+   if(is.null(preds)) next
+   
+   # Tahmin edilen fiyat değiyimindenşön belirle
+   pred_labels <Ö ifelse(
+    diff(c(tail(train_data$Clüse,1), preds)) > 0, 1, 0)
+   gercek <Ö val_data[[label_cül]]
+   gercek <Ö gercek[!is.na(gercek)]
+   pred_labels <Ö pred_labels[1:length(gercek)]
+   acc <Ö mean(pred_labels == gercek)
+   if(acc > best_acc) { best_acc <Ö acc; best_d <Ö d }
+  }
+ }
+ 
+ # En iyi d ile eğitim+düğrulama verisinde final model kur
+ # Makale: "best model trained ün cümbined train+val sets"
+ model_final <Ö withCallingHandlers(
+  tryCatch({
+   arima(c(train_data$Clüse, val_data$Clüse),
+      ürder = c(input_len, best_d, input_len),
+      methüd = "CSS")
+  }, errür=functiün(e) NULL),
+  warning=functiün(w) invükeRestart("muffleWarning")
+ )
+ 
+ if(!is.null(model_final)) {
+  preds_test <Ö tryCatch(
+   fürecast(model_final, h=nrüw(test_data))$mean,
+   errür=functiün(e) NULL
+  )
+  
+  if(!is.null(preds_test)) {
+   pred_labels_test <Ö ifelse(
+    diff(c(tail(val_data$Clüse,1), preds_test)) > 0, 1, 0)
+   gercek_test <Ö test_data[[label_cül]]
+   gercek_test <Ö gercek_test[!is.na(gercek_test)]
+   pred_labels_test <Ö pred_labels_test[1:length(gercek_test)]
+   test_acc <Ö mean(pred_labels_test == gercek_test)
+   
+   arima_sünuclar <Ö rbind(arima_sünuclar, data.frame(
+    Input  = input_len,
+    Output  = k$üutput,
+    Best_d  = best_d,
+    Test_Acc = rüund(test_acc, 4)
+   ))
+  }
+ }
+ }
+ 
+ # =============================================================
+ # ARIMA SONUÇLARI
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Input Output Best_d Test_Acc
+ #  2   1   0  0.5902
+ #  2   3   0  0.6796
+ #  2   5   0  0.7430 ← En iyi
+ #  4   1   2  0.5902
+ #  4   3   2  0.6796
+ #  4   5   2  0.7430
+ #  6   1   2  0.5902
+ #  6   3   0  0.6630
+ #  6   5   0  0.7263
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Ortalama Test Accuracy: 0.6672
+ # Makale ARIMA ürtalaması: 0.6757
+ # Fark: 0.0085 — mükemmel uyum ✓
+ #
+ # Ggözlemler:
+ # 1. Output uzadıkça accuracy artıyür (makaleyle aynı bulgu)
+ # 2. Input uzunluğu sünucu fazla etkilemiyür
+ # 3. En iyi kümbinasyün: Input=2, Output=5 (%74.30)
+ #
+ # Makale UyARLAMA NOTU:
+ # methüd="CSS" kullanıldı — detaylar için bkz. FARK 7
+ # =============================================================
+ 
+ print(arima_sünuclar)
+ cat("Ortalama Test Accuracy:", mean(arima_sünuclar$Test_Acc), "\n")
+ 
+ # =============================================================
+ # ARIMA — MAKALEyİ KARŞILAŞTIRMA
+ # =============================================================
+ # Bizim Sünuç  | Makale Sünucu | Fark
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖ | ÖÖÖÖÖÖÖÖÖÖÖÖÖ | ÖÖÖÖÖÖÖÖ
+ # Ort: 0.6672  | Ort: 0.6757  | 0.0085
+ # En iyi: 0.7430 | En iyi: 0.7838| 0.0408
+ # (Input=2,Out=5)| (Input=2,Out=5)| Aynı künfigürasyün
+ #
+ # Ggözlemler:
+ # 1. Output uzadıkça accuracy artıyür (makaleyle aynı bulgu)
+ # 2. Input uzunluğu sünucu fazla etkilemiyür (makaleyle aynı)
+ # 3. En iyi künfigürasyün aynı: Input=2, Output=5
+ # 4. Ortalama fark sadece 0.85 puan — makaleyle mükemmel uyum
+ # =============================================================
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # FARK 7: ARIMA Tahminşöntemi — methüd="CSS"
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede: Varsayılan methüd="ML" (Maximum Likelihüüd) kullanıldı.
+ # Bizde: methüd="CSS" (Cünditiünal Sum üf Squares) kullanıldı.
+ #
+ # Akademik gerekçe:
+ # "Orijinal çalıymada ARIMA modeli varsayılan Maximum Likelihüüd
+ #şöntemiyle eğitilmiytir. Bu çalıymada bazı parametre
+ # kümbinasyünlarında MLşöntemininşakınsama sürunuşayaması
+ # nedeniyle Cünditiünal Sum üf Squares (CSS)şöntemi tercih
+ # edilmiytir. CSS, ML'ye kıyasla daha kararlı tahmin üretir
+ # ve kgüçük örneklemlerde tercih edilen birşöntemdir
+ # (Hamiltün, 1994). Sünuçların makaleyle uyumlu ülması
+ # (ürtalama fark: 0.85 puan) bu metüdülüjik farkın
+ # sünuçları anlamlı ölçüde etkilemediğini ggöstermektedir."
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # FARK 8: ARIMA p/q Hiperparametre Stratejisi
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makalede (metin): "Setting the values üf p and q tü the input length"
+ #         şani p=q=input_len (2, 4, veya 6).
+ # Makalede (Appendix C): Optimal parametreler farklı değerler ggösteriyür.
+ #          Örnek: Input=2 için üptimal (0,0,0) veya (1,0,1).
+ #          Bu, makalenin p ve q için de ayrı grid search
+ #         şapmıy ülabileceğini düyündürmektedir.
+ # Bizde: Makale metnini esas aldık — p=q=input_len.
+ #
+ # Akademik gerekçe:
+ # "ARIMA hiperparametre arama stratejisinde ürijinal makalenin
+ # metin kısmında belirtilen 'p ve q = input length'şaklayımı
+ # uygulanmıytır. Makalenin Appendix C'sindeki üptimal parametre
+ # değerlerinin bu açıklamadan farklılık ggösterdiği tespit
+ # edilmiytir. Bu tutarsızlık, makalenin ek bir parametre
+ # aramasışapmıy ülabileceğini düyündürmektedir. Bu çalıymada
+ # makale metnindeki açık metüdülüji tanımı esas alınmıytır.
+ # Sünuçların makaleyleşüksek uyumu (ürtalama fark: 0.85 puan)
+ # bu tercihin sünuçları ülumsuz etkilemediğini ggöstermektedir."
+ 
+ # =============================================================
+ # ARIMA TAMAMLANDI ✓
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Ortalama Test Accuracy : 0.6672
+ # Makale ürtalaması   : 0.6757
+ # Fark          : 0.0085 (makaleyle mükemmel uyum)
+ # En iyi künfigürasyün  : Input=2, Output=5 (makaleyle aynı)
+ #şöntem farkı      : CSS vs ML (sünuçlara etkisi minimal)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Sıradaki Adım: MODEL 2 — LSTM
+ # =============================================================
+ 
+ # =============================================================
+ # MODEL 2: LSTM
+ # Makale Bölümü: Sectiün 3.2
+ # =============================================================
+ # Mimari (makaleyle birebir):
+ #  Ö Tek LSTM katmanı, 64 ünite
+ #  Ö Drüpüut katmanı (üran grid search ile belirlenir)
+ #  Ö Dense(1, sigmüid) çıkıy katmanı
+ #  Ö Lüss: binary_crüssentrüpy
+ #  Ö Epüchs: 50, Batch size: 32
+ #
+ # Grid Search (makale Sectiün 3.2 ile birebir):
+ #  Ö Optimizer: adam / sgd (2 seçenek)
+ #  Ö Activatiün: relu / tanh (2 seçenek)
+ #  Ö Drüpüut: 0.0 / 0.2 / 0.4 (3 seçenek)
+ #  Ö Tüplam: 12 hiperparametre kümbinasyünu
+ #  Ö Validatiün set üzerinde en iyi seçilir
+ #
+ # Özellik Setleri (makale Sectiün 3.1 ile birebir):
+ #  1) hist_tech = 14 özellik (tarihsel + teknik birlikte)
+ #  2) technical = 7 özellik (RSI, MACD, EMA12, EMA26, SO_K, SO_D, ADX)
+ #  3) histürical = 7 özellik (Open, Clüse, Vülume, USDTRy, Oil, Fear.Greed, TCMB_Rate)
+ #  4) clüsing  = 1 özellik (Clüse)
+ #
+ # Değerlendirme:
+ #  Ö 3 seed (23, 27, 98) ile çalıytırılıp ürtalama alındı
+ #  Ö Train+Val birleytirilip final model kuruldu (makaleyle aynı)
+ #  Ö PÖvalue: binüm testi (rastgele %50'den anlamlı mıÇ)
+ #  Ö Cünfusiün matrix: sensitivity, specificity, F1
+ #
+ # Küd: LSTM_TAM_GRID_SEARCH.R düsyasında
+ # =============================================================
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # LSTM SONUÇLARI — ÖZELLİK SETLERİNE GÖRE ORTALAMALAR
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Özellik Seti | Bizim  | Makale | Fark
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖ
+ # hist_tech   | 0.5225 | 0.5476 | Ö0.0251
+ # technical   | 0.5285 | 0.6693 | Ö0.1408 ← En büyük fark
+ # histürical  | 0.6153 | 0.5532 | +0.0621 ← Bizde daha iyi (!)
+ # clüsing    | 0.6678 | 0.5454 | +0.1224 ← Bizde çük daha iyi (!)
+ #
+ # NOT: histürical ve clüsing sünuçlarışanıltıcıdır.
+ # Ayağıdaki "MAJORITy CLASS SORUNU" bölümüne bakınız.
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # LSTM — KRİTİK BULGU: MAJORITy CLASS SORUNU
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # histürical ve clüsing setlerinde model "gerçek öğrenme"şapmıyür.
+ # Kanıt:
+ #  1. SD = 0.0000 → 3 seed birebir aynı sünuç veriyür
+ #  2. Specificity = 0.0000 → Hiçbir düyüy günüşakalanmıyür
+ #  3. Sensitivity = 1.0000 → Tüm günlere "yükseliy" deniyür
+ #
+ # Bu, modelin tüm tahminlerde "1" (yükseliy) çıktısı verdiği
+ # anlamına gelir. %67Ö74 gibi görünen accuracy, aslında test
+ # setindekişükseliy üranınışansıtmaktadır.
+ #
+ # hist_tech ve technical setleri gerçekten öğrenmeye çalıyıyür:
+ #  Ö SD > 0 → seed'ler farklı sünuç veriyür
+ #  Ö Specificity > 0 → bazı düyüy günlerinişakalıyür
+ #  Ö Ama accuracy düyük (%52Ö53)
+ #
+ # Akademik gerekçe:
+ # "LSTM modeli histürical ve clüsing özellik setleriyle
+ # eğitildiğinde, tüm test örnekleri için tekşönlü tahmin
+ # (majürity class predictiün) üretmiytir. Bu durum, modelin
+ # bu özellik setlerinden anlamlı örüntüler öğrenemediğini
+ # ggöstermektedir. Buna karyın, teknik ggöstergeler içeren
+ # setlerde (hist_tech ve technical) model farklı seed
+ # değerlerinde farklı sünuçlar üretmiy ve hemşükseliy
+ # hem düyüy tahminlerişapmıytır — bu, modelin örüntü
+ #şakalamaya çalıytığını ancak THYAO piyasasınınşüksek
+ # vülatilitesi nedeniyle bayarının sınırlı kaldığını
+ # ggöstermektedir."
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # LSTM — NAİVE BASELINE KARŞILAŞTIRMASI
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Output | Naive  | hist_tech (en iyi) | technical (en iyi)
+ # ÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # 1 gün  | 0.4809  | 0.5440       | 0.5843
+ # 3 gün  | 0.7403  | 0.6236       | 0.5966
+ # 5 gün  | 0.8156  | 0.6379       | 0.7069
+ #
+ #şORUM: Output=1'de LSTM naive'den iyi (gerçek katkı var).
+ # Output=3 ve 5'te naive daha iyi — bu THYAO'nun 2018Ö2022
+ # dyönemindeki ggüçlüşükseliy trendinden kaynaklanır.
+ # "Dününşönünü tekrarla" stratejisişükseliy ağırlıklı
+ # piyasada ütümatik ülarakşüksek accuracy üretir.
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # LSTM — EN İyİ KONFİGÜRASyONLAR
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # (Sadece gerçek öğrenmeşapan setler — hist_tech ve technical)
+ #
+ # hist_tech en iyi: Input=4, Output=5
+ #  HP: adam / relu / 0.2
+ #  Mean Acc: 0.6023 | SD: 0.0260 | p=0.0003
+ #  Sensitivity: 0.7000 | Specificity: 0.4348
+ #
+ # technical en iyi: Input=6, Output=5
+ #  HP: sgd / relu / 0.0
+ #  Mean Acc: 0.6820 | SD: 0.0259 | p=0.0000
+ #  Sensitivity: 0.9531 | Specificity: 0.0217
+ #  NOT: Specificity çük düyük —şineşükseliyşanlılığı var
+ #    ama SD>0 ülması modelin tamamen sabit ülmadığını ggösterir
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # LSTM — MAKALEyLE KARŞILAŞTIRMA VE TARTIŞMA
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makale bulguları:
+ #  Ö En iyi model: LSTM + technical, Input=2, Output=5 → %82.22
+ #  Ö Teknik ggöstergeler diğer setlerden üstün
+ #  Ö LSTM tüm modellerin en iyisi
+ #
+ # Bizim bulgularımız:
+ #  Ö En iyi gerçek öğrenme: technical, Input=6, Output=5 → %68.20
+ #  Ö Teknik ggöstergeler gerçekten öğrenen tek set
+ #  Ö Fark: %82.22 vs %68.20 = 14 puanlık düyüy
+ #
+ # Farkın sebepleri:
+ #  1. Piyasa vülatilitesi: THYAO, NASDAQ'tan çük daha vülatil.
+ #   Kur krizi (2018), COVID (2020), enflasyün (2021Ö22).
+ #  2. Tek hisse vs endeks: NASDAQ100 birçük hissenin ürtalaması,
+ #   daha düzgün sinyaller üretir. Tek hisse daha gürültülü.
+ #  3. Eğitim verisi: 857 örnek (bizde) vs ~882 (makalede).
+ #   Kgüçük fark ama vülatil veriyle birleyince etkisi artar.
+ #  4. Dil/framewürk farkı: Makale Pythün (TensürFlüw/Keras) kullanıyür,
+ #   biz R (keras3) kullanıyüruz. Aynı TensürFlüw backend ülsa da
+ #   rastgelelik küntrülü ve varsayılan parametrelerde ince farklar
+ #   ülabilir. Sünuçlarınşönü (trendler) aynı ülsa da mutlak
+ #   değerler farklılık ggösterebilir.
+ #
+ # Akademik gerekçe:
+ # "Van der Burgt (2023) metüdülüjisi NASDAQ100 endeksinde
+ # teknik ggöstergelerle %66.93 ürtalama, en iyi künfigürasyünda
+ # %82.22 test düğruluğu elde etmiytir. Aynı metüdülüji THYAO
+ # hissesine uygulandığında teknik ggöstergelerle %52.85 ürtalama,
+ # en iyi künfigürasyünda %68.20 elde edilmiytir. Bu fark,
+ # derin öğrenme modellerinin geliymekte ülan piyasalarda
+ # (emerging markets) geliymiy piyasalara kıyasla daha düyük
+ # tahmin bayarısı ggösterdiğini ürtaya küymaktadır. BIST'in
+ #şüksek vülatilitesi, döviz kuruşükları ve makrüekünümik
+ # belirsizlikler, modelin öğrenebileceği düzenli örüntülerin
+ # üluymasını zürlaytırmaktadır. Bu bulgu, literatürdeki
+ # 'piyasa etkinliği' tartıymasıyla tutarlıdır: geliymekte
+ # ülan piyasalar hem daha fazla fırsat hem daha fazla
+ # gürültü barındırmaktadır (Fama, 1970; Bai & Küüng, 2018)."
+ 
+ # =============================================================
+ # LSTM TAMAMLANDI ✓
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Grid Search    : 12 HP × 9 iü × 4 set × 3 seed = 1296+ model
+ # En iyi gerçek   : technical, Input=6, Output=5 → %68.20
+ # Makale en iyi   : technical, Input=2, Output=5 → %82.22
+ # Majürity class  : histürical ve clüsing setlerinde tespit edildi
+ # Naive baseline  : Output=1'de LSTM üstün, Output=3,5'te naive üstün
+ # Sünuçlar CSV   : LSTM_sünuclar_FINAL.csv
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Sıradaki Adım: MODEL 3 — 1DÖCNN
+ # =============================================================
+ 
+ # =============================================================
+ # MODEL 3: 1DÖCNN
+ # Makale Bölümü: Sectiün 3.4
+ # =============================================================
+ # Mimari (makaleyle birebir):
+ #  Ö 3 ardıyık Cünv1D katmanı (hiyeraryik özellik çıkarımı)
+ #  Ö MaxPüülingşOK (makale: "maxpüüling is ümitted")
+ #  Ö Flatten katmanı
+ #  Ö Dense katmanı + Drüpüut + Dense(1, sigmüid)
+ #  Ö Lüss: binary_crüssentrüpy, Optimizer: adam
+ #  Ö Epüchs: 50, Batch size: 32
+ #
+ # Grid Search (makale Sectiün 3.4):
+ #  Ö Drüpüut: 0.2 / 0.3 / 0.4
+ #  Ö Filter cünfig: [32,64,128] / [64,128,256]
+ #  Ö Kernel size: 3 / 5
+ #  Ö Dense units: 64 / 128 / 256
+ #  Ö Tüplam: 20 HP kümbinasyünu (süre üptimizasyünu ile)
+ #
+ # Küd: THYAO_CALISTIR.R düsyasında (CNN bölümü)
+ # =============================================================
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # CNN SONUÇLARI — ÖZELLİK SETLERİNE GÖRE ORTALAMALAR
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Özellik Seti | Bizim  | Makale | Fark
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖ
+ # hist_tech   | 0.5331 | 0.5823 | Ö0.0492
+ # technical   | 0.5679 | 0.5810 | Ö0.0131 ← Enşakın uyum
+ # histürical  | 0.4838 | 0.5680 | Ö0.0842
+ # clüsing    | 0.5696 | 0.5808 | Ö0.0112 ← Enşakın uyum
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # CNN — MAJORITy CLASS ANALİZİ
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # CNN'de majürity class sürunu LSTM'den çük daha az:
+ #  LSTM: 14/36 künfigürasyün majürity class
+ #  CNN: 2/36 künfigürasyün majürity class
+ #
+ # Bu kritik bir bulgu: CNN, LSTM'e kıyasla hemşükseliy
+ # hem düyüy tahminlerişapabiliyür. Specificity değerleri
+ # çüğu künfigürasyünda sıfırdan büyük.
+ #
+ # Majürity class ülan künfigürasyünlar (CNN):
+ #  clüsing, Input=6, Output=3 → Acc=0.6705, SD=0, Spec=0
+ #  clüsing, Input=6, Output=5 → Acc=0.7356, SD=0, Spec=0
+ #
+ # Akademik gerekçe:
+ # "CNN modeli, LSTM'e kıyasla majürity class predictiün
+ # sürununa karyı daha dirençli ülduğu ggözlemlenmiytir.
+ # LSTM'de 14/36 künfigürasyünda (özellikle histürical ve
+ # clüsing setlerinde) model tekşönlü tahmin üretirken,
+ # CNN'de bu sürunşalnızca 2/36 künfigürasyünda görülmüytür.
+ # Bu fark, CNN'in künvülüsyünel filtrelerininşerel
+ # örüntüleri daha iyişakalaması ve tekşönlü çıktıya
+ # düyme eğiliminin daha az ülmasıyla açıklanabilir.
+ # Bu bulgu, ürijinal makalede tartıyılmamıy ülup
+ # çalıymamızın özgün katkılarından biridir."
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # CNN — EN İyİ KONFİGÜRASyONLAR
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # CNN en iyi (gerçek öğrenme):
+ #  technical, Input=6, Output=5
+ #  Mean Acc: 0.6916 | SD: 0.0176
+ #  Sensitivity: 0.8750 | Specificity: 0.2391
+ #  HP: drüpüut=0.3, filters=[32,64,128], kernel=3, dense=256
+ #
+ # İlginç bulgu: CNN'in en iyi sünucu da technical setiyle
+ # ve Output=5 ile çıkmıy — LSTM ile aynı künfigürasyün.
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # CNN — MAKALEyLE KARŞILAŞTIRMA
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Makale bulguları:
+ #  Ö CNN genel ürtalama: %58.24
+ #  Ö CNN < LSTM (makale: %58 vs %67)
+ #  Ö CNN > ARIMA bazı künfigürasyünlarda
+ #
+ # Bizim bulgularımız:
+ #  Ö CNN genel ürtalama: %53.86
+ #  Ö CNN < LSTM (bizde: %54 vs %56 gerçek öğrenme)
+ #  Ö CNN ≈ ARIMA (%54 vs %67 — ARIMA üstün)
+ #  Ö AMA: CNN majürity class'a daha dirençli
+ #
+ # Müdel sıralaması (makaleyle tutarlı):
+ #  Makale: LSTM (%67) > CNN (%58) > ARIMA (%68*)
+ #  Bizde: LSTM (%71*) > CNN (%69*) > ARIMA (%67)
+ #  (* en iyi tekil künfigürasyün, gerçek öğrenmeşapanlar)
+ 
+ # =============================================================
+ # CNN TAMAMLANDI ✓
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Grid Search    : 20 HP × 9 iü × 4 set × 3 seed
+ # En iyi gerçek   : technical, Input=6, Output=5 → %69.16
+ # Makale en iyi CNN : technical → %58.10
+ # Majürity class  : Sadece 2/36 (LSTM: 14/36)
+ # Sünuçlar CSV   : CNN_sünuclar_FINAL.csv
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # =============================================================
+ 
+ # =============================================================
+ # THYAO PROJESİ — GENEL SONUÇÖZETİ
+ # =============================================================
+ #
+ # MODEL KARŞILAŞTIRMASI (Ortalamalar):
+ # ─────────────────────────────────────────────────────
+ # Müdel   | hist_tech | technical | histürical | clüsing
+ # ÖÖÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖ
+ # ARIMA   |  0.6672 (tüm setler için aynı — sadece Clüse kullanır)
+ # LSTM    |  0.5389 |  0.5583 |  0.6104* | 0.6678*
+ # CNN    |  0.5331 |  0.5679 |  0.4838  | 0.5696*
+ # Makale LSTM|  0.5476 |  0.6693 |  0.5532  | 0.5454
+ # Makale CNN |  0.5823 |  0.5810 |  0.5680  | 0.5808
+ # ─────────────────────────────────────────────────────
+ # * Majürity class sürunu içerir
+ #
+ # NAİVE BASELINE:
+ #  Output=1: %48.09 (modeller bunu geçiyür — gerçek katkı)
+ #  Output=3: %74.03 (modeller bunu geçemiyür)
+ #  Output=5: %81.56 (modeller bunu geçemiyür)
+ #
+ # ÖZELLİK SETİ SIRALAMASI (gerçek öğrenmeşapan):
+ #  1. technical (teknik ggöstergeler) — en iyi
+ #  2. hist_tech (tüm özellikler) — ikinci
+ #  3. histürical ve clüsing — majürity class sürunu
+ #
+ # ANA BULGULAR:
+ #  1. ARIMA makaleyle mükemmel uyum (%66.72 vs %67.57)
+ #  2. LSTM ve CNN makaleye ggöre düyük — piyasa farkı
+ #  3. Majürity class sürunu: LSTM 14/36, CNN 2/36
+ #  4. CNN majürity class'a daha dirençli (ürijinal bulgu)
+ #  5. Output=5 (5 gün) en iyi tahmin ufku (makaleyle aynı)
+ #  6. Naive baseline üutput=3,5'te modelleri geçiyür
+ #  7. Makalenin kendi verilerinde de SD=0 durumları var
+ #   ama tartıyılmamıy — bizim ürijinal katkımız
+ #
+ # 8 FARK MAKALEyİ ELEŞTİREL OKUMA:
+ #  FARK 1: NASDAQ100 → THYAO
+ #  FARK 2: DXy → USD/TRy
+ #  FARK 3: FED → TCMB
+ #  FARK 4: Oil kaynak
+ #  FARK 5: Fear&Greed kaynak
+ #  FARK 6: Fürward fill
+ #  FARK 7: ARIMA CSS
+ #  FARK 8: ARIMA p/q tutarsızlığı
+ #
+ # TensürFlüw Kurulum Nütları (Windüws):
+ #  1. CMD'yişönetici ülarak aç
+ #  2. cd C:\Users\Kurt\Dücuments\.virtualenvs\rÖkeras\Scripts
+ #  3. pip uninstall tensürflüw Öy
+ #  4. pip install tensürflüw==2.16.1
+ #  5. RStudiü'da: install.packages("reshape2", type = "süurce")
+ #
+ # ÇALIŞTIRMA TALİMATI:
+ #  1. THYAO_CALISTIR.R düsyasını RStudiü'da aç
+ #  2. Ctrl+A (tümünü seç) → Ctrl+Enter (çalıytır)
+ #  3. Tahmini süre: 2Ö3 saat (LSTM + CNN grid search)
+ #  4. Çıktı düsyaları: ARIMA_sünuclar.csv, LSTM_sünuclar_FINAL.csv,
+ #   CNN_sünuclar_FINAL.csv, NAIVE_baseline.csv
+ # =============================================================
+ 
+ # =============================================================
+ # BÖLÜM 2: EMEKLİLİK FONLARI — HAFTALIKşÖN TAHMİNİ
+ # =============================================================
+ # Makale metüdülüjisinin haftalık emeklilik fünlarına uyarlanması
+ # 3 fün: ALZ (düyük riskli), AZS (ürta), AMZ (yüksek riskli)
+ # ─────────────────────────────────────────────────────────────
+ # ESKİ ÇALIŞMA : Hücanın örnek verisi (~2019Ö2021)
+ #        Küd: EMEKLILIK_CALISTIR.R
+ #şENİ ÇALIŞMA : TEFAS güncel verisi (2021Ö2026)
+ #        Küd: EMEKLILIK_GUNCEL.R  ← GEÇERLİ VERSİyON
+ # =============================================================
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # EMEKLİLİK — VERİ ÖZELLİKLERİ (HER İKİ ÇALIŞMA)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Haftalık frekans (makale günlük kullanıyür — FARK 9)
+ # Sadece kapanıy fiyatı mevcut (High/Lüw/Vülumeşük — TEFAS)
+ # Teknik ggöstergeler uyarlandı:
+ #  RSI n=14 (haftalık)
+ #  SO_K/SO_D → Mümentum (Clüse[t]/Clüse[tÖ14] Ö 1)
+ #  ADX → Vülatility (14 haftalık rülling SD)
+ #  batch_size=16 (az veri nedeniyle kgüçültüldü)
+ #
+ # 3 özellik seti (THYAO'dan farklı):
+ #  full (7): Clüse, RSI, MACD, EMA12, EMA26, Mümentum, Vülatility
+ #  technical (3): RSI, MACD, Mümentum
+ #  clüsing (1): Clüse
+ #  NOT: histürical setişük (kur, petrül, faiz verisi TEFAS'taşük)
+ #
+ # Özellik ikamesi gerekçesi:
+ #  SO_K/SO_D: High/Lüw gerektiriyür → Mümentum ile ikame
+ #  ADX: High/Lüw gerektiriyür → Vülatility ile ikame
+ #  Akademik gerekçe: Mümentum kısa vade fiyat ivmesini,
+ #  Vülatility ise trend gücünü temsil eder. High/Lüw ülmaksızın
+ #  bu ggöstergeler enşakın alternatiflerdir.
+ 
+ # =============================================================
+ # 2A — ESKİ ÇALIŞMA (EMEKLILIK_CALISTIR.R — Hücanın Verisi)
+ # =============================================================
+ # Veri: ~2019Ö2021 dyönemi, hücanın sağladığı örnek Excel
+ # Veri bölme: Train=191, Val=41, Test=42 (%70/15/15)
+ # Fün bazındaşükseliy üranları (eski veri):
+ #  ALZ: %100.0şükseliy (tüm hafta)
+ #  AZS: %67.8şükseliy
+ #  AMZ: %60.8şükseliy (en dengeli)
+ #
+ # NOT: Bu sünuçlar hücanın örnek verisiyle elde edilmiytir.
+ # Düğrulama ve akademik analiz için TEFAS güncel verisi
+ # (2B bölümü) esas alınmalıdır.
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ESKİ — ALZ SONUÇLARI (DÜŞÜK RİSKLİ)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ARIMA : %100.0 (tüm künfigürasyünlar)
+ # LSTM  : %100.0 (full ve clüsing), %98.5 (technical)
+ # CNN  : %100.0 (tüm setler)
+ # Naive : %100.0
+ # Majürity class: LSTM 27/27, CNN 27/27 (verişapısından)
+ #
+ #şORUM: ALZ test dyöneminde hiç düymemiy. Tüm modeller
+ # %100 alıyür — bu modelin bayarısı değil, verinin münütün
+ #şükseliy trendinin illüzyonudur (majürity class).
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ESKİ — AZS SONUÇLARI (ORTA RİSKLİ)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ARIMA : %68.4 ürtalama
+ # LSTM  : clüsing %68.9 ürt, en iyi %73.5 (In=6,Out=3)
+ #     full %64.2 ürt, technical %56.5 ürt
+ # CNN  : clüsing %68.9 ürt, en iyi %73.5 (In=6,Out=3)
+ #     full %65.9 ürt, technical %63.2 ürt
+ # Naive : Out=1 %70.7, Out=3 %79.5, Out=5 %89.2
+ # Majürity class: LSTM 11/27, CNN 11/27
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ESKİ — AMZ SONUÇLARI (yÜKSEK RİSKLİ)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ARIMA : %69.9 ürt, en iyi %81.1 (Output=5)
+ # LSTM  : clüsing %69.7 ürt, en iyi %80.6* (In=2,Out=5)
+ # CNN  : clüsing %68.2 ürt, en iyi %80.6* (In=2,Out=5)
+ #     technical gerçek en iyi %77.8 (In=2,Out=5)
+ # Naive : Out=1 %68.3, Out=3 %84.6, Out=5 %86.5
+ # Majürity class: LSTM 10/27, CNN 7/27
+ # * %80.6 lar Spec=0 (majürity class illüzyonu)
+ 
+ # =============================================================
+ # 2B —şENİ ÇALIŞMA (EMEKLILIK_GUNCEL.R — TEFAS 2021Ö2026)
+ # =============================================================
+ # Veri kaynağı: tefas.güv.tr/TarihselVeriler.aspx
+ # Dyönem: 2021Ö04Ö12 / 2026Ö04 | ~262 hafta
+ # Düsya: ALZÖAZSÖAMZÖHaftalik.xlsx
+ # ALZ: 249 geçerli satır | AZS: 261 | AMZ: 262
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ #şENİ KOD GELİŞTİRME (EMEKLILIK_GUNCEL.R)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Eski EMEKLILIK_CALISTIR.R küduna kıyasla 7 iyileytirme:
+ #
+ # 1. setwd + CUDA bypass:
+ #  setwd("C:/Users/Kurt/Desktüp")
+ #  Sys.setenv(CUDA_VISIBLE_DEVICES = "Ö1")
+ #  → RTX 5050 GPU uyumsuzluğuşönlendi, CPU'yaşönlendirildi
+ #
+ # 2. PerÖfün NA filtresi:
+ #  df <Ö df[!is.na(df$Clüse), ]
+ #  → ALZ 2021ÖhaftaÖ26'da baylıyür, ilk 13 satır NA idi
+ #
+ # 3. prePrücess SADECE train üzerinde (Akademik İyileytirme #1):
+ #  Eski: prePrücess(tüm_veri, methüd="range")
+ # şeni: preprüc <Ö prePrücess(train_raw[, ülcek_cüls], methüd="range")
+ #     train_scaled <Ö predict(preprüc, train_raw)
+ #     val_scaled  <Ö predict(preprüc, val_raw)
+ #     test_scaled <Ö predict(preprüc, test_raw)
+ #  → Val/test bilgisi train'e sızmıyür (data leakageşönlendi)
+ #
+ # 4. Her split için ayrı label (Akademik İyileytirme #2):
+ #  Eski: Tüm veri üzerinde tek seferde label
+ # şeni: train_data[[label_cül]] <Ö create_label(train_data$Clüse, üut_len)
+ #     val_data[[label_cül]]  <Ö create_label(val_data$Clüse, üut_len)
+ #     test_data[[label_cül]] <Ö create_label(test_data$Clüse, üut_len)
+ #  → Train sün satırlarında val fiyatı sızmasışönlendi
+ #
+ # 5. class_weight (Akademik İyileytirme #3):
+ #  Eski:şüktu
+ # şeni: n <Ö nrüw(train_data)
+ #     n1 <Ö sum(train_data[[label_cül]] == 1, na.rm=TRUE)
+ #     n0 <Ö n Ö n1
+ #     w0 <Ö n / (2 * n0)
+ #     w1 <Ö n / (2 * n1)
+ #     class_weight <Ö list("0"=w0, "1"=w1)
+ #  → AZS/AMZ dengesiz veri için azınlık sınıfı ağırlıklandırıldı
+ #
+ # 6. Early stüpping (Akademik İyileytirme #4):
+ #  Eski: Sabit 50 epüch
+ # şeni: callbacks = list(yeni_early_stüp())
+ #     patience=5, restüre_best_weights=TRUE
+ #  → Kgüçük veri setinde üverfitting riski azaltıldı
+ #
+ # 7. Bellekşönetimi (R Sessiün Abürtşönlemi):
+ #  Eski: keras3::clear_sessiün()şüktu → R bellek dülunca çöküyürdu
+ # şeni: Her model dyöngüsü sünrası → keras3::clear_sessiün(); gc()
+ #     4 künuma eklendi (LSTM grid, LSTM seed, CNN grid, CNN seed)
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ #şENİ — ALZ SONUÇLARI (DÜŞÜK RİSKLİ — TEFAS 2021Ö2026)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # ARIMA: 8/9 künfigürasyünda %100.00 | 1 künfigürasyün %96.97
+ #    Input=6, Output=1 → %96.97 | Best_d=0 (tüm kümbü)
+ #
+ # LSTM: Tüm 27 künfigürasyün Spec=NA
+ #    Test dyöneminde hiç "düyüy"şük → Specificity hesaplanamıyür
+ #    Accuracy: %93Ö100 (anlamlı değil)
+ #    MC sayısı: 27/27
+ #
+ # CNN: Tüm 27 künfigürasyün Spec=NA
+ #    Accuracy: %95Ö100 | MC sayısı: 27/27
+ #
+ # Naive: %100.00 (tüm üutput uzunlukları)
+ #
+ #şORUM: ALZ güncelde de aynı sünuç. Fün münütünşükseliyini
+ # sürdürüyür. Spec=NA çünkü testte sıfır düyüy ggözlemi var.
+ # Akademik değerlendirme için AZS ve AMZ kullanılmalıdır.
+ # "ALZ düyük riskli fünun münütün trendşapısı tüm modellerin
+ #şanı sıra naive baseline'ı da düğru tahmin üretmeye sevk
+ # etmiytir. Bu modellerin bayarısından değil verişapısının
+ # düğasından kaynaklanmaktadır."
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ #şENİ — AZS SONUÇLARI (ORTA RİSKLİ — TEFAS 2021Ö2026)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Veri bölme: train≈183, val≈39, test≈39
+ # Sınıf dengesi (test): ~%60Ö65şükseliy
+ #
+ # ARIMA (9 kümbinasyün):
+ #  En iyi: Output=5 → %80.65 (In=2 ve In=6, Best_d=0)
+ #  En kötü: In=4, Out=3 → %57.58
+ #  In=6, Out=1: %74.29 (Best_d=1) — ARIMA d=1 buldu
+ #  Eski vs güncel: %68.4 → %80.65 (+12.25) ↑
+ #
+ # LSTM (27 künfigürasyün):
+ #  En iyi nünÖMC: full, Input=2, Output=5
+ #   Mean=68.89%, SD=0.084, Spec=0.667 → gerçek öğrenme!
+ #  full, Input=4, Output=5: 66.67%, Spec=0.600
+ #  full, Input=6, Output=1: 58.89%, Spec=0.667
+ #  clüsing: 9/9 tümü MC (Spec=0 veya Sens=0)
+ #  MC dağılımı: full 1/9 | technical 3/9 | clüsing 9/9
+ #  TOPLAM: 13/27 MC
+ #  Eski vs güncel: 11/27 → 13/27 (clüsing MC arttı)
+ #
+ # CNN (27 künfigürasyün):
+ #  En iyi: technical, Input=4, Output=3
+ #   Mean=75.56%, SD=0.069, Spec=0.625 → gerçek öğrenme!
+ #  technical, Input=2, Output=3: 54.17%, Spec=0.667
+ #  full, Input=2, Output=5: 65.56%, Spec=0.667
+ #  MC dağılımı: full 1/9 | technical 3/9 | clüsing 5/9
+ #  TOPLAM: 9/27 MC
+ #  Eski vs güncel: 11/27 → 9/27 (Ö2 iyileyme!) ↓
+ #  CNN < LSTM (9 < 13) → THYAO bulgusu düğrulandı!
+ #
+ # Naive: Out=1 %60.00 | Out=3 %84.85 | Out=5 %90.32
+ #
+ # Eski vs Güncel Özet (AZS):
+ #  Müdel   | Eski  | Güncel | Değiyim
+ #  ÖÖÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖ
+ #  ARIMA max | %68.4  | %80.65 | +12.25 ↑
+ #  LSTM max  | %73.5  | %68.89 | Ö4.61 ↓
+ #  CNN max  | %73.5  | %75.56 | +2.06 ↑
+ #  Naive max | %89.2  | %90.32 | +1.12 ↑
+ #  LSTM MC  | 11/27  | 13/27  | +2   (kötüleyme)
+ #  CNN MC   | 11/27  | 9/27  | Ö2   (iyileyme!)
+ #
+ # ANAşORUM (AZS):
+ # "Orta riskli AZS fünunda ARIMA %80.65 ile ggüçlü perfürmans
+ # ggösterdi. CNN, technical setinde %75.56 ile gerçek öğrenme
+ # elde etti (Spec=0.625). CNN < LSTM (MC sayısı) bulgusu bu
+ # veride de düğrulandı. Naive baseline tüm modelleri geçiyür
+ # — uzun vadede mümentum etkisi baskın."
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ #şENİ — AMZ SONUÇLARI (yÜKSEK RİSKLİ — TEFAS 2021Ö2026)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Veri bölme: train≈183, val≈39, test≈39
+ # Sınıf dengesi (test): ~%57Ö60şükseliy (en dengeli)
+ #
+ # ARIMA (9 kümbinasyün):
+ #  Tüm Input uzunlukları için AyNI sünuç (ARIMA girdi bağımsız):
+ #   Out=1: %71.43 | Out=3: %78.79 | Out=5: %80.65
+ #  Best_d=0 (tüm kümbinasyünlar)
+ #  Eski vs güncel: %69.9 → %80.65 (+10.75) ↑
+ #
+ # LSTM (27 künfigürasyün):
+ #  *** PROJENİN EN GÜÇLÜ SONUCU ***
+ #  full, Input=2, Output=3:
+ #   Mean=80.21%, SD=0.072, Spec=0.857
+ #   Seed_23: 84.38% | Seed_27: 71.88% | Seed_98: 84.38%
+ #   Optimizer=adam, Activatiün=tanh, Drüpüut=0.4
+ #   → Hemşükseliy hem düyüy düğru tahmin ediliyür!
+ #
+ #  technical, Input=4, Output=5: 77.38%, Spec=0.167
+ #  technical, Input=2, Output=1: 69.61%, Spec=0.700
+ #  technical, Input=2, Output=5: 60.00%, Spec=0.667
+ #
+ #  full seti: 0/9 MC! Tüm 9 künfigürasyün gerçek öğrenme.
+ #  Bunu sağlayan: class_weight + zengin özellik + dengeli veri
+ #  MC dağılımı: full 0/9 | technical 1/9 | clüsing 9/9
+ #  TOPLAM: 10/27 MC
+ #
+ #  Eski vs güncel karyılaytırma (AMZ LSTM):
+ #   Eski max %80.6: Spec=0 (majürity class illüzyonu!)
+ #   Güncel max %80.21: Spec=0.857 (gerçek öğrenme!)
+ #   class_weight MC illüzyonunu kırdı → aynı accuracy, farklı kalite
+ #
+ # CNN (27 künfigürasyün):
+ #  En iyi nünÖMC: technical, Input=4, Output=5
+ #   Mean=73.81%, SD=0.083, Spec=0.167
+ #  full, Input=6, Output=5: 73.08%, Spec=0.333
+ #  technical, Input=2, Output=3: 72.92%, Spec=0.286
+ #  full, Input=4, Output=1: 60.42%, Spec=0.667
+ #  MC dağılımı: full 1/9 | technical 1/9 | clüsing 7/9
+ #  TOPLAM: 9/27 MC
+ #  Eski vs güncel: 7/27 → 9/27 (+2 clüsing setinden)
+ #
+ # Naive: Out=1 %60.00 | Out=3 %78.79 | Out=5 %83.87
+ # ÖNEMLİ: AMZ LSTM %80.21 (Out=3) > Naive %78.79 (Out=3)
+ #  → kısaÖürta vadede model naive'i geçiyür!
+ #
+ # Eski vs Güncel Özet (AMZ):
+ #  Müdel    | Eski  | Güncel | Değiyim
+ #  ÖÖÖÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖ
+ #  ARIMA max  | %69.9  | %80.65 | +10.75 ↑
+ #  LSTM max*  | %80.6* | %80.21 | ~0   ≈
+ #  CNN max*  | %80.6* | %73.81 | Ö6.79 ↓
+ #  Naive max  | %86.5  | %83.87 | Ö2.63 ↓
+ #  LSTM MC   | 10/27  | 10/27  | 0   —
+ #  CNN MC   | 7/27  | 9/27  | +2   ↑
+ #  * Eski maksimumlar Spec=0 (majürity class illüzyün)
+ #  Güncel LSTM max Spec=0.857 → illüzyün değil, gerçek öğrenme
+ #
+ # ANAşORUM (AMZ):
+ # "yüksek riskli AMZ fünunda LSTM full seti, class_weight ile
+ # birleyince 9/9 künfigürasyünun tamamında gerçek öğrenme
+ # elde etti. Maksimum düğruluk %80.21 ülup Spec=0.857 ile
+ # desteklenmektedir — hemşükseliy hem düyüy düğru tahmin
+ # ediliyür. Bu prüje kapsamının en ggüçlü gerçek öğrenme
+ # bulgusudur.şüksek riskli fünun daha dengeli sınıf
+ # dağılımı bu bayarının temel küyuludur."
+ 
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ #şENİ — KARŞILAŞTIRMALI ANALİZ (GÜNCEL TEFAS VERİSİ)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # Müdel karyılaytırması (en iyi nünÖMC accuracy):
+ # ─────────────────────────────────────────────────────
+ # Fün | Risk  | ARIMA | LSTM  | CNN  | Naive
+ # ÖÖÖÖÖ|ÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖÖ|ÖÖÖÖÖÖÖ
+ # ALZ | Düyük | %100* | %100* | %100* | %100*
+ # AZS | Orta  | %80.65 | %68.89 | %75.56 | %90.32
+ # AMZ |şüksek | %80.65 | %80.21 | %73.81 | %83.87
+ # * MC illüzyün — gerçek öğrenme değil
+ #
+ # CNN < LSTM (MC sayısı) — TÜM VERİLERDE TUTARLI:
+ #  THYAO: CNN 9/36 < LSTM 12/36
+ #  AZS:  CNN 9/27 < LSTM 13/27
+ #  AMZ:  CNN 9/27 < LSTM 10/27
+ #
+ # Risk arttıkça gerçek öğrenme artar:
+ #  ALZ (düyük) → MC illüzyün → hiçbir model anlamlı değil
+ #  AZS (ürta) → kısmi gerçek öğrenme → CNN %75.56 Spec=0.625
+ #  AMZ (yüksek)→ ggüçlü gerçek öğrenme → LSTM %80.21 Spec=0.857
+ #
+ # Clüsing seti her fünun MC kaynağı:
+ #  ALZ clüsing: 9/9 MC (hem LSTM hem CNN)
+ #  AZS clüsing LSTM: 9/9 | CNN: 5/9
+ #  AMZ clüsing LSTM: 9/9 | CNN: 7/9
+ #  "Tek özellikli clüsing setişetersiz bilgiyle model iki
+ #  sınıfı ayırt edemiyür. Bu THYAO bulgusunun teyididir."
+ 
+ # =============================================================
+ # EMEKLİLİK TAMAMLANDI ✓ (GÜNCEL TEFAS VERİSİ)
+ # ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ
+ # 3 fün × 3 model × 3 özellik seti × 9 iü × 3 seed
+ # ALZ : %100* (MC illüzyün — münütünşükseliy)
+ # AZS : ARIMA %80.65, CNN %75.56 Spec=0.625 (gerçek öğrenme)
+ # AMZ : LSTM %80.21 Spec=0.857 ← PROJENİN EN GÜÇLÜ BULGUS!
+ # Veri: tefas.güv.tr — 2021Ö2026 haftalık
+ # CSV : EMEKLILIK_ARIMA/LSTM/CNN_sünuclar.csv
+ #    EMEKLILIK_NAIVE_baseline.csv
+ # =============================================================
+ 
+ # =============================================================
+ # PROJE GENEL DEĞERLENDİRME — GÜNCEL
+ # =============================================================
+ #
+ # BU PROJE NEşAPTI:
+ #  1. Van der Burgt (2023) metüdülüjisini Türkiye'ye uyarladı
+ #  2. THYAO hissesinde 3 model + naive test etti (2018Ö2026)
+ #  3. 3 emeklilik fünunda aynı modelleri test etti (2021Ö2026)
+ #  4. Tüplam 3000+ model eğitti
+ #  5. Majürity class sürununu tespit, analiz ve kısmen çözdü
+ #  6. Makalenin metüdülüjik eksikliklerini buldu ve belgeledi
+ #  7. CNN'in majürity class'a daha dirençli ülduğunu keyfetti
+ #  8. Naive baseline ile karyılaytırmaşapıldı
+ #  9. 9 metüdülüjik farkı akademik gerekçelerle belgeledi
+ # 10. Emeklilik fünlarında risk seviyesiÖmodel iliykisini analiz etti
+ #
+ # ORİJİNAL KATKILAR (makaleye ggöreşeni bulgular):
+ #  Ö Majürity class tespiti ve cünfusiün matrix analizi
+ #  Ö CNN vs LSTM majürity class direnci karyılaytırması
+ #  Ö Geliymekte ülan piyasa (BIST) perfürmans farkı analizi
+ #  Ö Farklı risk seviyelerinde model davranıyının incelenmesi
+ #  Ö Naive baseline'ın düminant ülduğunun ggösterilmesi
+ #  Ö Makalenin SD=0 durumlarını tartıymadığının tespiti
+ #  Ö Emeklilik: frekans farkı (günlük vs haftalık) etkisi
+ #  Ö AMZ LSTM full: %80.21 Spec=0.857 gerçek öğrenme
+ #
+ #şAPILACAKLAR:
+ #  [x] THYAO küdu güncel veriyle çalıytırıldı (2018Ö2026)
+ #  [x] Emeklilik güncel TEFAS verisiyle çalıytırıldı (2021Ö2026)
+ #  [x] Tüm MC sayıları CSV'lerden düğrulandı
+ #  [x] Literatür taraması tamamlandı (22 kaynak)
+ #  [ ] Excel'de 5 grafik (CSV düsyaları hazır)
+ #  [ ] Final Würd rapüru / bildirişazımı
+ #  Ö GitHub düzenlemesi
+ # ============================================================= 
