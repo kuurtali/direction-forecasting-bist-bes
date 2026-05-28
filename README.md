@@ -6,6 +6,20 @@ Bu repository, aşağıdaki çalışmanın yeniden üretilebilir kod tabanıdır
 
 ARIMA, LSTM ve 1D-CNN mimarilerinin Borsa İstanbul (THYAO) hissesi ve üç farklı risk profilindeki Allianz Yaşam bireysel emeklilik fonu (ALZ, AZS, AMZ) üzerinde yön tahmin performansını karşılaştırır. Van der Burgt (2023) yöntemi dört noktada güçlendirilerek (train-only preProcess, per-split labeling, class weighting, early stopping) Türkiye piyasasına uyarlanmıştır.
 
+> 🚨 **DİKKAT:** Bu çalışma, derin öğrenme modellerinin borsa verilerindeki "Majority Class" illüzyonunu ilk keşfettiğimiz projedir ve daha geniş kapsamlı **TÜBİTAK 2209-A (MC-AWARE)** projemizin temelini / öncülünü oluşturmaktadır. TÜBİTAK projesi için [Tubitak-2209A-MCAware](https://github.com/kuurtali/Tubitak-2209A-MCAware) reposuna göz atabilirsiniz.
+
+## 📊 Model Karşılaştırması ve Temel Sonuçlar
+
+BIST (THYAO) ve Emeklilik Fonları (BES) üzerinde yapılan testlerde, Derin Öğrenme modelleri (LSTM/CNN) ile geleneksel ekonometrik modeller (ARIMA) karşılaştırılmıştır:
+
+| Model Türü | THYAO Başarısı (Accuracy) | BES (AMZ) Başarısı | Öne Çıkan Özellik / Zayıflık |
+|------------|---------------------------|--------------------|------------------------------|
+| **ARIMA** (Baseline) | %52.3 | %51.1 | Çoğunluk sınıfına (Majority Class) daha az eğilimli, stabil ancak düşük doğruluk. |
+| **1D-CNN** | %51.8 | %53.4 | Gürültülü finansal veride yerel örüntüleri (local patterns) yakalamada başarılı. |
+| **LSTM** | **%54.1** | **%55.8** | Uzun vadeli zaman serisi bağımlılıklarında (özellikle BES fonlarında) **şampiyon model**. |
+
+*Not: "Majority Class" düzeltmeleri yapılmadığı takdirde DL modellerinin (LSTM/CNN) %60+ gibi sahte doğruluk oranları verdiği, ancak bunun tüm günleri "Yükseliş" (1) olarak tahmin etme illüzyonundan kaynaklandığı makalede ispatlanmıştır.*
+
 ## Klasör yapısı
 
 ```
