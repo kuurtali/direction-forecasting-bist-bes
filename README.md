@@ -7,6 +7,8 @@
   <img src="https://img.shields.io/badge/Machine%20Learning-Actuarial-brightgreen?style=for-the-badge" />
 </p>
 
+> 🚨 **DİKKAT:** Bu akademik çalışma, "Majority Class" tuzağını ve "Anti-Predictive" model davranışlarını keşfettiğimiz öncü araştırmamızdır. Daha gelişmiş Multi-Defense mimarisi içeren **TÜBİTAK 2209-A (MC-AWARE)** projemizin temelini oluşturur. [TÜBİTAK Projesi (Canlı Demo) İçin Tıklayın](https://github.com/kuurtali/Tubitak-2209A-MCAware)
+
 Bu repository, derin öğrenme modellerinin Borsa İstanbul (BIST) ve Bireysel Emeklilik Fonları (BES) üzerindeki finansal yön tahmin yeteneklerini inceleyen aşağıdaki akademik çalışmanın **%100 yeniden üretilebilir (reproducible) kod tabanıdır**:
 
 > 📄 **Kurt, M. A., Demir, Ş., Karadağ Erdemir, Ö. (2026).** *Türkiye piyasasında yön tahmini: derin öğrenme ve majority class illüzyonu.* Hacettepe Üniversitesi, Aktüerya Bilimleri Bölümü.
@@ -16,8 +18,6 @@ Bu repository, derin öğrenme modellerinin Borsa İstanbul (BIST) ve Bireysel E
 Finansal zaman serilerinde yön tahmini (Yükseliş/Düşüş) yaparken, Derin Öğrenme modelleri (LSTM/CNN) genellikle veri setindeki dominant sınıfa (örneğin pazarın sürekli yükselişte olduğu dönemlere) aşırı uyum sağlar. Bu durum literatürde **"Majority Class Illusion" (Çoğunluk Sınıfı İllüzyonu)** olarak bilinir.
 
 Bu projede; ARIMA, LSTM ve 1D-CNN mimarilerinin THYAO hissesi ve Allianz Yaşam emeklilik fonları (ALZ, AZS, AMZ) üzerindeki performansları kıyaslanmıştır. Model, **Van der Burgt (2023)** metodolojisi baz alınarak 4 farklı teknikle (train-only preProcess, per-split labeling, class weighting, early stopping) Türkiye piyasasına özel olarak güçlendirilmiştir.
-
-> 🚨 **DİKKAT:** Bu çalışma, "Majority Class" tuzağını ve "Anti-Predictive" model davranışlarını keşfettiğimiz öncü araştırmamızdır. Daha gelişmiş Multi-Defense mimarisi içeren **TÜBİTAK 2209-A (MC-AWARE)** projemizin temelini oluşturur. [TÜBİTAK Projesi (Canlı Demo) İçin Tıklayın](https://github.com/kuurtali/Tubitak-2209A-MCAware)
 
 ## 📊 Model Karşılaştırması ve Temel Sonuçlar
 
