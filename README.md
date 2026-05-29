@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/Machine%20Learning-Actuarial-brightgreen?style=for-the-badge" />
 </p>
 
-> 🚨 **DİKKAT:** Bu akademik çalışma, "Majority Class" tuzağını ve "Anti-Predictive" model davranışlarını keşfettiğimiz öncü araştırmamızdır. Daha gelişmiş Multi-Defense mimarisi içeren **TÜBİTAK 2209-A (MC-AWARE)** projemizin temelini oluşturur. [TÜBİTAK Projesi (Canlı Demo) İçin Tıklayın](https://github.com/kuurtali/Tubitak-2209A-MCAware)
+> 💡 **NOT:** Bu çalışma, "Majority Class" tuzağını ve "Anti-Predictive" model davranışlarını keşfettiğimiz öncü araştırmamızdır. Daha gelişmiş Multi-Defense mimarisi içeren **TÜBİTAK 2209-A (MC-AWARE)** projemizin temelini oluşturur. [TÜBİTAK Projesini İnceleyin](https://github.com/kuurtali/Tubitak-2209A-MCAware)
 
 Bu repository, derin öğrenme modellerinin Borsa İstanbul (BIST) ve Bireysel Emeklilik Fonları (BES) üzerindeki finansal yön tahmin yeteneklerini inceleyen aşağıdaki akademik çalışmanın **%100 yeniden üretilebilir (reproducible) kod tabanıdır**:
 
@@ -50,7 +50,7 @@ GITHUB_HAZIR/
 └── .gitignore
 ```
 
-## Hızlı kurulum
+## 🔬 Yeniden Üretilebilirlik (Reproducibility)
 
 ### 1. R + RStudio kurulumu
 R 4.3 veya üzeri gerekir. RStudio önerilir.
