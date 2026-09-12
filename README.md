@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/Machine%20Learning-Actuarial-brightgreen?style=for-the-badge" />
 </p>
 
-> 💡 **NOT:** Bu çalışma, "Majority Class" tuzağını ve "Anti-Predictive" model davranışlarını keşfettiğimiz öncü araştırmamızdır. Daha gelişmiş Multi-Defense mimarisi içeren **TÜBİTAK 2209-A (MC-AWARE)** projemizin temelini oluşturur. [TÜBİTAK Projesini İnceleyin](https://github.com/kuurtali/Tubitak-2209A-MCAware)
+> 💡 **NOT:** Bu çalışma, "Majority Class" tuzağını ve "Anti-Predictive" model davranışlarını inceleyen öncü araştırmadır. Daha geniş kapsamlı ve bağımsız olarak sürdürülen devam çalışması için [MC-AWARE projesini inceleyin](https://github.com/kuurtali/MCAware).
 
 Bu repository, derin öğrenme modellerinin Borsa İstanbul (BIST) ve Bireysel Emeklilik Fonları (BES) üzerindeki finansal yön tahmin yeteneklerini inceleyen aşağıdaki akademik çalışmanın **%100 yeniden üretilebilir (reproducible) kod tabanıdır**:
 
@@ -89,9 +89,9 @@ GPU'yu bypass eder; CPU modunda koşar (yavaş ama stabil).
 | USD/TRY, WTI petrol | `quantmod::getSymbols("USDTRY=X", "CL=F")` | İnternet üzerinden çekilir |
 | TCMB politika faizi | `getSymbols("INTDSRTRM193N", src="FRED")` | İnternet üzerinden çekilir |
 | Fear & Greed indeks | gman4774 GitHub mirror | İnternet üzerinden çekilir |
-| ALZ/AZS/AMZ haftalık | TEFAS sistemi (manuel indirilir) | **Hayır** — `data/` klasörüne sen indir |
+| ALZ/AZS/AMZ haftalık | TEFAS sistemi | **Evet** — yeniden üretilebilirlik anlık görüntüsü `data/ALZ_AZS_AMZ_Haftalik.xlsx` |
 
-**Önemli:** TEFAS verisi telif sebebiyle bu repoya dahil değildir. `data/ALZ_AZS_AMZ_Haftalik.xlsx` dosyasını TEFAS sisteminden manuel olarak indirip `data/` klasörüne yerleştirmeniz gerekir. Beklenen kolon yapısı:
+Depoda kullanılan veri anlık görüntüsü bulunur. Analizi daha güncel bir dönemle yenilemek için aynı dosya adını ve aşağıdaki kolon yapısını koruyarak TEFAS verisini değiştirebilirsiniz:
 
 ```
 Date | Price_ALZ | LogReturn_ALZ | Price_AZS | LogReturn_AZS | Price_AMZ | LogReturn_AMZ
@@ -166,7 +166,7 @@ Bu kodu kullanırsanız lütfen makaleye atıfta bulunun:
 
 | Proje / Project | Açıklama / Description |
 |-----------------|------------------------|
-| [Tubitak-2209A-MCAware](https://github.com/kuurtali/Tubitak-2209A-MCAware) | TÜBİTAK 2209-A: BIST'te derin öğrenme ile anti-prediktif davranış keşfi |
+| [MC-AWARE](https://github.com/kuurtali/MCAware) | BIST yön tahmininde majority-class tuzakları ve anti-prediktif davranış üzerine bağımsız derin öğrenme araştırması |
 | [ADAS Pricing Paradox](https://github.com/kuurtali/ADAS-Pricing-Paradox) | Aktüeryal ADAS fiyatlama: 100K poliçe, Poisson + Gamma GLM |
 | [VOL2 — ADAS Advanced](https://github.com/kuurtali/VOL2-ADAS-Pricing-Paradox) | ADAS fiyatlama VOL2: 200K poliçe, Gini Index, Lift Charts |
 | [Actuarial Shiny Dashboard](https://github.com/kuurtali/actuarial-analysis-w-shiny-and-glm) | İnteraktif R Shiny risk skorlama: Logistic GLM (AUC 0.828) |

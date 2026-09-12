@@ -1,12 +1,16 @@
 # data/
 
-Bu klasör, scriptlerin beklediği yerel veri dosyaları içindir. **Telifli/dış kaynaklı veriler bu repoya commit edilmez** (bkz. `.gitignore`).
+Bu klasör, scriptlerin kullandığı veri girdilerini açıklar. Analizde kullanılan
+`ALZ_AZS_AMZ_Haftalik.xlsx` anlık görüntüsü yeniden üretilebilirlik için repoda
+bulunur. Daha güncel veriyle çalışırken aynı dosya adı ve kolon yapısı korunarak
+dosya değiştirilebilir; dış kaynak verilerini yeniden kullanmadan önce ilgili
+sağlayıcının güncel koşulları kontrol edilmelidir.
 
-## Beklenen dosyalar
+## Dahil edilen dosya
 
 ### `ALZ_AZS_AMZ_Haftalik.xlsx`
 
-TEFAS sisteminden manuel olarak indirilen haftalık emeklilik fonu fiyat verisi.
+TEFAS sisteminden alınan haftalık emeklilik fonu fiyat verisi.
 
 **Beklenen kolonlar (sırasıyla):**
 
@@ -30,14 +34,14 @@ TEFAS sisteminden manuel olarak indirilen haftalık emeklilik fonu fiyat verisi.
 | AZS | Allianz Yaşam Karma Emeklilik Yatırım Fonu | Orta |
 | AMZ | Allianz Yaşam Hisse Senedi Ağırlıklı Emeklilik Yatırım Fonu | Yüksek |
 
-### Nasıl indirilir?
+### Daha güncel veriyle yenileme
 
 1. https://www.tefas.gov.tr/FonAnaliz.aspx adresine gidin
 2. Sırasıyla ALZ, AZS, AMZ fonlarını sorgulayın
-3. Tarih aralığını 2021-04 / 2026-04 olarak ayarlayın
+3. İstenen tarih aralığını seçin
 4. CSV/Excel olarak indirin
 5. Üç fonu yukarıdaki kolon yapısına göre tek bir Excel dosyasında birleştirin
-6. Bu klasöre `ALZ_AZS_AMZ_Haftalik.xlsx` adıyla kaydedin
+6. Bu klasördeki dosyayı `ALZ_AZS_AMZ_Haftalik.xlsx` adıyla değiştirin
 
 ## İnternet üzerinden çekilen veriler
 
