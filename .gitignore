@@ -1,0 +1,18 @@
+# Generated outputs
+output/
+
+# R session files
+.Rhistory
+.RData
+.Rproj.user/
+
+# Python caches
+__pycache__/
+*.pyc
+
+# Local research workspace and historical drafts
+01_Savunma_ve_Ana_Metinler/
+02_Akademik_Kanıtlar/
+03_Gorsel_Portfolyo/
+04_Formatlar_Ve_Ornekler/
+05_Calısma_Alanı/

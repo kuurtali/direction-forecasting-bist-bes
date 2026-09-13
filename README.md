@@ -11,6 +11,10 @@
 
 Bu repository, derin öğrenme modellerinin Borsa İstanbul (BIST) ve Bireysel Emeklilik Fonları (BES) üzerindeki finansal yön tahmin yeteneklerini inceleyen aşağıdaki akademik çalışmanın **%100 yeniden üretilebilir (reproducible) kod tabanıdır**:
 
+Public dal yalnızca yeniden üretim için gerekli kodu, veri girdisini ve proje
+belgelerini içerir; çalışma yedekleri, taslaklar ve üçüncü taraf örnek belgeler
+bu kapsamın dışındadır.
+
 > 📄 **Kurt, M. A., Demir, Ş., Karadağ Erdemir, Ö. (2026).** *Türkiye piyasasında yön tahmini: derin öğrenme ve majority class illüzyonu.* Hacettepe Üniversitesi, Aktüerya Bilimleri Bölümü.
 
 ## 📌 Proje Özeti (Executive Summary)
@@ -34,7 +38,7 @@ BIST (THYAO) ve Emeklilik Fonları (BES) üzerinde yapılan testlerde, Derin Ö�
 ## Klasör yapısı
 
 ```
-GITHUB_HAZIR/
+direction-forecasting-bist-bes/
 ├── R/                                # Bilimsel pipeline kodları
 │   ├── THYAO_2018-2026.R             # Güncel dönem THYAO modeli (ana)
 │   ├── THYAO_2018-2022.R             # Eski dönem THYAO (kavramsal sürüklenme analizi için)
@@ -101,7 +105,7 @@ Date | Price_ALZ | LogReturn_ALZ | Price_AZS | LogReturn_AZS | Price_AMZ | LogRe
 
 ## Koşum sırası
 
-Kodları repo kökünden (yani `GITHUB_HAZIR/` içinden) çalıştırın. Çıktılar `output/` klasörüne yazılır.
+Kodları repo kökünden çalıştırın. Çıktılar `output/` klasörüne yazılır.
 
 ```r
 # 1. Sınıf dağılımı raporu (Appendix I tablosu)
