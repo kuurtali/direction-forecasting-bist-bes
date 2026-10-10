@@ -1,5 +1,8 @@
 # 📈 BIST & BES Direction Forecasting (Deep Learning)
 
+[Portfolio](https://github.com/kuurtali) · [Report an issue](https://github.com/kuurtali/direction-forecasting-bist-bes/issues)
+
+
 <p align="center">
   <img src="https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white" />
   <img src="https://img.shields.io/badge/Keras-D00000?style=for-the-badge&logo=Keras&logoColor=white" />
@@ -7,9 +10,11 @@
   <img src="https://img.shields.io/badge/Machine%20Learning-Actuarial-brightgreen?style=for-the-badge" />
 </p>
 
-> 💡 **NOT:** Bu çalışma, "Majority Class" tuzağını ve "Anti-Predictive" model davranışlarını inceleyen öncü araştırmadır. Daha geniş kapsamlı ve bağımsız olarak sürdürülen devam çalışması için [MC-AWARE projesini inceleyin](https://github.com/kuurtali/MCAware).
+> 💡 **NOT:** Bu çalışma, "Majority Class" tuzağını ve "Anti-Predictive" model davranışlarını inceleyen araştırmadır. Daha geniş kapsamlı ve bağımsız olarak sürdürülen devam çalışması için [MC-AWARE projesini inceleyin](https://github.com/kuurtali/MCAware).
 
-Bu repository, derin öğrenme modellerinin Borsa İstanbul (BIST) ve Bireysel Emeklilik Fonları (BES) üzerindeki finansal yön tahmin yeteneklerini inceleyen aşağıdaki akademik çalışmanın **%100 yeniden üretilebilir (reproducible) kod tabanıdır**:
+Bu repository, derin öğrenme modellerinin Borsa İstanbul (BIST) ve Bireysel Emeklilik Fonları (BES) üzerindeki finansal yön tahmin yeteneklerini inceleyen aşağıdaki akademik çalışmanın yeniden çalıştırma kodlarını içerir:
+
+> **Sonuçların kapsamı:** Aşağıdaki sayılar depoda raporlanan deney sonuçlarıdır. Bu belge güncellemesinde modeller yeniden eğitilmedi. İnternetten çekilen zaman serilerinin değişmesi ve paket sürümleri aynı sayıları yeniden üretmeyi etkileyebilir; tarih aralığı, veri anlık görüntüsü ve ortam birlikte sabitlenmelidir.
 
 Public dal yalnızca yeniden üretim için gerekli kodu, veri girdisini ve proje
 belgelerini içerir; çalışma yedekleri, taslaklar ve üçüncü taraf örnek belgeler
@@ -31,7 +36,7 @@ BIST (THYAO) ve Emeklilik Fonları (BES) üzerinde yapılan testlerde, Derin Ö�
 |------------|---------------------------|--------------------|------------------------------|
 | **ARIMA** (Baseline) | %52.3 | %51.1 | Çoğunluk sınıfına (Majority Class) daha az eğilimli, stabil ancak düşük doğruluk. |
 | **1D-CNN** | %51.8 | %53.4 | Gürültülü finansal veride yerel örüntüleri (local patterns) yakalamada başarılı. |
-| **LSTM** | **%54.1** | **%55.8** | Uzun vadeli zaman serisi bağımlılıklarında (özellikle BES fonlarında) **şampiyon model**. |
+| **LSTM** | **%54.1** | **%55.8** | Uzun vadeli zaman serisi bağımlılıklarında (özellikle BES fonlarında) bu tabloda en yüksek doğruluk. |
 
 *Not: "Majority Class" düzeltmeleri yapılmadığı takdirde DL modellerinin (LSTM/CNN) %60+ gibi sahte doğruluk oranları verdiği, ancak bunun tüm günleri "Yükseliş" (1) olarak tahmin etme illüzyonundan kaynaklandığı makalede ispatlanmıştır.*
 
