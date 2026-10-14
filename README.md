@@ -1,6 +1,6 @@
 # 📈 BIST & BES Direction Forecasting (Deep Learning)
 
-[Portfolio](https://github.com/kuurtali) · [Report an issue](https://github.com/kuurtali/direction-forecasting-bist-bes/issues)
+[Portföy](https://github.com/kuurtali) · [Tüm projeler](https://github.com/kuurtali#projects) · [Sorun bildir](https://github.com/kuurtali/direction-forecasting-bist-bes/issues)
 
 
 <p align="center">
